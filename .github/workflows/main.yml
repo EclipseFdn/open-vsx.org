@@ -1,0 +1,28 @@
+name: CI
+
+on: [push]
+
+env:
+  IMAGE_TAG: docker.pkg.github.com/eclipse/open-vsx.org/openvsx-website
+  IMAGE_VERSION: latest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
+    - name: Set up Yarn
+      run: npm install --global yarn@1.*
+    - uses: actions/checkout@v2
+    - name: Build Website
+      run: |
+        yarn --cwd website
+        yarn --cwd website build
+    - name: Build and Push Docker Image
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+        docker build -t $IMAGE_TAG:$IMAGE_VERSION .
+        docker push $IMAGE_TAG:$IMAGE_VERSION
