@@ -1,0 +1,4 @@
+tasks:
+  - init: |
+      yarn --cwd website
+      yarn --cwd website build
