@@ -4,7 +4,6 @@ on: [push]
 
 env:
   IMAGE_TAG: docker.pkg.github.com/eclipse/open-vsx.org/openvsx-website
-  IMAGE_VERSION: latest
 
 jobs:
   build:
@@ -24,5 +23,6 @@ jobs:
     - name: Build and Push Docker Image
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+        IMAGE_VERSION=$(git rev-parse --short "$GITHUB_SHA")
         docker build -t $IMAGE_TAG:$IMAGE_VERSION .
         docker push $IMAGE_TAG:$IMAGE_VERSION
