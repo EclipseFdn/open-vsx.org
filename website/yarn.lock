@@ -2173,10 +2173,10 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-openvsx-webui@0.1.0-next.3d79dec:
-  version "0.1.0-next.3d79dec"
-  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.1.0-next.3d79dec.tgz#01aa1fe5df436f269b0d866ee5ebbfc8f4ccf876"
-  integrity sha512-B/4SNFFU6eYFovPwCsyySiJtT3/Fz6bgjzREAsudeo2ckcELYGamLVC6DW7Gn+HadGRwADHjbv/kph/WkMWEJg==
+openvsx-webui@0.1.0-next.2dd793d:
+  version "0.1.0-next.2dd793d"
+  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.1.0-next.2dd793d.tgz#4d99a1edc56d0646e08e04cffc30a0d947e5b793"
+  integrity sha512-qFPUg7QVszeXBTP7hufH0VGrAz1B389GtVyq+Y3whI43o+uUqlfIufRhEA5IhjcRPXctRLY/6j9ot7IhLcfPbQ==
   dependencies:
     "@material-ui/core" latest
     "@material-ui/icons" latest
