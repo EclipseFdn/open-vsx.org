@@ -17,8 +17,8 @@ import { Main, ExtensionRegistryService, PageSettings, Extension } from 'openvsx
 
 const theme = createMuiTheme({
     palette: {
-        primary: { main: '#eeeeee', contrastText: '#352e37' },
-        secondary: { main: '#a60ee5', contrastText: '#daf5ce' }
+        primary: { main: '#eeeeee', contrastText: '#3f3841', dark: '#565157' },
+        secondary: { main: '#a60ee5', contrastText: '#edf5ea' }
     },
     breakpoints: {
         values: {
