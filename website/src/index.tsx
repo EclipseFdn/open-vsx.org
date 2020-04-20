@@ -42,6 +42,7 @@ const pageSettings: PageSettings = {
     pageTitle: 'Open VSX Registry',
     listHeaderTitle: 'Extensions for VS Code Compatible Editors',
     logoURL: '/openvsx-registry.svg',
+    logoAlt: 'Open VSX Registry',
     extensionDefaultIconURL: '/default-icon.png',
     namespaceAccessInfoURL: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access',
     reportAbuseHref: extension => `mailto:open-vsx@typefox.io?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL(extension)}`,
