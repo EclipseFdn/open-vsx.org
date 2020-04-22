@@ -7,5 +7,8 @@ assignees: ''
 ---
 
 <!--
-Briefly explain what makes you a legitimate owner of the namespace mentioned in the issue title
+Briefly explain what makes you a legitimate owner of the namespace mentioned in
+the issue title.
+Please ensure that you have logged in to https://open-vsx.org at least once,
+otherwise we cannot process your request.
 -->
