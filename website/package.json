@@ -6,14 +6,14 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "0.1.0-next.dc997f4"
+        "openvsx-webui": "0.1.0-next.7eb59f0"
     },
     "devDependencies": {
         "@types/react": "^16.9.25",
         "@types/react-dom": "^16.9.5",
         "@types/react-router-dom": "^5.1.3",
         "css-loader": "^3.4.2",
-        "file-loader": "^6.0.0",
+        "express": "^4.17.1",
         "source-map-loader": "^0.2.4",
         "style-loader": "^1.1.3",
         "ts-loader": "^6.2.2",
@@ -23,6 +23,9 @@
     },
     "scripts": {
         "build": "webpack --config webpack.config.js --mode=production",
-        "watch": "webpack --config webpack.config.js --mode=development --watch"
+        "watch": "webpack --config webpack.config.js --mode=production --watch",
+        "build:dev": "webpack --config dev/webpack.config.js --mode=development",
+        "watch:dev": "webpack --config dev/webpack.config.js --mode=development --watch",
+        "start:dev": "node dev/server"
     }
 }

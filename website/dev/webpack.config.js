@@ -15,7 +15,7 @@ const outputPath = path.resolve(__dirname, 'static')
 
 module.exports = {
     entry: [
-        './src/main.tsx'
+        './dev/index.tsx'
     ],
     output: {
         filename: 'bundle.js',

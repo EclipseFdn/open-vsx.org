@@ -1,4 +1,8 @@
+ports:
+- port: 3000
+
 tasks:
   - init: |
       yarn --cwd website
       yarn --cwd website build
+      yarn --cwd website build:dev

@@ -1,3 +1,4 @@
 node_modules/
 /static/bundle.*
+/dev/static/bundle.*
 yarn-error.log

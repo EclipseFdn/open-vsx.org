@@ -13,7 +13,9 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core';
-import { Main, ExtensionRegistryService, PageSettings, Extension } from 'openvsx-webui';
+import { Main } from 'openvsx-webui';
+import createPageSettings from '../src/page-settings';
+import { MockRegistryService } from './mock-service';
 
 const theme = createMuiTheme({
     palette: {
@@ -31,24 +33,9 @@ const theme = createMuiTheme({
     }
 });
 
-const service = new ExtensionRegistryService();
-
+const service = new MockRegistryService();
+const pageSettings = createPageSettings(theme);
 const node = document.getElementById('main');
-
-const reportAbuseText = encodeURIComponent('<Please describe the issue>');
-const extensionURL = (extension: Extension) => encodeURIComponent(
-    `${location.protocol}//${location.hostname}/extension/${extension.namespace}/${extension.name}`);
-const pageSettings: PageSettings = {
-    pageTitle: 'Open VSX Registry',
-    listHeaderTitle: 'Extensions for VS Code Compatible Editors',
-    logoURL: '/openvsx-registry.svg',
-    logoAlt: 'Open VSX Registry',
-    extensionDefaultIconURL: '/default-icon.png',
-    namespaceAccessInfoURL: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access',
-    reportAbuseHref: extension => `mailto:open-vsx@typefox.io?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL(extension)}`,
-    claimNamespaceHref: namespace => 'https://github.com/eclipse/open-vsx.org/issues/new/choose'
-};
-
 ReactDOM.render(<BrowserRouter>
     <ThemeProvider theme={theme}>
         <Main
