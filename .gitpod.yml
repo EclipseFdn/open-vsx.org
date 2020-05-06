@@ -6,3 +6,6 @@ tasks:
       yarn --cwd website
       yarn --cwd website build
       yarn --cwd website build:dev
+    command: |
+      cd website
+      yarn start:dev

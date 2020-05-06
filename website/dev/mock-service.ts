@@ -9,7 +9,8 @@
  ********************************************************************************/
 
 import {
-    ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult, UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference
+    ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
+    UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace, NamespaceMembership
 } from "openvsx-webui";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spongebob_Squarepants_as_a_balloon.jpg';
@@ -59,11 +60,11 @@ export class MockRegistryService extends ExtensionRegistryService {
         } as ExtensionReviewList);
     }
 
-    async postReview(): Promise<SuccessResult | ErrorResult> {
+    postReview(): Promise<SuccessResult | ErrorResult> {
         return Promise.resolve({ success: 'ok' });
     }
 
-    async deleteReview(deleteReviewUrl: string): Promise<SuccessResult | ErrorResult> {
+    deleteReview(): Promise<SuccessResult | ErrorResult> {
         return Promise.resolve({ success: 'ok' });
     }
 
@@ -79,7 +80,7 @@ export class MockRegistryService extends ExtensionRegistryService {
         return Promise.resolve([]);
     }
 
-    async createAccessToken(): Promise<PersonalAccessToken> {
+    createAccessToken(): Promise<PersonalAccessToken> {
         return Promise.resolve({
             id: 0,
             value: 'abcd',
@@ -88,11 +89,27 @@ export class MockRegistryService extends ExtensionRegistryService {
         } as PersonalAccessToken);
     }
 
-    async deleteAccessToken(): Promise<SuccessResult | ErrorResult> {
+    deleteAccessToken(): Promise<SuccessResult | ErrorResult> {
         return Promise.resolve({ success: 'ok' });
     }
 
-    async deleteAllAccessTokens(): Promise<(SuccessResult | ErrorResult)[]> {
+    deleteAllAccessTokens(): Promise<(SuccessResult | ErrorResult)[]> {
+        return Promise.resolve([]);
+    }
+
+    getNamespaces(): Promise<Namespace[]> {
+        return Promise.resolve([]);
+    }
+
+    getNamespaceMembers(): Promise<NamespaceMembership[]> {
+        return Promise.resolve([]);
+    }
+
+    setNamespaceMembers(): Promise<(SuccessResult | ErrorResult)[]> {
+        return Promise.resolve([]);
+    }
+
+    changeNamespaceMemberRole(): Promise<(SuccessResult | ErrorResult)[]> {
         return Promise.resolve([]);
     }
 

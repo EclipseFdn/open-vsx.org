@@ -27,7 +27,7 @@ const About = () => {
     })();
     return <Container maxWidth='md'>
         <Box mt={4}>
-            <Typography variant='h4'>About this Service</Typography>
+            <Typography variant='h4'>About This Service</Typography>
             <Typography variant='body1' className={classes.paragraph}>
                 Open VSX is an open-source registry for VS Code extensions.
                 It can be used by any development environment that supports such extensions.

@@ -1,4 +1,4 @@
-# Snapshot revision: 7eb59f0
+# Snapshot revision: 3aa4c0b
 FROM docker.pkg.github.com/eclipse/openvsx/openvsx-server:snapshot
 
 ADD website/static/* BOOT-INF/classes/static/

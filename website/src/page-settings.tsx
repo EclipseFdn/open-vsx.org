@@ -15,9 +15,10 @@ import { Link as RouteLink, Route } from 'react-router-dom';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { PageSettings, Extension, Styleable } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
+import OpenVSXRegistryLogo from './openvsx-registry-logo';
 import About from './about';
 
-export default function createPageSettings(theme: Theme): PageSettings {
+export default function createPageSettings(theme: Theme, themeType: 'light' | 'dark'): PageSettings {
     const toolbarStyle = makeStyles({
         logo: {
             width: 'auto',
@@ -27,9 +28,7 @@ export default function createPageSettings(theme: Theme): PageSettings {
     });
     const toolbarContent = () => <RouteLink
             to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
-            <img src='/openvsx-registry.svg'
-                className={toolbarStyle().logo}
-                alt='Open VSX Registry' />
+            <OpenVSXRegistryLogo themeType={themeType} className={toolbarStyle().logo}/>
         </RouteLink>;
     
     const footerStyle = makeStyles({
@@ -65,7 +64,7 @@ export default function createPageSettings(theme: Theme): PageSettings {
             </Link>
             <Box className={footerStyle().group}>
                 <RouteLink to='/about' className={footerStyle().legalLink}>
-                    About this Service
+                    About This Service
                 </RouteLink>
                 <Link href='https://www.eclipse.org/legal/privacy.php' className={footerStyle().legalLink}>
                     Privacy Policy
@@ -111,13 +110,16 @@ export default function createPageSettings(theme: Theme): PageSettings {
 
     return {
         pageTitle: 'Open VSX Registry',
+        themeType,
         toolbarContent,
         footerContent,
         searchHeader,
         additionalRoutes,
         reportAbuse,
         claimNamespace,
-        extensionDefaultIconURL: '/default-icon.png',
-        namespaceAccessInfoURL: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access'
+        urls: {
+            extensionDefaultIcon: '/default-icon.png',
+            namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access'
+        }
     };
 }
