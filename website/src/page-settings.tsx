@@ -32,13 +32,23 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         </RouteLink>;
     
     const footerStyle = makeStyles({
+        wrapper: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            [theme.breakpoints.down('sm')]: {
+                flexDirection: 'column'
+            }
+        },
+        group: {
+            [theme.breakpoints.down('sm')]: {
+                margin: `${theme.spacing(1)}px ${theme.spacing(1.5)}px 0 ${theme.spacing(1.5)}px`
+            }
+        },
         repositoryLink: {
             display: 'flex',
             alignItems: 'center',
-            fontSize: '1.1rem',
-            [theme.breakpoints.down('sm')]: {
-                display: 'none'
-            }
+            fontSize: '1.1rem'
         },
         legalLink: {
             marginLeft: theme.spacing(3),
@@ -48,35 +58,34 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 textDecoration: 'underline'
             },
             [theme.breakpoints.down('sm')]: {
-                marginLeft: theme.spacing(1.5)
-            }
-        },
-        group: {
-            display: 'flex',
-            [theme.breakpoints.down('sm')]: {
-                fontSize: '80%'
+                marginLeft: 0,
+                marginTop: theme.spacing(0.5)
             }
         }
     });
-    const footerContent = () => <React.Fragment>
+    const footerContent = () => <Box className={footerStyle().wrapper}>
             <Link target='_blank' href='https://github.com/eclipse/openvsx' className={footerStyle().repositoryLink}>
                 <GitHubIcon />&nbsp;eclipse/openvsx
             </Link>
-            <Box className={footerStyle().group}>
-                <RouteLink to='/about' className={footerStyle().legalLink}>
-                    About This Service
-                </RouteLink>
-                <Link href='https://www.eclipse.org/legal/privacy.php' className={footerStyle().legalLink}>
-                    Privacy Policy
-                </Link>
-                <Link href='https://www.eclipse.org/legal/termsofuse.php' className={footerStyle().legalLink}>
-                    Terms of Use
-                </Link>
-                <Link href='https://www.eclipse.org/legal/copyright.php' className={footerStyle().legalLink}>
-                    Copyright Agent
-                </Link>
+            <Box display='flex'>
+                <Box className={`${footerStyle().wrapper} ${footerStyle().group}`}>
+                    <RouteLink to='/about' className={footerStyle().legalLink}>
+                        About This Service
+                    </RouteLink>
+                    <Link href='https://www.eclipse.org/legal/privacy.php' className={footerStyle().legalLink}>
+                        Privacy Policy
+                    </Link>
+                </Box>
+                <Box className={`${footerStyle().wrapper} ${footerStyle().group}`}>
+                    <Link href='https://www.eclipse.org/legal/termsofuse.php' className={footerStyle().legalLink}>
+                        Terms of Use
+                    </Link>
+                    <Link href='https://www.eclipse.org/legal/copyright.php' className={footerStyle().legalLink}>
+                        Copyright Agent
+                    </Link>
+                </Box>
             </Box>
-        </React.Fragment>;
+        </Box>;
 
     const searchStyle = makeStyles({
         typography: {
@@ -117,6 +126,9 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         additionalRoutes,
         reportAbuse,
         claimNamespace,
+        metrics: {
+            maxFooterHeight: 105
+        },
         urls: {
             extensionDefaultIcon: '/default-icon.png',
             namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access'
