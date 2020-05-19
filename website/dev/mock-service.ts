@@ -32,6 +32,8 @@ export class MockRegistryService extends ExtensionRegistryService {
             files: {},
             displayName: 'Foo Extension',
             version: '1.0.0',
+            versionAlias: 'latest',
+            allVersions: {},
             averageRating: 3.5,
             downloadCount: 4321,
             timestamp: new Date().toISOString(),
