@@ -107,11 +107,7 @@ export class MockRegistryService extends ExtensionRegistryService {
         return Promise.resolve([]);
     }
 
-    setNamespaceMembers(): Promise<(SuccessResult | ErrorResult)[]> {
-        return Promise.resolve([]);
-    }
-
-    changeNamespaceMemberRole(): Promise<(SuccessResult | ErrorResult)[]> {
+    setNamespaceMember(): Promise<(SuccessResult | ErrorResult)[]> {
         return Promise.resolve([]);
     }
 
