@@ -20,7 +20,7 @@ export default function createTheme(themeType: 'light' | 'dark') {
             secondary: {
                 main: themeType === 'dark' ? '#c160ef' : '#a60ee5', 
                 contrastText: '#edf5ea',
-                light: themeType === 'dark' ? '#777' : '#fff',
+                light: themeType === 'dark' ? '#000' : '#e6e6e6',
                 dark: themeType === 'dark' ? '#333' : '#fff', 
             },
             type: themeType
