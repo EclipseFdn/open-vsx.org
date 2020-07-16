@@ -1,4 +1,4 @@
-# Snapshot revision: 0a300db
+# Snapshot revision: dacd2fd
 FROM docker.pkg.github.com/eclipse/openvsx/openvsx-server:snapshot
 
 ADD website/static/* BOOT-INF/classes/static/
