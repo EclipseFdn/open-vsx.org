@@ -15,13 +15,13 @@ import { ThemeProvider } from '@material-ui/styles';
 import { useMediaQuery } from '@material-ui/core';
 import { Main } from 'openvsx-webui';
 import createPageSettings from '../src/page-settings';
-import createTheme from '../src/theme';
+import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import { MockRegistryService } from './mock-service';
 
 const App = () => {
     const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
     const themeType = prefersDarkScheme ? 'dark' : 'light';
-    const theme = React.useMemo(() => createTheme(themeType), [themeType]);
+    const theme = React.useMemo(() => createDefaultTheme(themeType), [themeType]);
     const service = new MockRegistryService();
     const pageSettings = createPageSettings(theme, themeType);
 

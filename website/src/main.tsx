@@ -14,13 +14,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/styles';
 import { useMediaQuery } from '@material-ui/core';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
+import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import createPageSettings from './page-settings';
-import createTheme from './theme';
 
 const App = () => {
     const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
     const themeType = prefersDarkScheme ? 'dark' : 'light';
-    const theme = React.useMemo(() => createTheme(themeType), [themeType]);
+    const theme = React.useMemo(() => createDefaultTheme(themeType), [themeType]);
     const service = new ExtensionRegistryService();
     const pageSettings = createPageSettings(theme, themeType);
 

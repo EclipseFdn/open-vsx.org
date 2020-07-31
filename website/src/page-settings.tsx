@@ -120,12 +120,14 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
     return {
         pageTitle: 'Open VSX Registry',
         themeType,
-        toolbarContent,
-        footerContent,
-        searchHeader,
-        additionalRoutes,
-        reportAbuse,
-        claimNamespace,
+        elements: {
+            toolbarContent,
+            footerContent,
+            searchHeader,
+            additionalRoutes,
+            reportAbuse,
+            claimNamespace,
+        },
         metrics: {
             maxFooterHeight: 105
         },
