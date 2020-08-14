@@ -8,13 +8,15 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
+// @ts-check
 const webpack = require('webpack');
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const outputPath = path.resolve(__dirname, 'static');
 
-module.exports = {
+/** @type {webpack.Configuration} */
+const config = {
     entry: [
         './dev/index.tsx'
     ],
@@ -30,8 +32,18 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
-                use: ['ts-loader']
+                test: /\.(js|ts)x?$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            '@babel/preset-env',
+                            '@babel/preset-typescript',
+                            '@babel/preset-react'
+                        ]
+                    }
+                }
             },
             {
                 test: /\.js$/,
@@ -60,3 +72,5 @@ module.exports = {
         })
     ]
 };
+
+module.exports = config;
