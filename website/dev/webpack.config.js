@@ -10,8 +10,9 @@
 
 const webpack = require('webpack');
 const path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const outputPath = path.resolve(__dirname, 'static')
+const outputPath = path.resolve(__dirname, 'static');
 
 module.exports = {
     entry: [
@@ -52,6 +53,10 @@ module.exports = {
             /\.js$/,
             /\.d\.ts$/
         ]),
-        new webpack.ProgressPlugin()
+        new webpack.ProgressPlugin(),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: 'report-dev.html'
+        })
     ]
 };
