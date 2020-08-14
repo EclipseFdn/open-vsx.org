@@ -15,6 +15,7 @@ import { Link as RouteLink, Route } from 'react-router-dom';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { PageSettings, Extension, Styleable } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
+import { DefaultMenuContent, MobileMenuContent } from './menu-content';
 import OpenVSXRegistryLogo from './openvsx-registry-logo';
 import About from './about';
 
@@ -23,7 +24,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         logo: {
             width: 'auto',
             height: '40px',
-            marginTop: '7px'
+            marginTop: '8px'
         }
     });
     const toolbarContent = () => <RouteLink
@@ -121,6 +122,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         pageTitle: 'Open VSX Registry',
         themeType,
         elements: {
+            defaultMenuContent: DefaultMenuContent,
+            mobileMenuContent: MobileMenuContent,
             toolbarContent,
             footerContent,
             searchHeader,
