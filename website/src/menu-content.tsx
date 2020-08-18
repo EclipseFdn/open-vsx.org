@@ -17,8 +17,6 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ForumIcon from '@material-ui/icons/Forum';
 import InfoIcon from '@material-ui/icons/Info';
 
-//-------------------- Mobile View --------------------//
-
 const menuContentStyle = (theme: Theme) => createStyles({
     headerItem: {
         margin: theme.spacing(2.5),
@@ -49,6 +47,9 @@ const menuContentStyle = (theme: Theme) => createStyles({
         alignItems: 'center'
     }
 });
+
+
+//-------------------- Mobile View --------------------//
 
 export class MobileMenuContentComponent extends React.Component<WithStyles<typeof menuContentStyle>> {
     render(): React.ReactElement {

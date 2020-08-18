@@ -27,7 +27,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             marginTop: '8px'
         }
     });
-    const toolbarContent = () => <RouteLink
+    const toolbarContent = () =>
+        <RouteLink
             to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
             <OpenVSXRegistryLogo themeType={themeType} className={toolbarStyle().logo}/>
         </RouteLink>;
@@ -64,7 +65,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             }
         }
     });
-    const footerContent = () => <Box className={footerStyle().wrapper}>
+    const footerContent = () =>
+        <Box className={footerStyle().wrapper}>
             <Link target='_blank' href='https://github.com/eclipse/openvsx' className={footerStyle().repositoryLink}>
                 <GitHubIcon />&nbsp;eclipse/openvsx
             </Link>
@@ -96,11 +98,12 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             textAlign: 'center'
         }
     });
-    const searchHeader = () => <Typography variant='h4' classes={{ root: searchStyle().typography }}>
+    const searchHeader = () =>
+        <Typography variant='h4' classes={{ root: searchStyle().typography }}>
             Extensions for VS Code Compatible Editors
         </Typography>;
 
-    const additionalRoutes = () => <Route path='/about' render={() => <About />} />
+    const additionalRoutes = () => <Route path='/about' render={() => <About />} />;
 
     const reportAbuse: React.FunctionComponent<{ extension: Extension } & Styleable> = ({ extension, className }) => {
         const reportAbuseText = encodeURIComponent('<Please describe the issue>');
