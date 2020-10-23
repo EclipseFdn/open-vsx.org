@@ -18,7 +18,7 @@ import createPageSettings from '../src/page-settings';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import { MockRegistryService } from './mock-service';
 
-const App = () => {
+const App: React.FunctionComponent = () => {
     const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
     const themeType = prefersDarkScheme ? 'dark' : 'light';
     const theme = React.useMemo(() => createDefaultTheme(themeType), [themeType]);
