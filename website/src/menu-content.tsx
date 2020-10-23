@@ -9,15 +9,15 @@
  ********************************************************************************/
 
 import * as React from 'react';
-import { withStyles, createStyles } from '@material-ui/styles';
-import { Theme, WithStyles, Typography, MenuItem, Link } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { Theme, Typography, MenuItem, Link } from '@material-ui/core';
 import { Link as RouteLink } from 'react-router-dom';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ForumIcon from '@material-ui/icons/Forum';
 import InfoIcon from '@material-ui/icons/Info';
 
-const menuContentStyle = (theme: Theme) => createStyles({
+const menuContentStyle = makeStyles((theme: Theme) => ({
     headerItem: {
         margin: theme.spacing(2.5),
         color: theme.palette.text.primary,
@@ -46,71 +46,63 @@ const menuContentStyle = (theme: Theme) => createStyles({
         display: 'flex',
         alignItems: 'center'
     }
-});
+}));
 
 
 //-------------------- Mobile View --------------------//
 
-export class MobileMenuContentComponent extends React.Component<WithStyles<typeof menuContentStyle>> {
-    render(): React.ReactElement {
-        const classes = this.props.classes;
-        return <React.Fragment>
-            <MenuItem className={classes.menuItem}>
-                <Link target='_blank' href='https://github.com/eclipse/openvsx'>
-                    <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                        <GitHubIcon className={classes.itemIcon} />
-                        Source Code
-                    </Typography>
-                </Link>
-            </MenuItem>
-            <MenuItem className={classes.menuItem}>
-                <Link href='https://github.com/eclipse/openvsx/wiki'>
-                    <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                        <MenuBookIcon className={classes.itemIcon} />
-                        Documentation
-                    </Typography>
-                </Link>
-            </MenuItem>
-            <MenuItem className={classes.menuItem}>
-                <Link href='https://gitter.im/eclipse/openvsx'>
-                    <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                        <ForumIcon className={classes.itemIcon} />
-                        Community Chat
-                    </Typography>
-                </Link>
-            </MenuItem>
-            <MenuItem className={classes.menuItem}>
-                <RouteLink to='/about'>
-                    <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                        <InfoIcon className={classes.itemIcon} />
-                        About This Service
-                    </Typography>
-                </RouteLink>
-            </MenuItem>
-        </React.Fragment>;
-    }
+export const MobileMenuContent: React.FunctionComponent = () => {
+    const classes = menuContentStyle();
+    return <React.Fragment>
+        <MenuItem className={classes.menuItem}>
+            <Link target='_blank' href='https://github.com/eclipse/openvsx'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <GitHubIcon className={classes.itemIcon} />
+                    Source Code
+                </Typography>
+            </Link>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
+            <Link href='https://github.com/eclipse/openvsx/wiki'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <MenuBookIcon className={classes.itemIcon} />
+                    Documentation
+                </Typography>
+            </Link>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
+            <Link href='https://gitter.im/eclipse/openvsx'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <ForumIcon className={classes.itemIcon} />
+                    Community Chat
+                </Typography>
+            </Link>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
+            <RouteLink to='/about'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <InfoIcon className={classes.itemIcon} />
+                    About This Service
+                </Typography>
+            </RouteLink>
+        </MenuItem>
+    </React.Fragment>;
 }
-
-export const MobileMenuContent = withStyles(menuContentStyle)(MobileMenuContentComponent);
 
 
 //-------------------- Default View --------------------//
 
-export class DefaultMenuConentComponent extends React.Component<WithStyles<typeof menuContentStyle>> {
-    render(): React.ReactElement {
-        const classes = this.props.classes;
-        return <React.Fragment>
-            <Link href='https://github.com/eclipse/openvsx/wiki' className={classes.headerItem}>
-                Documentation
-            </Link>
-            <Link href='https://gitter.im/eclipse/openvsx' className={classes.headerItem}>
-                Community
-            </Link>
-            <RouteLink to='/about' className={classes.headerItem}>
-                About
-            </RouteLink>
-        </React.Fragment>;
-    }
+export const DefaultMenuContent: React.FunctionComponent = () => {
+    const classes = menuContentStyle();
+    return <React.Fragment>
+        <Link href='https://github.com/eclipse/openvsx/wiki' className={classes.headerItem}>
+            Documentation
+        </Link>
+        <Link href='https://gitter.im/eclipse/openvsx' className={classes.headerItem}>
+            Community
+        </Link>
+        <RouteLink to='/about' className={classes.headerItem}>
+            About
+        </RouteLink>
+    </React.Fragment>;
 }
-
-export const DefaultMenuContent = withStyles(menuContentStyle)(DefaultMenuConentComponent);

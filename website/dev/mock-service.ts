@@ -10,12 +10,19 @@
 
 import {
     ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
-    UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace, NamespaceMembership
+    UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
+    NamespaceMembershipList, AdminService, PublisherInfo
 } from "openvsx-webui";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spongebob_Squarepants_as_a_balloon.jpg';
 
 export class MockRegistryService extends ExtensionRegistryService {
+
+    constructor() {
+        // FIXME cannot reference `this` in super constructor call
+        super('', new MockAdminService(undefined!));
+        (this.admin.registry as any) = this;
+    }
 
     search(): Promise<SearchResult | ErrorResult> {
         return Promise.resolve({
@@ -74,8 +81,18 @@ export class MockRegistryService extends ExtensionRegistryService {
         return Promise.resolve({
             loginName: 'test_user',
             fullName: 'Spongebob Squarepants',
-            avatarUrl
+            avatarUrl,
+            role: 'admin'
         } as UserData);
+    }
+
+    getUserByName(): Promise<UserData[]> {
+        return Promise.resolve([
+            {
+                loginName: 'test',
+                provider: 'github'
+            } as UserData
+        ]);
     }
 
     getAccessTokens(): Promise<PersonalAccessToken[]> {
@@ -103,16 +120,56 @@ export class MockRegistryService extends ExtensionRegistryService {
         return Promise.resolve([]);
     }
 
-    getNamespaceMembers(): Promise<NamespaceMembership[]> {
-        return Promise.resolve([]);
+    getNamespaceMembers(): Promise<NamespaceMembershipList> {
+        return Promise.resolve({
+            namespaceMemberships: []
+        });
     }
 
     setNamespaceMember(): Promise<(SuccessResult | ErrorResult)[]> {
         return Promise.resolve([]);
     }
 
+    signPublisherAgreement(): Promise<UserData | ErrorResult> {
+        return Promise.resolve({} as UserData);
+    }
+
     getCsrfToken(): Promise<CsrfTokenJson | ErrorResult> {
         return Promise.resolve({ error: 'Mock service' });
+    }
+
+}
+
+export class MockAdminService extends AdminService {
+
+    findNamespace(): Promise<Namespace> {
+        return Promise.resolve({
+            name: 'foo',
+            access: 'public',
+            extensions: []
+        } as any);
+    }
+
+    createNamespace(): Promise<SuccessResult> {
+        return Promise.resolve({ success: 'ok' });
+    }
+
+    deleteExtension(): Promise<SuccessResult | ErrorResult> {
+        return Promise.resolve({ success: 'ok' });
+    }
+
+    getPublisherInfo(): Promise<PublisherInfo> {
+        return Promise.resolve({
+            activeAccessTokenNum: 5,
+            extensions: [],
+            user: {
+                loginName: 'test'
+            } as UserData
+        });
+    }
+
+    revokePublisherAgreement(provider: string, login: string): Promise<SuccessResult | ErrorResult> {
+        return Promise.resolve({ success: 'ok' });
     }
 
 }

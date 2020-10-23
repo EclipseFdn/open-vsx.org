@@ -17,7 +17,7 @@ import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import createPageSettings from './page-settings';
 
-const App = () => {
+const App: React.FunctionComponent = () => {
     const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
     const themeType = prefersDarkScheme ? 'dark' : 'light';
     const theme = React.useMemo(() => createDefaultTheme(themeType), [themeType]);
