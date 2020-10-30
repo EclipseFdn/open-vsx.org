@@ -84,7 +84,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             claimNamespace,
         },
         metrics: {
-            footerHeight: 105
+            footerHeight: 45
         },
         urls: {
             extensionDefaultIcon: '/default-icon.png',
