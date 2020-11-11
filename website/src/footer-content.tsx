@@ -37,7 +37,7 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
     const classes = footerStyle();
     const theme = useTheme();
     const isSmallDisplay = useMediaQuery(theme.breakpoints.down('sm'));
-    const isLargeDisplay = useMediaQuery(theme.breakpoints.up('lg'));
+    const isLargeDisplay = useMediaQuery(theme.breakpoints.up('xl'));
 
     const MainFooter = () => {
         const itemSpacing = 2.5;
@@ -51,6 +51,9 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
                     </Box>
                     <Box ml={itemSpacing}>
                         {termsOfUse(classes)}
+                    </Box>
+                    <Box ml={itemSpacing}>
+                        {publisherAgreement(classes)}
                     </Box>
                     <Box ml={itemSpacing}>
                         {copyrightAgent(classes)}
@@ -85,6 +88,9 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
                 </Box>
                 <Box mb={itemSpacing}>
                     {termsOfUse(classes)}
+                </Box>
+                <Box mb={itemSpacing}>
+                    {publisherAgreement(classes)}
                 </Box>
                 <Box mb={itemSpacing}>
                     {copyrightAgent(classes)}
@@ -122,6 +128,13 @@ const termsOfUse = (classes: FooterStyle) =>
         href='https://www.eclipse.org/legal/termsofuse.php'
         className={`${classes.link} ${classes.legalText}`} >
         Terms of Use
+    </Link>;
+
+const publisherAgreement = (classes: FooterStyle) =>
+    <Link
+        href='https://www.eclipse.org/legal/documents/eclipse-openvsx-publisher-agreement.pdf'
+        className={`${classes.link} ${classes.legalText}`} >
+        Publisher Agreement
     </Link>;
 
 const copyrightAgent = (classes: FooterStyle) =>

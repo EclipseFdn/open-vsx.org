@@ -38,7 +38,8 @@ const About = () => {
         </Typography>
         <Typography variant='body1' className={classes.paragraph}>
             This website is currently operated by <Link color='secondary' href='https://www.typefox.io/'>TypeFox</Link>,
-            but it will soon be transferred to the <Link color='secondary' href='https://www.eclipse.org/'>Eclipse Foundation</Link>.
+            but <Link color='secondary' href='https://blogs.eclipse.org/post/brian-king/open-vsx-registry-under-new-management'>it will soon be transferred</Link> to
+            the <Link color='secondary' href='https://www.eclipse.org/'>Eclipse Foundation</Link>.
         </Typography>
         <Typography variant='body1' className={classes.paragraph}>
             The source code of this website is managed by

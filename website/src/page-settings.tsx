@@ -34,6 +34,14 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             <OpenVSXRegistryLogo themeType={themeType} className={toolbarStyle().logo}/>
         </RouteLink>;
 
+    //---------- ANNOUNCEMENT BANNER
+    const bannerContent: React.FunctionComponent = () =>
+        <Typography variant='body1'>
+            This website will be transferred to the Eclipse Foundation on December 9.
+            Please read <Link color='secondary' href="https://blogs.eclipse.org/post/brian-king/open-vsx-registry-under-new-management">this blog post</Link> to
+            find out more. If you are a publisher, some action will be required.
+        </Typography>;
+
     //---------- SEARCH HEADER
     const searchStyle = makeStyles({
         typography: {
@@ -77,14 +85,30 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
             toolbarContent,
-            footerContent,
+            banner: {
+                content: bannerContent,
+                props: {
+                    dismissButton: {
+                        show: true,
+                        label: 'Got It'
+                    }
+                },
+                cookie: {
+                    key: 'transition-announcement',
+                    value: 'closed',
+                    path: '/'
+                }
+            },
+            footer: {
+                content: footerContent,
+                props: {
+                    footerHeight: 45
+                }
+            },
             searchHeader,
             additionalRoutes,
             reportAbuse,
             claimNamespace,
-        },
-        metrics: {
-            footerHeight: 45
         },
         urls: {
             extensionDefaultIcon: '/default-icon.png',

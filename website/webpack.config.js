@@ -33,7 +33,7 @@ const config = {
     module: {
         rules: [
             {
-                test: /\.(js|ts)x?$/,
+                test: /\.m?(js|ts)x?$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
@@ -42,6 +42,9 @@ const config = {
                             '@babel/preset-env',
                             '@babel/preset-typescript',
                             '@babel/preset-react'
+                        ],
+                        plugins: [
+                            '@babel/plugin-transform-runtime'
                         ]
                     }
                 }
@@ -53,15 +56,14 @@ const config = {
             }
         ]
     },
-    node: { fs: 'empty', net: 'empty' },
+    node: false,
     devtool: 'source-map',
 
     plugins: [
-        new webpack.WatchIgnorePlugin([
-            /\.js$/,
-            /\.d\.ts$/
-        ]),
-        new webpack.ProgressPlugin(),
+        new webpack.WatchIgnorePlugin({
+            paths: [/\.js$/, /\.d\.ts$/]
+        }),
+        new webpack.ProgressPlugin({}),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
             reportFilename: reportPath

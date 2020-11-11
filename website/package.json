@@ -6,25 +6,27 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "0.1.0-next.1d6d579"
+        "@babel/runtime": "^7.12.5",
+        "openvsx-webui": "0.1.0-next.34e106a"
     },
     "devDependencies": {
-        "@babel/core": "^7.11.1",
-        "@babel/preset-env": "^7.11.0",
-        "@babel/preset-react": "^7.10.4",
-        "@babel/preset-typescript": "^7.10.4",
+        "@babel/core": "^7.12.3",
+        "@babel/plugin-transform-runtime": "^7.12.1",
+        "@babel/preset-env": "^7.12.1",
+        "@babel/preset-react": "^7.12.5",
+        "@babel/preset-typescript": "^7.12.1",
         "@types/react": "^16.9.46",
         "@types/react-dom": "^16.9.8",
         "@types/react-router-dom": "^5.1.5",
-        "babel-loader": "^8.1.0",
-        "css-loader": "^4.2.1",
+        "babel-loader": "^8.2.1",
+        "css-loader": "^5.0.1",
         "express": "^4.17.1",
-        "source-map-loader": "^1.0.1",
-        "style-loader": "^1.2.1",
+        "source-map-loader": "^1.1.2",
+        "style-loader": "^2.0.0",
         "typescript": "~3.8.3",
-        "webpack": "^4.44.1",
-        "webpack-bundle-analyzer": "^3.8.0",
-        "webpack-cli": "^3.3.12"
+        "webpack": "^5.4.0",
+        "webpack-bundle-analyzer": "^4.1.0",
+        "webpack-cli": "^4.2.0"
     },
     "scripts": {
         "build": "webpack --config webpack.config.js --mode=production",
