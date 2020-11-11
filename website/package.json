@@ -7,7 +7,7 @@
     "license": "EPL-2.0",
     "dependencies": {
         "@babel/runtime": "^7.12.5",
-        "openvsx-webui": "0.1.0-next.34e106a"
+        "openvsx-webui": "0.1.0-next.c0834d8"
     },
     "devDependencies": {
         "@babel/core": "^7.12.3",

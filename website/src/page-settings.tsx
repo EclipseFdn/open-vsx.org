@@ -10,11 +10,12 @@
 
 import * as React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Link, Typography, Theme } from '@material-ui/core';
+import { Link, Typography, Theme, Box } from '@material-ui/core';
 import { Link as RouteLink, Route } from 'react-router-dom';
 import { PageSettings, Extension, Styleable } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
+import InfoIcon from '@material-ui/icons/Info';
 import OpenVSXRegistryLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import About from './about';
@@ -36,11 +37,16 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
 
     //---------- ANNOUNCEMENT BANNER
     const bannerContent: React.FunctionComponent = () =>
-        <Typography variant='body1'>
-            This website will be transferred to the Eclipse Foundation on December 9.
-            Please read <Link color='secondary' href="https://blogs.eclipse.org/post/brian-king/open-vsx-registry-under-new-management">this blog post</Link> to
-            find out more. If you are a publisher, some action will be required.
-        </Typography>;
+        <Box display='flex' alignItems='center' pt={1} pb={1}>
+            <Box mr={2}>
+                <InfoIcon fontSize='large' />
+            </Box>
+            <Typography variant='body1'>
+                This website will be transferred to the Eclipse Foundation on December 9.
+                Please read <Link color='secondary' href="https://blogs.eclipse.org/post/brian-king/open-vsx-registry-under-new-management">this blog post</Link> to
+                find out more. If you are a publisher, some action will be required.
+            </Typography>
+        </Box>;
 
     //---------- SEARCH HEADER
     const searchStyle = makeStyles({
@@ -91,7 +97,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                     dismissButton: {
                         show: true,
                         label: 'Got It'
-                    }
+                    },
+                    color: 'info'
                 },
                 cookie: {
                     key: 'transition-announcement',
