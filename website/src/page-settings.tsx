@@ -71,7 +71,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         const reportAbuseText = encodeURIComponent('<Please describe the issue>');
         const extensionURL = encodeURIComponent(`${location.protocol}//${location.hostname}/extension/${extension.namespace}/${extension.name}`);
         return <Link
-            href={`mailto:open-vsx@typefox.io?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
+            href={`mailto:license@eclipse.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
             variant='body2' color='secondary' className={className} >
             Report Abuse
         </Link>;

@@ -2794,10 +2794,10 @@ opener@^1.5.2:
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
-openvsx-webui@0.1.0-next.3a7ed47:
-  version "0.1.0-next.3a7ed47"
-  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.1.0-next.3a7ed47.tgz#b1d8bb4ed5534452fdb644ed4a3e7d25ab21e3c9"
-  integrity sha512-EaOa1csO9CibSNPtm/PQHv53SqysZHKUUZXB8YJ5ictsLHa1yJ5b7ov/Cs+RwCP9zLgjT8RufniMU0lzmXSJJw==
+openvsx-webui@0.1.0-next.0d8b389:
+  version "0.1.0-next.0d8b389"
+  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.1.0-next.0d8b389.tgz#2caba2cd76fa5ba8aed54937826ce40fed5cc12f"
+  integrity sha512-OBodA0vpkwUcNYNzo2qeFjeDq5uOhNAz850f2sMpa/Cj7cpHDkZ1djE/Hyh3sGEQovdBweKKzLZowPfm7hdeCw==
   dependencies:
     "@material-ui/core" "^4.9.11"
     "@material-ui/icons" "^4.9.1"
