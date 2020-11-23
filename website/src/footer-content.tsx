@@ -11,6 +11,7 @@
 import * as React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Link, Theme, Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Link as RouteLink } from 'react-router-dom';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
@@ -131,11 +132,11 @@ const termsOfUse = (classes: FooterStyle) =>
     </Link>;
 
 const publisherAgreement = (classes: FooterStyle) =>
-    <Link
-        href='https://www.eclipse.org/legal/documents/eclipse-openvsx-publisher-agreement.pdf'
+    <RouteLink
+        to='/publisher-agreement-v1.0'
         className={`${classes.link} ${classes.legalText}`} >
         Publisher Agreement
-    </Link>;
+    </RouteLink>;
 
 const copyrightAgent = (classes: FooterStyle) =>
     <Link

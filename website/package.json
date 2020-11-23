@@ -6,19 +6,13 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "@babel/runtime": "^7.12.5",
-        "openvsx-webui": "0.1.0-next.0d8b389"
+        "openvsx-webui": "0.1.0-next.bc4b3a4"
     },
     "devDependencies": {
-        "@babel/core": "^7.12.3",
-        "@babel/plugin-transform-runtime": "^7.12.1",
-        "@babel/preset-env": "^7.12.1",
-        "@babel/preset-react": "^7.12.5",
-        "@babel/preset-typescript": "^7.12.1",
+        "@types/markdown-it": "^10.0.3",
         "@types/react": "^16.9.46",
         "@types/react-dom": "^16.9.8",
         "@types/react-router-dom": "^5.1.5",
-        "babel-loader": "^8.2.1",
         "css-loader": "^5.0.1",
         "express": "^4.17.1",
         "source-map-loader": "^1.1.2",
@@ -29,6 +23,9 @@
         "webpack-cli": "^4.2.0"
     },
     "scripts": {
+        "prepare": "yarn compile",
+        "compile": "tsc",
+        "watch:tsc": "tsc -w",
         "build": "webpack --config webpack.config.js --mode=production",
         "watch": "webpack --config webpack.config.js --mode=production --watch",
         "build:dev": "webpack --config dev/webpack.config.js --mode=development",

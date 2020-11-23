@@ -1,4 +1,5 @@
 node_modules/
+/lib/
 /static/bundle.*
 /dev/static/bundle.*
 /dev/static/report-*

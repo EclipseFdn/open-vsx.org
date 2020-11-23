@@ -82,7 +82,16 @@ export class MockRegistryService extends ExtensionRegistryService {
             loginName: 'test_user',
             fullName: 'Spongebob Squarepants',
             avatarUrl,
-            role: 'admin'
+            role: 'admin',
+            publisherAgreement: {
+                status: 'none'
+            },
+            additionalLogins: [
+                {
+                    loginName: 'test_user',
+                    provider: 'eclipse'
+                }
+            ]
         } as UserData);
     }
 

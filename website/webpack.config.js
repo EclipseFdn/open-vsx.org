@@ -19,7 +19,7 @@ const reportPath = path.resolve(__dirname, 'dev', 'static', 'report-prod.html');
 /** @type {webpack.Configuration} */
 const config = {
     entry: [
-        './src/main.tsx'
+        './lib/src/main.js'
     ],
     output: {
         filename: 'bundle.js',
@@ -28,26 +28,14 @@ const config = {
     },
 
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.js', '.jsx']
     },
     module: {
         rules: [
             {
-                test: /\.m?(js|ts)x?$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env',
-                            '@babel/preset-typescript',
-                            '@babel/preset-react'
-                        ],
-                        plugins: [
-                            '@babel/plugin-transform-runtime'
-                        ]
-                    }
-                }
+                test: /\.jsx?$/,
+                use: ['source-map-loader'],
+                enforce: 'pre'
             },
             {
                 test: /\.css$/,
@@ -60,9 +48,6 @@ const config = {
     devtool: 'source-map',
 
     plugins: [
-        new webpack.WatchIgnorePlugin({
-            paths: [/\.js$/, /\.d\.ts$/]
-        }),
         new webpack.ProgressPlugin({}),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',

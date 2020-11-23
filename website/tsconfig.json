@@ -17,7 +17,8 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "strictNullChecks": true,
-        "jsx": "react"
+        "jsx": "react",
+        "outDir": "lib"
     },
     "include": [
         "src",

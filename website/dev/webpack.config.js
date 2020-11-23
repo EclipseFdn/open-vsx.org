@@ -12,13 +12,14 @@
 const webpack = require('webpack');
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const prodConfig = require('../webpack.config');
 
 const outputPath = path.resolve(__dirname, 'static');
 
 /** @type {webpack.Configuration} */
 const config = {
     entry: [
-        './dev/index.tsx'
+        './lib/dev/main-dev.js'
     ],
     output: {
         filename: 'bundle.js',
@@ -26,47 +27,12 @@ const config = {
         publicPath: '/'
     },
 
-    resolve: {
-        extensions: ['.ts', '.tsx', '.js']
-    },
-    module: {
-        rules: [
-            {
-                test: /\.m?(js|ts)x?$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env',
-                            '@babel/preset-typescript',
-                            '@babel/preset-react'
-                        ],
-                        plugins: [
-                            '@babel/plugin-transform-runtime'
-                        ]
-                    }
-                }
-            },
-            {
-                test: /\.js$/,
-                use: ['source-map-loader'],
-                enforce: 'pre'
-            },
-            {
-                test: /\.css$/,
-                exclude: /\.useable\.css$/,
-                use: ['style-loader', 'css-loader']
-            }
-        ]
-    },
+    resolve: prodConfig.resolve,
+    module: prodConfig.module,
     node: false,
     devtool: 'source-map',
 
     plugins: [
-        new webpack.WatchIgnorePlugin({
-            paths: [/\.js$/, /\.d\.ts$/]
-        }),
         new webpack.ProgressPlugin({}),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',

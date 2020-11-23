@@ -18,6 +18,7 @@ import { DefaultMenuContent, MobileMenuContent } from './menu-content';
 import InfoIcon from '@material-ui/icons/Info';
 import OpenVSXRegistryLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
+import { Document } from './document';
 import About from './about';
 
 export default function createPageSettings(theme: Theme, themeType: 'light' | 'dark'): PageSettings {
@@ -64,7 +65,12 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
 
     //---------- ADDITIONAL PAGES
     const additionalRoutes: React.FunctionComponent = () =>
-        <Route path='/about' render={() => <About />} />;
+        <>
+            <Route path='/about' render={() => <About />} />
+            <Route path='/publisher-agreement-v1.0' render={() =>
+                <Document url='/documents/publisher-agreement-v1.0.md' />
+            } />
+        </>;
 
     //---------- REPORT ABUSE LINK
     const reportAbuse: React.FunctionComponent<{ extension: Extension } & Styleable> = ({ extension, className }) => {
@@ -119,7 +125,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         },
         urls: {
             extensionDefaultIcon: '/default-icon.png',
-            namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access'
+            namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access',
+            publisherAgreement: '/documents/publisher-agreement-v1.0.md'
         }
     };
 }
