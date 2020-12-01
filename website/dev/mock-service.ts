@@ -151,7 +151,15 @@ export class MockRegistryService extends ExtensionRegistryService {
 
 export class MockAdminService extends AdminService {
 
-    findNamespace(): Promise<Namespace> {
+    getExtension(): Promise<Extension> {
+        return this.registry.getExtensionDetail('') as Promise<Extension>;
+    }
+
+    deleteExtension(): Promise<SuccessResult | ErrorResult> {
+        return Promise.resolve({ success: 'ok' });
+    }
+
+    getNamespace(): Promise<Namespace> {
         return Promise.resolve({
             name: 'foo',
             access: 'public',
@@ -160,10 +168,6 @@ export class MockAdminService extends AdminService {
     }
 
     createNamespace(): Promise<SuccessResult> {
-        return Promise.resolve({ success: 'ok' });
-    }
-
-    deleteExtension(): Promise<SuccessResult | ErrorResult> {
         return Promise.resolve({ success: 'ok' });
     }
 
@@ -177,7 +181,7 @@ export class MockAdminService extends AdminService {
         });
     }
 
-    revokePublisherAgreement(provider: string, login: string): Promise<SuccessResult | ErrorResult> {
+    revokePublisherContributions(provider: string, login: string): Promise<SuccessResult | ErrorResult> {
         return Promise.resolve({ success: 'ok' });
     }
 
