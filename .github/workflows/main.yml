@@ -22,13 +22,16 @@ jobs:
     - name: Install Yarn
       run: npm install --global yarn@1.*
     - uses: actions/checkout@v2
-    - name: Build Website
+    - name: Set Image Version
+      run: echo "IMAGE_VERSION=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+    - name: Build Frontend
       run: |
         yarn --cwd website
         yarn --cwd website build
-    - name: Build and Push Docker Image
+    - name: Build Website Image
+      run: docker build -t $WEBSITE_TAG:$IMAGE_VERSION .
+    - name: Push Website Image
       run: |
         echo ${{ secrets.BOT_ACCESS_TOKEN }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-        IMAGE_VERSION=${GITHUB_SHA:0:7}
-        docker build -t $WEBSITE_TAG:$IMAGE_VERSION .
         docker push $WEBSITE_TAG:$IMAGE_VERSION
+      if: github.repository == 'eclipse/open-vsx.org' && github.ref == 'refs/heads/master'
