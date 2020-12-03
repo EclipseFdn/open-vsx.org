@@ -1,9 +1,15 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 env:
-  IMAGE_TAG: docker.pkg.github.com/eclipse/open-vsx.org/openvsx-website
+  WEBSITE_TAG: ghcr.io/eclipse/openvsx-website
 
 jobs:
   build:
@@ -12,8 +18,8 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: 10.x
-    - name: Set up Yarn
+        node-version: 12.x
+    - name: Install Yarn
       run: npm install --global yarn@1.*
     - uses: actions/checkout@v2
     - name: Build Website
@@ -22,7 +28,7 @@ jobs:
         yarn --cwd website build
     - name: Build and Push Docker Image
       run: |
-        echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-        IMAGE_VERSION=$(git rev-parse --short "$GITHUB_SHA")
-        docker build -t $IMAGE_TAG:$IMAGE_VERSION .
-        docker push $IMAGE_TAG:$IMAGE_VERSION
+        echo ${{ secrets.BOT_ACCESS_TOKEN }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+        IMAGE_VERSION=${GITHUB_SHA:0:7}
+        docker build -t $WEBSITE_TAG:$IMAGE_VERSION .
+        docker push $WEBSITE_TAG:$IMAGE_VERSION
