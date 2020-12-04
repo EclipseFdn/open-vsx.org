@@ -1,0 +1,50 @@
+# This is the base configuration of the server running at open-vsx.org.
+# Properties containing secrets are not included here, e.g. spring.datasource
+# for database access and ovsx.storage.azure for file storage access.
+# Additional properties are loaded from the file provided with the
+# DEPLOYMENT_CONFIG environment variable.
+server:
+  address: 0.0.0.0
+  port: 8080
+spring:
+  config:
+    import: file:${DEPLOYMENT_CONFIG}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  session:
+    store-type: jdbc
+  security:
+    oauth2:
+      client:
+        registration:
+          eclipse:
+            authorization-grant-type: authorization_code
+            scope: openvsx_publisher_agreement, profile
+        provider:
+          eclipse:
+            authorization-uri: https://accounts.eclipse.org/oauth2/authorize
+            token-uri: https://accounts.eclipse.org/oauth2/token
+            user-info-uri: https://accounts.eclipse.org/oauth2/UserInfo
+            user-name-attribute: name
+            user-info-authentication-method: header
+ovsx:
+  storage:
+    primary-service: azure-blob
+  webui:
+    frontendRoutes: "/extension/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*"
+  eclipse:
+    base-url: https://api.eclipse.org/
+    publisher-agreement:
+      version: 1
+      timezone: US/Eastern
+  publishing:
+    require-license: true
+  elasticsearch:
+    enabled: true
+    ssl: true
+    relevance:
+      rating: 0.2
+      downloads: 1.0
+      timestamp: 3.0
