@@ -4,6 +4,6 @@ This repository contains the source of [open-vsx.org](https://open-vsx.org), the
 
 ## Claiming Namespace Ownership
 
-[Open VSX namespaces](https://github.com/eclipse/openvsx/wiki/Namespace-Access) are public by default. [Create an issue here](https://github.com/eclipse/open-vsx.org/issues/new/choose) to claim ownership of a namespace.
+[Open VSX namespaces](https://github.com/eclipse/openvsx/wiki/Namespace-Access) are public by default. [Create an issue here](https://github.com/EclipseFdn/open-vsx.org/issues/new/choose) to claim ownership of a namespace.
 
 If you want to refute a previously granted ownership, please comment on the corresponding issue.
