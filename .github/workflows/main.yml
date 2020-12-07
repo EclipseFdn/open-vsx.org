@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  WEBSITE_TAG: ghcr.io/eclipse/openvsx-website
+  WEBSITE_TAG: ghcr.io/EclipseFdn/openvsx-website
 
 jobs:
   build:
@@ -34,4 +34,4 @@ jobs:
       run: |
         echo ${{ secrets.BOT_ACCESS_TOKEN }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
         docker push $WEBSITE_TAG:$IMAGE_VERSION
-      if: github.repository == 'eclipse/open-vsx.org' && github.ref == 'refs/heads/master'
+      if: github.repository == 'EclipseFdn/open-vsx.org' && github.ref == 'refs/heads/master'
