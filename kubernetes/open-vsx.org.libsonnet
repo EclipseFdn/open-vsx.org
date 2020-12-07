@@ -97,7 +97,7 @@ local newDeployment(env, dockerImage) = {
             image: dockerImage,
             env: utils.pairList(self._env),
             _env:: {
-              JVM_ARGS: "-Xms1536M -Xmx4G -Ddebug=true -Dspring.config.import=file:%s/%s" % [ env.deploymentConfig.path, env.deploymentConfig.filename, ],
+              JVM_ARGS: "-Xms1536M -Xmx4G",
               GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
                 thisContainer._volumeMounts[googleCloudStorageCredsVolumeName],
                 env.googleCloudStorage.credentialsFilename,
@@ -234,27 +234,17 @@ local newElasticSearchCluster(env) = {
     labels: labels(env),
   },
   spec: {
-    version: "6.8.13",
+    version: "7.9.3",
     nodeSets: [
       {
         name: "default",
         config: {
-          "node.data": true,
-          "node.ingest": true,
-          "node.master": true,
-          "node.store.allow_mmap": false,
-          "xpack.security.http.ssl.enabled": true
+          "node.roles": [ "master", "data" ],
+          "node.store.allow_mmap": false
         },
-        // config for 7.9.x
-        // config: {
-        //   "node.roles": [ "master", "data", "ingest" ],
-        //   "node.store.allow_mmap": false
-        // },
         podTemplate: {
           metadata: {
-            labels: {
-              labels: labels(env),
-            }
+            labels: labels(env),
           },
           spec: {
             containers: [
@@ -282,7 +272,7 @@ local newElasticSearchCluster(env) = {
 
 local _newKubernetesResources(envName, imageTag) = {
   local environment = newEnvironment(envName),
-  local deployment = newDeployment(environment, "ghcr.io/eclipse/openvsx-website:%s" % imageTag),
+  local deployment = newDeployment(environment, "ghcr.io/eclipsefdn/openvsx-website:%s" % imageTag),
   local service = newService(environment, deployment),
 
   arr: [
