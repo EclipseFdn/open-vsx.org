@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  WEBSITE_TAG: ghcr.io/EclipseFdn/openvsx-website
+  WEBSITE_TAG: ghcr.io/eclipsefdn/openvsx-website
 
 jobs:
   build:
