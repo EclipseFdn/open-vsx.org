@@ -43,9 +43,15 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                This website will be transferred to the Eclipse Foundation on December 9.
+                This website is now managed by the Eclipse Foundation.
                 Please read <Link color='secondary' href="https://blogs.eclipse.org/post/brian-king/open-vsx-registry-under-new-management">this blog post</Link> to
-                find out more. If you are a publisher, some action will be required.
+                find out more. If you are a publisher, you need to sign the <RouteLink
+                    to='/publisher-agreement-v1.0'
+                    color='secondary'
+                    style={{ textDecoration: 'none' }} >
+                    Eclipse Foundation Open VSX Publisher Agreement
+                </RouteLink> as
+                explained <Link color='secondary' href="https://github.com/eclipse/openvsx/wiki/Publishing-Extensions">in the Wiki</Link>.
             </Typography>
         </Box>;
 
@@ -107,7 +113,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                     color: 'info'
                 },
                 cookie: {
-                    key: 'transition-announcement',
+                    key: 'transition-done',
                     value: 'closed',
                     path: '/'
                 }
