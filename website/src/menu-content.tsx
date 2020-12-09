@@ -14,6 +14,7 @@ import { Theme, Typography, MenuItem, Link } from '@material-ui/core';
 import { Link as RouteLink } from 'react-router-dom';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
+import HelpIcon from '@material-ui/icons/Help';
 import ForumIcon from '@material-ui/icons/Forum';
 import InfoIcon from '@material-ui/icons/Info';
 
@@ -71,6 +72,14 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             </Link>
         </MenuItem>
         <MenuItem className={classes.menuItem}>
+            <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <HelpIcon className={classes.itemIcon} />
+                    FAQ
+                </Typography>
+            </Link>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
             <Link href='https://gitter.im/eclipse/openvsx'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <ForumIcon className={classes.itemIcon} />
@@ -97,6 +106,9 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
     return <React.Fragment>
         <Link href='https://github.com/eclipse/openvsx/wiki' className={classes.headerItem}>
             Documentation
+        </Link>
+        <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/' className={classes.headerItem}>
+            FAQ
         </Link>
         <Link href='https://gitter.im/eclipse/openvsx' className={classes.headerItem}>
             Community
