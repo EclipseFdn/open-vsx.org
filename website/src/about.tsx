@@ -40,11 +40,11 @@ const About = () => {
             This service is operated by the <Link color='secondary' href='https://www.eclipse.org/'>Eclipse Foundation</Link>.
         </Typography>
         <Typography variant='body1' className={classes.paragraph}>
-            The source code of this website is managed by
+            The source code of Open VSX is managed by
             the <Link color='secondary' href='https://projects.eclipse.org/projects/ecd.openvsx'>Eclipse Open VSX</Link> project
             and is licensed under
             the <Link color='secondary' href='https://www.eclipse.org/legal/epl-2.0/'>Eclipse Public License v2.0</Link>.
-            The code split in two repositories:
+            The code is split in two repositories:
         </Typography>
         <ul className={classes.adaptFont}>
             <li>
@@ -53,7 +53,7 @@ const About = () => {
                 (both public and private).
             </li>
             <li>
-                <Link color='secondary' href='https://github.com/eclipse/open-vsx.org'>eclipse/open-vsx.org</Link> &ndash;
+                <Link color='secondary' href='https://github.com/EclipseFdn/open-vsx.org'>EclipseFdn/open-vsx.org</Link> &ndash;
                 additional code for this website.
             </li>
         </ul>
