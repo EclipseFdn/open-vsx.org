@@ -279,6 +279,14 @@ local _newKubernetesResources(envName, imageTag) = {
     deployment,
     service,
     newRoute(environment, service),
+    newRoute(environment, service) {
+      metadata+: {
+        name: "www-%s" % environment.appName
+      },
+      spec+: {
+        host: "www.%s" % environment.host 
+      },
+    },
     newElasticSearchCluster(environment),
   ]
 };
