@@ -1,5 +1,3 @@
-@Library('common-shared') _
-
 pipeline {
   agent {
     kubernetes {
@@ -11,6 +9,7 @@ pipeline {
         containers:
         - name: kubectl
           image: eclipsefdn/kubectl:1.18-alpine
+          imagePullPolicy: Always
           command:
           - cat
           tty: true
@@ -79,9 +78,9 @@ pipeline {
       }
       steps {
         container('kubectl') {
-          withKubeConfig([credentialsId: '6ad93d41-e6fc-4462-b6bc-297e360784fd', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
+          withKubeConfig([credentialsId: 'b04681b6-6fc2-4432-aaec-a6a8755b25ac', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
             sh '''
-              ./kubernetes/gen-deployment.sh staging ${IMAGE_NAME}:${IMAGE_TAG}
+              ./kubernetes/gen-deployment.sh staging "${IMAGE_NAME}:${IMAGE_TAG}" | kubectl apply -f -
             '''
           }
         }
@@ -94,9 +93,9 @@ pipeline {
       }
       steps {
         container('kubectl') {
-          withKubeConfig([credentialsId: '6ad93d41-e6fc-4462-b6bc-297e360784fd', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
+          withKubeConfig([credentialsId: 'b04681b6-6fc2-4432-aaec-a6a8755b25ac', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
             sh '''
-              ./kubernetes/gen-deployment.sh production ${IMAGE_NAME}:${IMAGE_TAG}
+              ./kubernetes/gen-deployment.sh production "${IMAGE_NAME}:${IMAGE_TAG}" | kubectl apply -f -
             '''
           }
         }
@@ -105,9 +104,20 @@ pipeline {
   }
 
   post {
-    always {
+    failure {
+      mail to: 'mikael.barbero@eclipse-foundation.org',
+        subject: "[open-vsx.org] Build Failure ${currentBuild.fullDisplayName}",
+        mimeType: 'text/html',
+        body: "Project: ${env.JOB_NAME}<br/>Build Number: ${env.BUILD_NUMBER}<br/>Build URL: ${env.BUILD_URL}<br/>Console: ${env.BUILD_URL}/console"
+    }
+    fixed {
+      mail to: 'mikael.barbero@eclipse-foundation.org',
+        subject: "[CBI] Back to normal ${currentBuild.fullDisplayName}",
+        mimeType: 'text/html',
+        body: "Project: ${env.JOB_NAME}<br/>Build Number: ${env.BUILD_NUMBER}<br/>Build URL: ${env.BUILD_URL}<br/>Console: ${env.BUILD_URL}/console"
+    }
+    cleanup {
       deleteDir() /* clean up workspace */
-      sendNotifications currentBuild
     }
   }
 }
