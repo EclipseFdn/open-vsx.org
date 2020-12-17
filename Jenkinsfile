@@ -65,7 +65,7 @@ pipeline {
         label 'docker-build'
       }
       steps {
-        withDockerRegistry([credentialsId: 'eclipse-openvsx-bot-github-packages', url: 'https://ghcr.io/']) {
+        withDockerRegistry([credentialsId: 'a56a2346-7fc5-4f91-a624-073197e5f5c8', url: 'https://ghcr.io/']) {
           sh '''
             docker push ${IMAGE_NAME}:${IMAGE_TAG}
           '''
@@ -81,7 +81,7 @@ pipeline {
         container('kubectl') {
           withKubeConfig([credentialsId: '6ad93d41-e6fc-4462-b6bc-297e360784fd', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
             sh '''
-              ./gen-deployment.sh staging ${IMAGE_NAME}:${IMAGE_TAG}
+              ./kubernetes/gen-deployment.sh staging ${IMAGE_NAME}:${IMAGE_TAG}
             '''
           }
         }
@@ -96,7 +96,7 @@ pipeline {
         container('kubectl') {
           withKubeConfig([credentialsId: '6ad93d41-e6fc-4462-b6bc-297e360784fd', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
             sh '''
-              ./gen-deployment.sh production ${IMAGE_NAME}:${IMAGE_TAG}
+              ./kubernetes/gen-deployment.sh production ${IMAGE_NAME}:${IMAGE_TAG}
             '''
           }
         }
