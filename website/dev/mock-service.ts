@@ -49,7 +49,7 @@ export class MockRegistryService extends ExtensionRegistryService {
                 loginName: 'test_user',
                 avatarUrl
             } as UserData,
-            namespaceAccess: 'public',
+            verified: true,
             reviewCount: 12,
             categories: ['Other'],
             tags: ['Mock'],
