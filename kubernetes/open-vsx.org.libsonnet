@@ -270,31 +270,30 @@ local newElasticSearchCluster(env) = {
   }
 };
 
-local _newKubernetesResources(envName, imageTag) = {
+local _newKubernetesResources(envName, image) = {
   local environment = newEnvironment(envName),
-  local deployment = newDeployment(environment, "ghcr.io/eclipsefdn/openvsx-website:%s" % imageTag),
+  local deployment = newDeployment(environment, image),
   local service = newService(environment, deployment),
 
   arr: [
     deployment,
     service,
     newRoute(environment, service),
-    newRoute(environment, service) {
+    newElasticSearchCluster(environment),
+  ] + if envName == "production" then [ newRoute(environment, service) {
       metadata+: {
         name: "www-%s" % environment.appName
       },
       spec+: {
         host: "www.%s" % environment.host 
       },
-    },
-    newElasticSearchCluster(environment),
-  ]
+  }] else [],
 };
 
-local newKubernetesResources(envName, imageTag) = _newKubernetesResources(envName, imageTag).arr;
+local newKubernetesResources(envName, image) = _newKubernetesResources(envName, image).arr;
 
-local newKubernetesYamlStream(envName, imageTag) = 
-  std.manifestYamlStream(newKubernetesResources(envName, imageTag), false, false);
+local newKubernetesYamlStream(envName, image) = 
+  std.manifestYamlStream(newKubernetesResources(envName, image), false, false);
 
 {
   newEnvironment:: newEnvironment,

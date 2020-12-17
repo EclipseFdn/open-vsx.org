@@ -1,14 +1,17 @@
-## How to deploy staging instance for a given image tag?
+## How to deploy staging instance for a given image?
 
 ```bash
-./gen-deployment.sh staging <imagetag> | kubectl apply -f -
+./gen-deployment.sh staging <image> | kubectl apply -f -
 ```
 
-## How to deploy production instance for a given image tag?
+Where `<image>` can be ghcr.io/eclipsefdn/openvsx-website:de4f2c
+## How to deploy production instance for a given image?
 
 ```bash
-./gen-deployment.sh production <imagetag> | kubectl apply -f -
+./gen-deployment.sh production <image> | kubectl apply -f -
 ```
+
+Where `<image>` can be ghcr.io/eclipsefdn/openvsx-website:de4f2c
 
 ## Dependencies
 

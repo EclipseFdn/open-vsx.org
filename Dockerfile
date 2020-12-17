@@ -1,4 +1,27 @@
+FROM ubuntu as builder
+
+WORKDIR /workdir
+
+RUN apt-get update \
+  && apt-get install --no-install-recommends -y \
+    bash \
+    ca-certificates \
+    curl \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# See https://github.com/nodesource/distributions/blob/master/README.md#debinstall
+RUN curl -sSL https://deb.nodesource.com/setup_12.x | bash - \
+  && apt-get install -y nodejs
+
+RUN npm install --global yarn@1.*
+
+COPY . /workdir
+
+RUN /usr/bin/yarn --cwd website \
+  && /usr/bin/yarn --cwd website build
+
 FROM ghcr.io/eclipse/openvsx-server:7d04e73
 
-COPY --chown=openvsx:openvsx website/static/ BOOT-INF/classes/static/
-COPY --chown=openvsx:openvsx configuration/ config/
+COPY --from=builder --chown=openvsx:openvsx website/static/ BOOT-INF/classes/static/
+COPY --from=builder --chown=openvsx:openvsx configuration/ config/
