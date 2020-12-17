@@ -23,5 +23,5 @@ RUN /usr/bin/yarn --cwd website \
 
 FROM ghcr.io/eclipse/openvsx-server:7d04e73
 
-COPY --from=builder --chown=openvsx:openvsx website/static/ BOOT-INF/classes/static/
-COPY --from=builder --chown=openvsx:openvsx configuration/ config/
+COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
+COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/
