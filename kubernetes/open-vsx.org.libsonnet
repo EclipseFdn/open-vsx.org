@@ -212,7 +212,7 @@ local newRoute(env, service) = {
     host: env.host,
     path: "/",
     port: {
-      targetPort: service.spec._ports["http"].port,
+      targetPort: service.spec._ports["http"].targetPort,
     },
     tls: {
       insecureEdgeTerminationPolicy: "Redirect",
