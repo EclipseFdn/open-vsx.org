@@ -126,7 +126,7 @@ local newDeployment(env, dockerImage) = {
             },
             livenessProbe: {
               httpGet: {
-                path: "/about",
+                path: "/actuator/health/liveness",
                 port: "http"
               },
               failureThreshold: 3,
@@ -134,7 +134,7 @@ local newDeployment(env, dockerImage) = {
             },
             readinessProbe: {
               httpGet: {
-                path: "/about",
+                path: "/actuator/health/readiness",
                 port: "http"
               },
               failureThreshold: 2,
@@ -142,7 +142,7 @@ local newDeployment(env, dockerImage) = {
             },
             startupProbe: {
               httpGet: {
-                path: "/about",
+                path: "/actuator/health/readiness",
                 port: "http"
               },
               failureThreshold: 30,
