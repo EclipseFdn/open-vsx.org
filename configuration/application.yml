@@ -38,6 +38,8 @@ spring:
             user-name-attribute: name
             user-info-authentication-method: header
 management:
+  server:
+    port: 8081
   health:
     probes:
       enabled: true

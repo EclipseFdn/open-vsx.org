@@ -107,6 +107,7 @@ local newDeployment(env, dockerImage) = {
             ports: utils.pairList(self._ports, vfield="containerPort"),
             _ports:: {
               http: 8080,
+              httpManagement: 8081,
             },
             volumeMounts: utils.pairList(self._volumeMounts, vfield="mountPath"),
             _volumeMounts:: {
@@ -127,7 +128,7 @@ local newDeployment(env, dockerImage) = {
             livenessProbe: {
               httpGet: {
                 path: "/actuator/health/liveness",
-                port: "http"
+                port: "httpManagement"
               },
               failureThreshold: 3,
               periodSeconds: 10
@@ -135,7 +136,7 @@ local newDeployment(env, dockerImage) = {
             readinessProbe: {
               httpGet: {
                 path: "/actuator/health/readiness",
-                port: "http"
+                port: "httpManagement"
               },
               failureThreshold: 2,
               periodSeconds: 10
@@ -143,7 +144,7 @@ local newDeployment(env, dockerImage) = {
             startupProbe: {
               httpGet: {
                 path: "/actuator/health/readiness",
-                port: "http"
+                port: "httpManagement"
               },
               failureThreshold: 30,
               periodSeconds: 10
@@ -211,7 +212,7 @@ local newRoute(env, service) = {
     host: env.host,
     path: "/",
     port: {
-      targetPort: "http",
+      targetPort: service.spec._ports["http"].port,
     },
     tls: {
       insecureEdgeTerminationPolicy: "Redirect",
