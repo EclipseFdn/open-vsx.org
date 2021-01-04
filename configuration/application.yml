@@ -6,6 +6,7 @@
 server:
   address: 0.0.0.0
   port: 8080
+  shutdown: graceful
 spring:
   config:
     import: file:${DEPLOYMENT_CONFIG}
@@ -20,6 +21,8 @@ spring:
         cache-public: true
   session:
     store-type: jdbc
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
   security:
     oauth2:
       client:
