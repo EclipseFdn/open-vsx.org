@@ -13,6 +13,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  resources:
+    cache:
+      cachecontrol:
+        max-age: 4h
+        cache-public: true
   session:
     store-type: jdbc
   security:
@@ -29,6 +34,10 @@ spring:
             user-info-uri: https://accounts.eclipse.org/oauth2/UserInfo
             user-name-attribute: name
             user-info-authentication-method: header
+management:
+  health:
+    probes:
+      enabled: true
 ovsx:
   storage:
     primary-service: azure-blob
