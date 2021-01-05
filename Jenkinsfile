@@ -89,7 +89,7 @@ pipeline {
 
     stage('Deploy production') {
       when {
-        tag "release-*"
+        branch 'production'
       }
       steps {
         container('kubectl') {
