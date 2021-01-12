@@ -21,7 +21,7 @@ COPY . /workdir
 RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
-FROM ghcr.io/eclipse/openvsx-server:5756311
+FROM ghcr.io/eclipse/openvsx-server:ae88c6d
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/
