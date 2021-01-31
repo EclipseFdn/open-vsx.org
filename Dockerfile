@@ -1,3 +1,4 @@
+# Builder image to compile the website
 FROM ubuntu as builder
 
 WORKDIR /workdir
@@ -21,7 +22,8 @@ COPY . /workdir
 RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
-FROM ghcr.io/eclipse/openvsx-server:ae88c6d
+# Main image derived from openvsx-server
+FROM ghcr.io/eclipse/openvsx-server:a9154dc
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/

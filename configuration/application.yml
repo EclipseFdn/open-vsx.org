@@ -53,6 +53,7 @@ ovsx:
     publisher-agreement:
       version: 1
       timezone: US/Eastern
+    check-compliance-on-start: true
   publishing:
     require-license: true
   elasticsearch:
