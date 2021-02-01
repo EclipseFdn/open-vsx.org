@@ -43,9 +43,9 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                The final date for existing publishers to sign our publishing agreement and for your extension to have a license
-                is January 29, 2021. Please read <Link color='secondary' href="https://blogs.eclipse.org/post/brian-king/new-era-open-vsx-registry">this blog post</Link> that
-                explains the changes, and read the <Link color='secondary' href="https://github.com/eclipse/openvsx/wiki/Publishing-Extensions">Wiki page</Link> to find out more.
+                If you are a publisher and your extension has been deactivated, you can reactivate it
+                by signing the publisher agreement and/or adding a license to your
+                extension. <Link color='secondary' href="https://blogs.eclipse.org/post/brian-king/new-era-open-vsx-registry">Find out more</Link>.
             </Typography>
         </Box>;
 
@@ -107,7 +107,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                     color: 'info'
                 },
                 cookie: {
-                    key: 'pre-compliance-cut-off',
+                    key: 'post-compliance-cut-off',
                     value: 'closed',
                     path: '/'
                 }
