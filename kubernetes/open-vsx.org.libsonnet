@@ -97,7 +97,7 @@ local newDeployment(env, dockerImage) = {
             image: dockerImage,
             env: utils.pairList(self._env),
             _env:: {
-              JVM_ARGS: "-Xms1536M -Xmx4G",
+              JVM_ARGS: if (env.envName == "staging") then "-Xms512M -Xmx1536M" else "-Xms1536M -Xmx4G",
               GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
                 thisContainer._volumeMounts[googleCloudStorageCredsVolumeName],
                 env.googleCloudStorage.credentialsFilename,
@@ -117,12 +117,12 @@ local newDeployment(env, dockerImage) = {
             },
             resources: {
               requests: {
-                memory: "2Gi",
-                cpu: "250m"
+                memory: if (env.envName == "staging") then "2Gi" else "6Gi",
+                cpu: if (env.envName == "staging") then "250m" else "500m",
               },
               limits: {
-                memory: "4Gi",
-                cpu: "2000m"
+                memory: if (env.envName == "staging") then "2Gi" else "6Gi",
+                cpu: if (env.envName == "staging") then "1000m" else "4000m",
               }
             },
             livenessProbe: {
