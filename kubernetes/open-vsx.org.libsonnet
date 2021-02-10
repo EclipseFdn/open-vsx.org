@@ -117,11 +117,11 @@ local newDeployment(env, dockerImage) = {
             },
             resources: {
               requests: {
-                memory: "2Gi",
+                memory: "6Gi",
                 cpu: "250m"
               },
               limits: {
-                memory: "4Gi",
+                memory: "6Gi",
                 cpu: "2000m"
               }
             },
