@@ -125,11 +125,11 @@ const privacyPolicy = (classes: FooterStyle) =>
     </Link>;
 
 const termsOfUse = (classes: FooterStyle) =>
-    <Link
-        href='https://www.eclipse.org/legal/termsofuse.php'
+    <RouteLink
+        to='/terms-of-use'
         className={`${classes.link} ${classes.legalText}`} >
         Terms of Use
-    </Link>;
+    </RouteLink>;
 
 const publisherAgreement = (classes: FooterStyle) =>
     <RouteLink

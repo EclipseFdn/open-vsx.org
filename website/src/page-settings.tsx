@@ -20,6 +20,7 @@ import OpenVSXRegistryLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import { Document } from './document';
 import About from './about';
+import TermsOfUse from './terms-of-use';
 
 export default function createPageSettings(theme: Theme, themeType: 'light' | 'dark'): PageSettings {
     //---------- MAIN LOGO / TOOLBAR
@@ -67,6 +68,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
     const additionalRoutes: React.FunctionComponent = () =>
         <>
             <Route path='/about' render={() => <About />} />
+            <Route path='/terms-of-use' render={() => <TermsOfUse />} />
             <Route path='/publisher-agreement-v1.0' render={() =>
                 <Document url='/documents/publisher-agreement-v1.0.md' />
             } />
