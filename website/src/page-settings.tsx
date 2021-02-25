@@ -67,6 +67,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
     const additionalRoutes: React.FunctionComponent = () =>
         <>
             <Route path='/about' render={() => <About />} />
+            <Route path='/terms-of-use' render={() => <Document url='/documents/terms-of-use.md' />} />
             <Route path='/publisher-agreement-v1.0' render={() =>
                 <Document url='/documents/publisher-agreement-v1.0.md' />
             } />
