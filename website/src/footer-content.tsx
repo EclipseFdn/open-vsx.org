@@ -31,13 +31,16 @@ const footerStyle = makeStyles((theme: Theme) => ({
     },
     legalText: {
         fontWeight: theme.typography.fontWeightLight
+    },
+    toolbarManageCookies: {
+        fontWeight: theme.typography.fontWeightLight
     }
 }));
 
 const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expanded }) => {
     const classes = footerStyle();
     const theme = useTheme();
-    const isSmallDisplay = useMediaQuery(theme.breakpoints.down('sm'));
+    const isSmallDisplay = useMediaQuery(theme.breakpoints.down('lg'));
     const isLargeDisplay = useMediaQuery(theme.breakpoints.up('xl'));
 
     const MainFooter = () => {
@@ -67,6 +70,9 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
                     </Box>
                     <Box ml={itemSpacing}>
                         {rightsReservedText(classes)}
+                    </Box>
+                    <Box ml={itemSpacing}>
+                        {manageCookies(classes)}
                     </Box>
                 </Box>
                 :
@@ -98,6 +104,9 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
                 </Box>
                 <Box mb={itemSpacing + 1}>
                     {legalResources(classes)}
+                </Box>
+                <Box mb={itemSpacing + 1}>
+                    {manageCookies(classes)}
                 </Box>
             </Box>
             <MainFooter />
@@ -165,5 +174,23 @@ const rightsReservedText = (classes: FooterStyle) =>
     <Box className={classes.legalText}>
         All Rights Reserved.
     </Box>;
+
+const manageCookies = (classes: FooterStyle) => {
+    const handleClick = () => {
+        const ccWindow = document.getElementsByClassName('cc-window').item(0);
+        if(ccWindow) {
+            ccWindow.setAttribute('style', 'display:flex');
+            setTimeout(function() {
+              ccWindow.classList.remove('cc-invisible');
+            }, 20);
+        }
+    }
+    return <Link 
+        onClick={handleClick}
+        className={classes.link + ' ' + classes.toolbarManageCookies}>
+            Manage Cookies
+    </Link>;
+}
+
 
 export default FooterContent;
