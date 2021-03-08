@@ -11,7 +11,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-# See https://github.com/nodesource/distributions/blob/master/README.md#debinstall
+# See https://github.com/nodesource/distributions/blob/main/README.md#debinstall
 RUN curl -sSL https://deb.nodesource.com/setup_12.x | bash - \
   && apt-get install -y nodejs
 
