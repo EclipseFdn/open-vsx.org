@@ -74,7 +74,7 @@ pipeline {
 
     stage('Deploy staging') {
       when {
-        branch 'master'
+        branch 'main'
       }
       steps {
         container('kubectl') {
