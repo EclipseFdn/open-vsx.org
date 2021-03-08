@@ -208,7 +208,11 @@ local newService(env, deployment) = {
 local newRoute(env, service) = {
   apiVersion: "route.openshift.io/v1",
   kind: "Route",
-  metadata: namespacedResourceMetadata(env),
+  metadata: namespacedResourceMetadata(env) {
+    annotations: {
+      "haproxy.router.openshift.io/timeout": if (env.envName == "staging") then "30s" else "10m"
+    },
+  },
   spec: {
     host: env.host,
     path: "/",
