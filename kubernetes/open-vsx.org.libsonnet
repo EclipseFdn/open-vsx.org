@@ -96,8 +96,9 @@ local newDeployment(env, dockerImage) = {
             name: env.appName,
             image: dockerImage,
             env: utils.pairList(self._env),
+            local jvmPerfOptions = "-XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions",
             _env:: {
-              JVM_ARGS: if (env.envName == "staging") then "-Xms512M -Xmx1536M" else "-Xms1536M -Xmx4G",
+              JVM_ARGS: (if (env.envName == "staging") then "-Xms512M -Xmx1536M" else "-Xms1536M -Xmx6G") + jvmPerfOptions,
               GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
                 thisContainer._volumeMounts[googleCloudStorageCredsVolumeName],
                 env.googleCloudStorage.credentialsFilename,
@@ -117,11 +118,11 @@ local newDeployment(env, dockerImage) = {
             },
             resources: {
               requests: {
-                memory: if (env.envName == "staging") then "2Gi" else "6Gi",
-                cpu: if (env.envName == "staging") then "250m" else "500m",
+                memory: if (env.envName == "staging") then "2Gi" else "8Gi",
+                cpu: if (env.envName == "staging") then "250m" else "2000m",
               },
               limits: {
-                memory: if (env.envName == "staging") then "2Gi" else "6Gi",
+                memory: if (env.envName == "staging") then "2Gi" else "8Gi",
                 cpu: if (env.envName == "staging") then "1000m" else "4000m",
               }
             },
