@@ -11,12 +11,15 @@ This Website makes available Content from entities other than the Eclipse Founda
 The Eclipse Foundation may remove, update, or modify Content from this Website at any time without notice. 
 
 Neither the Eclipse Foundation nor its agents, affiliates, and members (collectively, "Members") assume any responsibility regarding the Content nor the availability of such Content. The access and use of any Content is solely at your own risk. Neither the Eclipse Foundation nor its Members provide any assurances that any reported problems with any Content will be resolved. The Eclipse Foundation has no obligation to address any errors associated with the Content.  By making the Content available for access by you on this Website, neither the Eclipse Foundation nor the Members grant any licenses to any copyrights, patents or any other intellectual property rights in the Content or any other materials. 
+
 All logos and trademarks contained on this Website are and remain the property of their respective owners. Unless otherwise provided by a Third Party Publisher, no licenses or other rights in or to such logos and/or trademarks are granted to you.
+
 If you wish to provide any feedback regarding this Website or its Content, please send an email to license@eclipse.org. If you believe that Content residing or accessible on or through this Website infringes a copyright, please send a notice of copyright infringement to our designated agent pursuant to the procedures set forth here: https://www.eclipse.org/legal/copyright.php.  
 
 ## For Third Party Publishers 
 
 If you wish to submit Content to appear and be available for access on this Website, you must do so pursuant to the terms and conditions of the [Open VSX Publisher Agreement](https://www.eclipse.org/legal/documents/eclipse-openvsx-publisher-agreement.pdf). You must accept the terms and conditions of that license before submitting any Content to this Website. Without limitation of anything in the Open VSX Publisher Agreement, you acknowledge that you are prohibited from posting, transmitting, or storing to or from this Website or to any service offered by the Eclipse Foundation any unlawful, threatening, libelous, defamatory, obscene, scandalous, inflammatory, pornographic, or profane material, or any other material that could give rise to any civil or criminal liability under the law.
+
 The Eclipse Foundation and the Members do not want to receive confidential information from you through this Website. Please note that any information or material sent to The Eclipse Foundation or the Members will be deemed NOT to be confidential and will be publicly available. 
 
 ## Disclaimers 
