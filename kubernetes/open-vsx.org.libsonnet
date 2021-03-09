@@ -256,14 +256,18 @@ local newElasticSearchCluster(env) = {
             containers: [
               {
                 name: "elasticsearch",
+                env: utils.pairList(self._env),
+                _env:: {
+                  ES_JAVA_OPTS: if (env.envName == "staging") then "-Xms1g -Xmx1g" else "-Xms4g -Xmx4g",
+                },
                 resources: {
                   requests: {
-                    memory: if (env.envName == "staging") then "2Gi" else "4Gi",
+                    memory: if (env.envName == "staging") then "2Gi" else "8Gi",
                     cpu: 1
                   },
                   limits: {
-                    memory: if (env.envName == "staging") then "2Gi" else "4Gi",
-                    cpu: if (env.envName == "staging") then 1 else 2,
+                    memory: if (env.envName == "staging") then "2Gi" else "8Gi",
+                    cpu: if (env.envName == "staging") then 1 else 4,
                   }
                 }
               }
