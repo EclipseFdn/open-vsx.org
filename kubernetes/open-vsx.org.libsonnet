@@ -96,7 +96,7 @@ local newDeployment(env, dockerImage) = {
             name: env.appName,
             image: dockerImage,
             env: utils.pairList(self._env),
-            local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions",
+            local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlogging.level.org.springframework=TRACE",
             _env:: {
               JVM_ARGS: (if (env.envName == "staging") then "-Xms512M -Xmx1536M" else "-Xms1536M -Xmx6G") + jvmPerfOptions,
               GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
@@ -210,7 +210,8 @@ local newRoute(env, service) = {
   kind: "Route",
   metadata: namespacedResourceMetadata(env) {
     annotations: {
-      "haproxy.router.openshift.io/timeout": if (env.envName == "staging") then "30s" else "10m"
+      "haproxy.router.openshift.io/timeout": if (env.envName == "staging") then "30s" else "10m",
+      "haproxy.router.openshift.io/disable_cookies": "true",
     },
   },
   spec: {
