@@ -96,7 +96,7 @@ local newDeployment(env, dockerImage) = {
             name: env.appName,
             image: dockerImage,
             env: utils.pairList(self._env),
-            local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlogging.level.org.springframework=TRACE",
+            local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions",
             _env:: {
               JVM_ARGS: (if (env.envName == "staging") then "-Xms512M -Xmx1536M" else "-Xms1536M -Xmx6G") + jvmPerfOptions,
               GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
