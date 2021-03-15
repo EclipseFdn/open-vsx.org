@@ -116,14 +116,23 @@ local newDeployment(env, dockerImage) = {
               [googleCloudStorageCredsVolumeName]: "/run/secrets/google-cloud-storage",
               [truststoreWithESCertsVolumeName]: env.elasticsearch.truststore.path,
             },
-            resources: {
+            resources: if (env.envName == "staging") then {
               requests: {
-                memory: if (env.envName == "staging") then "2Gi" else "8Gi",
-                cpu: if (env.envName == "staging") then "250m" else "2000m",
+                memory: "2Gi",
+                cpu: "250m",
               },
               limits: {
-                memory: if (env.envName == "staging") then "2Gi" else "8Gi",
-                cpu: if (env.envName == "staging") then "1000m" else "4000m",
+                memory: "2Gi",
+                cpu: "1000m",
+              }
+            } else {
+              requests: {
+                memory: "8Gi",
+                cpu: "4000m",
+              },
+              limits: {
+                memory: "8Gi",
+                cpu: "8000m",
               }
             },
             livenessProbe: {
