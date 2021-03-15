@@ -10,6 +10,9 @@ server:
 spring:
   config:
     import: file:${DEPLOYMENT_CONFIG}
+  datasource:
+    hikari:
+      maximum-pool-size: 30
   jpa:
     properties:
       hibernate:
