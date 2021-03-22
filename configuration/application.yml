@@ -14,6 +14,7 @@ spring:
     hikari:
       maximum-pool-size: 20
   jpa:
+    open-in-view: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
