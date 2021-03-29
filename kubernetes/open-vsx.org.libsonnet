@@ -98,7 +98,7 @@ local newDeployment(env, dockerImage) = {
             env: utils.pairList(self._env),
             local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions",
             _env:: {
-              JVM_ARGS: (if (env.envName == "staging") then "-Xms512M -Xmx1536M" else "-Xms1536M -Xmx6G") + jvmPerfOptions,
+              JVM_ARGS: (if (env.envName == "staging") then "-Xms512M -Xmx1536M" else "-Xms4G -Xmx8G") + jvmPerfOptions,
               GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
                 thisContainer._volumeMounts[googleCloudStorageCredsVolumeName],
                 env.googleCloudStorage.credentialsFilename,
@@ -127,12 +127,12 @@ local newDeployment(env, dockerImage) = {
               }
             } else {
               requests: {
-                memory: "8Gi",
-                cpu: "4000m",
+                memory: "12Gi",
+                cpu: "8000m",
               },
               limits: {
-                memory: "8Gi",
-                cpu: "8000m",
+                memory: "12Gi",
+                cpu: "12000m",
               }
             },
             livenessProbe: {
