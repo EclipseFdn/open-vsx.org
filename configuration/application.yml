@@ -12,7 +12,7 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 50
+      maximum-pool-size: 30
   jpa:
     open-in-view: false
     properties:
