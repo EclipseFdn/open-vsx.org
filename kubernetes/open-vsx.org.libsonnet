@@ -56,7 +56,7 @@ local newDeployment(env, dockerImage) = {
   kind: "Deployment",
   metadata: namespacedResourceMetadata(env),
   spec: {
-    replicas: 1,
+    replicas: 8,
     selector: {
       matchLabels: labels(env),
     },
@@ -98,7 +98,7 @@ local newDeployment(env, dockerImage) = {
             env: utils.pairList(self._env),
             local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions",
             _env:: {
-              JVM_ARGS: (if (env.envName == "staging") then "-Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M" else "-Xms16G -Xmx24G") + jvmPerfOptions,
+              JVM_ARGS: (if (env.envName == "staging") then "-Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M" else "-Xms4G -Xmx6G") + jvmPerfOptions,
               GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
                 thisContainer._volumeMounts[googleCloudStorageCredsVolumeName],
                 env.googleCloudStorage.credentialsFilename,
@@ -127,12 +127,12 @@ local newDeployment(env, dockerImage) = {
               }
             } else {
               requests: {
-                memory: "32Gi",
-                cpu: "12000m",
+                memory: "8Gi",
+                cpu: "4000m",
               },
               limits: {
-                memory: "32Gi",
-                cpu: "16000m",
+                memory: "8Gi",
+                cpu: "8000m",
               }
             },
             livenessProbe: {
