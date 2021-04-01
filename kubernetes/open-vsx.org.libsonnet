@@ -56,7 +56,7 @@ local newDeployment(env, dockerImage) = {
   kind: "Deployment",
   metadata: namespacedResourceMetadata(env),
   spec: {
-    replicas: if (env.envName == "staging") then 1 else 4,
+    replicas: if (env.envName == "staging") then 1 else 2,
     selector: {
       matchLabels: labels(env),
     },
@@ -132,7 +132,7 @@ local newDeployment(env, dockerImage) = {
               },
               limits: {
                 memory: "6Gi",
-                cpu: "4000m",
+                cpu: "3000m",
               }
             },
             livenessProbe: {
@@ -191,6 +191,24 @@ local newDeployment(env, dockerImage) = {
               secretName: env.elasticsearch.httpCerts.secretName,
             }
           },
+        },
+        affinity: {
+          nodeAffinity: {
+            preferredDuringSchedulingIgnoredDuringExecution: [
+              {
+                preference: {
+                  matchExpressions: [
+                    {
+                      key: "speed",
+                      operator: "NotIn",
+                      values: [ "fast" ]
+                    }
+                  ]
+                },
+                weight: 1
+              }
+            ]
+          }
         },
       }
     }
