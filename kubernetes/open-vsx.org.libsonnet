@@ -33,11 +33,6 @@ local newEnvironment(envName) = {
     }
   },
 
-  googleCloudStorage: {
-    secretName: "google-cloud-storage-%s" % envName,
-    credentialsFilename: "service_account.json",
-  },
-
   deploymentConfig: {
     secretName: "deployment-configuration-%s" % envName,
     path: "/run/secrets/open-vsx.org/deployment",
@@ -48,7 +43,6 @@ local newEnvironment(envName) = {
 local newDeployment(env, dockerImage) = {
   
   local elasticsearchCertsVolumeName = "elastic-internal-http-certificates",
-  local googleCloudStorageCredsVolumeName = "google-cloud-storage-credentials",
   local truststoreWithESCertsVolumeName = "truststore-with-elasticsearch-certs",
   local deploymentConfigurationVolumeName = "deployment-configuration",
 
@@ -99,10 +93,6 @@ local newDeployment(env, dockerImage) = {
             local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions",
             _env:: {
               JVM_ARGS: (if (env.envName == "staging") then "-Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M" else "-Xms1G -Xmx4G") + jvmPerfOptions,
-              GOOGLE_APPLICATION_CREDENTIALS: "%s/%s" % [
-                thisContainer._volumeMounts[googleCloudStorageCredsVolumeName],
-                env.googleCloudStorage.credentialsFilename,
-              ],
               DEPLOYMENT_CONFIG: "%s/%s" % [ env.deploymentConfig.path, env.deploymentConfig.filename, ],
             },
             ports: utils.pairList(self._ports, vfield="containerPort"),
@@ -113,7 +103,6 @@ local newDeployment(env, dockerImage) = {
             volumeMounts: utils.pairList(self._volumeMounts, vfield="mountPath"),
             _volumeMounts:: {
               [deploymentConfigurationVolumeName]: env.deploymentConfig.path,
-              [googleCloudStorageCredsVolumeName]: "/run/secrets/google-cloud-storage",
               [truststoreWithESCertsVolumeName]: env.elasticsearch.truststore.path,
             },
             resources: if (env.envName == "staging") then {
@@ -169,14 +158,6 @@ local newDeployment(env, dockerImage) = {
               defaultMode: 420,
               optional: false,
               secretName: env.deploymentConfig.secretName,
-            }
-          },
-          [googleCloudStorageCredsVolumeName]: {
-            local thisVolume = self,
-            secret: {
-              defaultMode: 420,
-              optional: false,
-              secretName: env.googleCloudStorage.secretName,
             }
           },
           [truststoreWithESCertsVolumeName]: {
