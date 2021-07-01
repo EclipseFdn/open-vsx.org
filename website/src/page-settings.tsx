@@ -43,9 +43,9 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                If you are a publisher and your extension has been deactivated, you can reactivate it
-                by signing the publisher agreement and/or adding a license to your
-                extension. <Link color='secondary' href="https://blogs.eclipse.org/post/brian-king/new-era-open-vsx-registry">Find out more</Link>.
+                Download this FREE white paper to learn more about Open VSX and why open source tools to 
+                support VS Code extensions are gaining in popularity.
+                <Link color='secondary' href="https://outreach.eclipse.foundation/openvsx">Open VSX Registry: A Vendor Neutral, Open Source Marketplace for VS Code Extensions</Link>.
             </Typography>
         </Box>;
 
@@ -108,7 +108,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                     color: 'info'
                 },
                 cookie: {
-                    key: 'post-compliance-cut-off',
+                    key: 'open-vsx-whitepaper',
                     value: 'closed',
                     path: '/'
                 }
