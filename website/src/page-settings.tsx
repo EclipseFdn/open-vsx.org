@@ -44,8 +44,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             </Box>
             <Typography variant='body1'>
                 Download this FREE white paper to learn more about Open VSX and why open source tools to 
-                support VS Code extensions are gaining in popularity.
-                <Link color='secondary' href="https://outreach.eclipse.foundation/openvsx">Open VSX Registry: A Vendor Neutral, Open Source Marketplace for VS Code Extensions</Link>.
+                support VS Code extensions are gaining in 
+                popularity. <Link color='secondary' href="https://outreach.eclipse.foundation/openvsx">Open VSX Registry: A Vendor Neutral, Open Source Marketplace for VS Code Extensions</Link>.
             </Typography>
         </Box>;
 
