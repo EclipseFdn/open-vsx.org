@@ -280,8 +280,41 @@ local newElasticSearchCluster(env) = {
                   }
                 }
               }
-            ]
-          }
+            ],
+            affinity: {
+              nodeAffinity: {
+                preferredDuringSchedulingIgnoredDuringExecution: [
+                  {
+                    weight: 1,
+                    preference: {
+                      matchExpressions: [
+                        {
+                          key: "speed",
+                          operator: "NotIn",
+                          values: [ "fast", ],
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+              podAntiAffinity: {
+                preferredDuringSchedulingIgnoredDuringExecution: [
+                  {
+                    weight: 100,
+                    podAffinityTerm: {
+                      labelSelector: {
+                        matchLabels: {
+                          "elasticsearch.k8s.elastic.co/cluster-name": env.elasticsearch.name,
+                        },
+                      },
+                      topologyKey: "kubernetes.io/hostname",
+                    },
+                  },
+                ],
+              },
+            },
+          },
         },
         count: if (env.envName == "staging") then 1 else 3,
       }
