@@ -7,6 +7,10 @@ server:
   address: 0.0.0.0
   port: 8080
   shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
+    min-response-size: 1024
 spring:
   config:
     import: file:${DEPLOYMENT_CONFIG}
