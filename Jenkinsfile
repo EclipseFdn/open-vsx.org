@@ -3,25 +3,31 @@ pipeline {
     kubernetes {
       label 'kubedeploy-agent'
       yaml '''
-      apiVersion: v1
-      kind: Pod
-      spec:
-        containers:
-        - name: kubectl
-          image: eclipsefdn/kubectl:1.18-alpine
-          imagePullPolicy: Always
-          command:
-          - cat
-          tty: true
-          resources:
-            limits:
-              cpu: 1
-              memory: 1Gi
-        - name: jnlp
-          resources:
-            limits:
-              cpu: 1
-              memory: 1Gi
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+          - name: kubectl
+            image: eclipsefdn/kubectl:okd-c1
+            command:
+            - cat
+            tty: true
+            resources:
+              limits:
+                cpu: 1
+                memory: 1Gi
+            volumeMounts:
+            - mountPath: "/home/default/.kube"
+              name: "dot-kube"
+              readOnly: false
+          - name: jnlp
+            resources:
+              limits:
+                cpu: 1
+                memory: 1Gi
+          volumes:
+          - name: "dot-kube"
+            emptyDir: {}
       '''
     }
   }
@@ -78,7 +84,7 @@ pipeline {
       }
       steps {
         container('kubectl') {
-          withKubeConfig([credentialsId: 'b04681b6-6fc2-4432-aaec-a6a8755b25ac', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
+          withKubeConfig([credentialsId: 'ci-bot-okd-c1-token', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
             sh '''
               ./kubernetes/gen-deployment.sh staging "${IMAGE_NAME}:${IMAGE_TAG}" | kubectl apply -f -
             '''
@@ -93,7 +99,7 @@ pipeline {
       }
       steps {
         container('kubectl') {
-          withKubeConfig([credentialsId: 'b04681b6-6fc2-4432-aaec-a6a8755b25ac', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
+          withKubeConfig([credentialsId: 'ci-bot-okd-c1-token', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
             sh '''
               ./kubernetes/gen-deployment.sh production "${IMAGE_NAME}:${IMAGE_TAG}" | kubectl apply -f -
             '''
