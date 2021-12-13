@@ -90,7 +90,7 @@ local newDeployment(env, dockerImage) = {
             name: env.appName,
             image: dockerImage,
             env: utils.pairList(self._env),
-            local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions",
+            local jvmPerfOptions = " -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true",
             _env:: {
               JVM_ARGS: (if (env.envName == "staging") then "-Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M" else "-Xms4G -Xmx6G") + jvmPerfOptions,
               DEPLOYMENT_CONFIG: "%s/%s" % [ env.deploymentConfig.path, env.deploymentConfig.filename, ],
