@@ -277,7 +277,7 @@ local newElasticSearchCluster(env) = {
                 name: "elasticsearch",
                 env: utils.pairList(self._env),
                 _env:: {
-                  ES_JAVA_OPTS: if (env.envName == "staging") then "-Xms1g -Xmx1g" else "-Xms4g -Xmx4g",
+                  ES_JAVA_OPTS: (if (env.envName == "staging") then "-Xms1g -Xmx1g" else "-Xms4g -Xmx4g") + " -Dlog4j2.formatMsgNoLookups=true",
                 },
                 resources: {
                   requests: {
