@@ -191,6 +191,16 @@ local newDeployment(env, dockerImage) = {
             ]
           }
         },
+        topologySpreadConstraints: [
+          {
+            maxSkew: 1,
+            topologyKey: "kubernetes.io/hostname",
+            whenUnsatisfiable: "DoNotSchedule",
+            labelSelector: {
+              matchLabels: labels(env),
+            },
+          },
+        ],
       }
     }
   }
@@ -298,6 +308,7 @@ local newElasticSearchCluster(env) = {
                   },
                 ],
               },
+
               podAntiAffinity: {
                 preferredDuringSchedulingIgnoredDuringExecution: [
                   {
