@@ -12,7 +12,7 @@ import {
     ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
     UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
     NamespaceMembershipList, AdminService, PublisherInfo
-} from "openvsx-webui";
+} from "openvsx-webui-staging";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spongebob_Squarepants_as_a_balloon.jpg';
 

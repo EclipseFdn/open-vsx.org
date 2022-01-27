@@ -13,8 +13,8 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/styles';
 import { useMediaQuery } from '@material-ui/core';
-import { Main, ExtensionRegistryService } from 'openvsx-webui';
-import createDefaultTheme from 'openvsx-webui/lib/default/theme';
+import { Main, ExtensionRegistryService } from 'openvsx-webui-staging';
+import createDefaultTheme from 'openvsx-webui-staging/lib/default/theme';
 import createPageSettings from './page-settings';
 
 const App: React.FunctionComponent = () => {
