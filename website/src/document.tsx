@@ -10,9 +10,9 @@
 
 import * as React from 'react';
 import { Box } from '@material-ui/core';
-import { SanitizedMarkdown } from 'openvsx-webui-staging/lib/components/sanitized-markdown';
-import { DelayedLoadIndicator } from 'openvsx-webui-staging/lib/components/delayed-load-indicator';
-import { MainContext } from 'openvsx-webui-staging/lib/context';
+import { SanitizedMarkdown } from 'openvsx-webui/lib/components/sanitized-markdown';
+import { DelayedLoadIndicator } from 'openvsx-webui/lib/components/delayed-load-indicator';
+import { MainContext } from 'openvsx-webui/lib/context';
 
 export class Document extends React.Component<Document.Props, Document.State> {
 

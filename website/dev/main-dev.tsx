@@ -13,9 +13,9 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/styles';
 import { useMediaQuery } from '@material-ui/core';
-import { Main } from 'openvsx-webui-staging';
+import { Main } from 'openvsx-webui';
 import createPageSettings from '../src/page-settings';
-import createDefaultTheme from 'openvsx-webui-staging/lib/default/theme';
+import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import { MockRegistryService } from './mock-service';
 
 const App: React.FunctionComponent = () => {
