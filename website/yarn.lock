@@ -1313,9 +1313,9 @@ ms@2.1.1:
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
 nanoid@^3.1.23:
-  version "3.1.23"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.23.tgz#f744086ce7c2bc47ee0a8472574d5c78e4183a81"
-  integrity sha512-FiB0kzdP0FFVGDKlRLEQ1BgDzU87dy5NnzjeW9YZNt+/c3+q82EQDUwniSAUxp/F0gFNI1ZhKU1FqYsMuqZVnw==
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.3.tgz#fd8e8b7aa761fe807dba2d1b98fb7241bb724a25"
+  integrity sha512-p1sjXuopFs0xg+fPASzQ28agW1oHD7xDsd9Xkf3T15H3c/cifrFHVwrh74PdoklAPi+i7MdRsE47vm2r6JoB+w==
 
 negotiator@0.6.2:
   version "0.6.2"
@@ -1370,10 +1370,10 @@ opener@^1.5.2:
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
-openvsx-webui@0.1.1-next.153a429:
-  version "0.1.1-next.153a429"
-  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.1.1-next.153a429.tgz#c49179bb17c2f645894b9a5a63205288ca210ca4"
-  integrity sha512-Jbl2lwtuJcFv0g0tTUiXXRpSHyfTAXDyWXVhGnkEVR8EWrJgAIY1FUK4g68yP+EgW0lKiHud+ZdeKaUY+5Cs9A==
+openvsx-webui@0.2.0-next.19286bf:
+  version "0.2.0-next.19286bf"
+  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.2.0-next.19286bf.tgz#912c13dc2c9f6c0b77f601b452fcec704fb90f96"
+  integrity sha512-W1pn7eIikcTi0QhwEd+zZa9by+k5raYjAl77hpZl+9h9I57CD4bjoRfSejjdcIgPI0YwZ9FlDmUJLDtFRy21mA==
   dependencies:
     "@material-ui/core" "~4.9.14"
     "@material-ui/icons" "~4.9.1"
