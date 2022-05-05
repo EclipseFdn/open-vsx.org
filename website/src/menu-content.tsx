@@ -17,6 +17,7 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import HelpIcon from '@material-ui/icons/Help';
 import ForumIcon from '@material-ui/icons/Forum';
 import InfoIcon from '@material-ui/icons/Info';
+import StarIcon from '@material-ui/icons/Star';
 
 const menuContentStyle = makeStyles((theme: Theme) => ({
     headerItem: {
@@ -95,6 +96,14 @@ export const MobileMenuContent: React.FunctionComponent = () => {
                 </Typography>
             </RouteLink>
         </MenuItem>
+        <MenuItem className={classes.menuItem}>
+            <Link href='https://www.eclipse.org/donate/openvsx/'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <StarIcon className={classes.itemIcon} />
+                    Donate
+                </Typography>
+            </Link>
+        </MenuItem>
     </React.Fragment>;
 }
 
@@ -116,5 +125,8 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
         <RouteLink to='/about' className={classes.headerItem}>
             About
         </RouteLink>
+        <Link href='https://www.eclipse.org/donate/openvsx/' className={classes.headerItem}>
+            Donate
+        </Link>
     </React.Fragment>;
 }
