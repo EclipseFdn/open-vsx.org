@@ -100,7 +100,7 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             <Link href='https://www.eclipse.org/donate/openvsx/'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <StarIcon className={classes.itemIcon} />
-                    Donate
+                    Sponsor
                 </Typography>
             </Link>
         </MenuItem>
