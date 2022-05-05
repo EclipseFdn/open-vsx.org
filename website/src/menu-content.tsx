@@ -126,7 +126,7 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
             About
         </RouteLink>
         <Link href='https://www.eclipse.org/donate/openvsx/' className={classes.headerItem}>
-            Donate
+            Sponsor
         </Link>
     </React.Fragment>;
 }
