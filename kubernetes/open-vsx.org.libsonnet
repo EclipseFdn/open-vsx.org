@@ -145,7 +145,7 @@ local newDeployment(env, dockerImage) = {
                 path: "/actuator/health/readiness",
                 port: "http-management"
               },
-              failureThreshold: 30,
+              failureThreshold: 360,
               periodSeconds: 10
             }
           },
