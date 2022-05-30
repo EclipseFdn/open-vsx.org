@@ -51,6 +51,7 @@ local newDeployment(env, dockerImage) = {
   metadata: namespacedResourceMetadata(env),
   spec: {
     replicas: if (env.envName == "staging") then 1 else 2,
+    progressDeadlineSeconds: 3600,
     selector: {
       matchLabels: labels(env),
     },
