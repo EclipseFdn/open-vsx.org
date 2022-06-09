@@ -31,6 +31,10 @@ const footerStyle = makeStyles((theme: Theme) => ({
     },
     legalText: {
         fontWeight: theme.typography.fontWeightLight
+    },
+    cookieText: {
+        cursor: 'pointer',
+        fontWeight: 300
     }
 }));
 
@@ -61,6 +65,9 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
                     </Box>
                     <Box ml={itemSpacing}>
                         {legalResources(classes)}
+                    </Box>
+                    <Box ml={itemSpacing}>
+                        {manageCookies(classes)}
                     </Box>
                     <Box ml={itemSpacing}>
                         {copyrightText(classes)}
@@ -96,8 +103,11 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
                 <Box mb={itemSpacing}>
                     {copyrightAgent(classes)}
                 </Box>
-                <Box mb={itemSpacing + 1}>
+                <Box mb={itemSpacing}>
                     {legalResources(classes)}
+                </Box>
+                <Box mb={itemSpacing + 1}>
+                    {manageCookies(classes)}
                 </Box>
             </Box>
             <MainFooter />
@@ -166,4 +176,8 @@ const rightsReservedText = (classes: FooterStyle) =>
         All Rights Reserved.
     </Box>;
 
+const manageCookies = (classes: FooterStyle) =>
+    <Box className={`${classes.link} ${classes.cookieText} toolbar-manage-cookies`}>
+        Manage Cookies
+    </Box>;
 export default FooterContent;
