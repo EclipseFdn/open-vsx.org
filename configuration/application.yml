@@ -17,6 +17,8 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 10
+  flyway:
+    baseline-on-migrate: false
   jpa:
     open-in-view: false
     properties:
