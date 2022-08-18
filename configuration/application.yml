@@ -14,6 +14,9 @@ server:
 spring:
   config:
     import: file:${DEPLOYMENT_CONFIG}
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
   datasource:
     hikari:
       maximum-pool-size: 10
@@ -53,6 +56,17 @@ management:
   health:
     probes:
       enabled: true
+org:
+  jobrunr:
+    job-scheduler:
+      enabled: true
+    background-job-server:
+      enabled: true
+      worker-count: 2
+    dashboard:
+      enabled: false
+    miscellaneous:
+      allow-anonymous-data-usage: false
 ovsx:
   storage:
     primary-service: azure-blob
