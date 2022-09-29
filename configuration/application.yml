@@ -20,6 +20,7 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 10
+      leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
   jpa:
