@@ -20,6 +20,7 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 10
+      leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
   jpa:
@@ -65,6 +66,8 @@ org:
       worker-count: 2
     dashboard:
       enabled: false
+    database:
+      type: sql
     miscellaneous:
       allow-anonymous-data-usage: false
 ovsx:
