@@ -71,7 +71,7 @@ org:
     miscellaneous:
       allow-anonymous-data-usage: false
 bucket4j:
-  enabled: false
+  enabled: true
   filters:
     - cache-name: buckets
       url: '/api/-/(namespace/create|publish)'
