@@ -20,7 +20,7 @@ yarn --cwd website build
 yarn --cwd website start:dev
 ```
 
-### Development
+### Development 
 
 We recommend running `watch:tsc` and `watch:dev` afterwards to run the TypeScript compiler and Webpack in watch mode.
 
