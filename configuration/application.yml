@@ -3,14 +3,6 @@
 # for database access and ovsx.storage.azure for file storage access.
 # Additional properties are loaded from the file provided with the
 # DEPLOYMENT_CONFIG environment variable.
-logging:
-  level:
-    org:
-      hibernate:
-        engine:
-          transaction:
-            internal:
-              TransactionImpl: DEBUG
 server:
   address: 0.0.0.0
   port: 8080
