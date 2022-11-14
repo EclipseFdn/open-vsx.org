@@ -11,7 +11,7 @@
 import {
     ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
     UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
-    NamespaceMembershipList, AdminService, PublisherInfo
+    NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole
 } from "openvsx-webui";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spongebob_Squarepants_as_a_balloon.jpg';
@@ -24,7 +24,7 @@ export class MockRegistryService extends ExtensionRegistryService {
         (this.admin.registry as any) = this;
     }
 
-    search(): Promise<SearchResult | ErrorResult> {
+    search(abortController: AbortController, filter?: ExtensionFilter): Promise<Readonly<SearchResult | ErrorResult>> {
         return Promise.resolve({
             offset: 0,
             totalSize: 0,
@@ -32,7 +32,7 @@ export class MockRegistryService extends ExtensionRegistryService {
         });
     }
 
-    getExtensionDetail(): Promise<Extension | ErrorResult> {
+    getExtensionDetail(abortController: AbortController, extensionUrl: UrlString): Promise<Readonly<Extension | ErrorResult>> {
         return Promise.resolve({
             name: 'foo',
             namespace: 'mock_extensions',
@@ -59,25 +59,25 @@ export class MockRegistryService extends ExtensionRegistryService {
         } as Extension);
     }
 
-    getExtensionReadme(): Promise<string> {
+    getExtensionReadme(abortController: AbortController, extension: Extension): Promise<string> {
         return Promise.resolve('# Mock Readme');
     }
 
-    getExtensionReviews(): Promise<ExtensionReviewList> {
+    getExtensionReviews(abortController: AbortController, extension: Extension): Promise<Readonly<ExtensionReviewList>> {
         return Promise.resolve({
             reviews: [] as ExtensionReview[]
         } as ExtensionReviewList);
     }
 
-    postReview(): Promise<SuccessResult | ErrorResult> {
+    async postReview(abortController: AbortController, review: NewReview, postReviewUrl: UrlString): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
 
-    deleteReview(): Promise<SuccessResult | ErrorResult> {
+    async deleteReview(abortController: AbortController, deleteReviewUrl: string): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
 
-    getUser(): Promise<UserData | ErrorResult> {
+    getUser(abortController: AbortController): Promise<Readonly<UserData | ErrorResult>> {
         return Promise.resolve({
             loginName: 'test_user',
             fullName: 'Spongebob Squarepants',
@@ -95,7 +95,7 @@ export class MockRegistryService extends ExtensionRegistryService {
         } as UserData);
     }
 
-    getUserByName(): Promise<UserData[]> {
+    getUserByName(abortController: AbortController, name: string): Promise<Readonly<UserData>[]> {
         return Promise.resolve([
             {
                 loginName: 'test',
@@ -104,11 +104,11 @@ export class MockRegistryService extends ExtensionRegistryService {
         ]);
     }
 
-    getAccessTokens(): Promise<PersonalAccessToken[]> {
+    getAccessTokens(abortController: AbortController, user: UserData): Promise<Readonly<PersonalAccessToken>[]> {
         return Promise.resolve([]);
     }
 
-    createAccessToken(): Promise<PersonalAccessToken> {
+    async createAccessToken(abortController: AbortController, user: UserData, description: string): Promise<Readonly<PersonalAccessToken>> {
         return Promise.resolve({
             id: 0,
             value: 'abcd',
@@ -117,49 +117,48 @@ export class MockRegistryService extends ExtensionRegistryService {
         } as PersonalAccessToken);
     }
 
-    deleteAccessToken(): Promise<SuccessResult | ErrorResult> {
+    async deleteAccessToken(abortController: AbortController, token: PersonalAccessToken): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
 
-    deleteAllAccessTokens(): Promise<(SuccessResult | ErrorResult)[]> {
+    async deleteAllAccessTokens(abortController: AbortController, tokens: PersonalAccessToken[]): Promise<Readonly<SuccessResult | ErrorResult>[]> {
         return Promise.resolve([]);
     }
 
-    getNamespaces(): Promise<Namespace[]> {
+    getCsrfToken(abortController: AbortController): Promise<Readonly<CsrfTokenJson | ErrorResult>> {
+        return Promise.resolve({ error: 'Mock service' });
+    }
+
+    getNamespaces(abortController: AbortController): Promise<Readonly<Namespace>[]> {
         return Promise.resolve([]);
     }
 
-    getNamespaceMembers(): Promise<NamespaceMembershipList> {
+    getNamespaceMembers(abortController: AbortController, namespace: Namespace): Promise<Readonly<NamespaceMembershipList>> {
         return Promise.resolve({
             namespaceMemberships: []
         });
     }
 
-    setNamespaceMember(): Promise<(SuccessResult | ErrorResult)[]> {
+    async setNamespaceMember(abortController: AbortController, endpoint: UrlString, user: UserData, role: MembershipRole | 'remove'): Promise<Readonly<SuccessResult | ErrorResult>[]> {
         return Promise.resolve([]);
     }
 
-    signPublisherAgreement(): Promise<UserData | ErrorResult> {
+    async signPublisherAgreement(abortController: AbortController): Promise<Readonly<UserData | ErrorResult>> {
         return Promise.resolve({} as UserData);
     }
-
-    getCsrfToken(): Promise<CsrfTokenJson | ErrorResult> {
-        return Promise.resolve({ error: 'Mock service' });
-    }
-
 }
 
 export class MockAdminService extends AdminService {
 
-    getExtension(): Promise<Extension> {
-        return this.registry.getExtensionDetail('') as Promise<Extension>;
+    getExtension(abortController: AbortController, namespace: string, extension: string): Promise<Readonly<Extension>> {
+        return this.registry.getExtensionDetail(abortController, '') as Promise<Extension>;
     }
 
-    deleteExtension(): Promise<SuccessResult | ErrorResult> {
+    async deleteExtensions(abortController: AbortController, req: { namespace: string, extension: string, targetPlatformVersions?: object[] }): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
 
-    getNamespace(): Promise<Namespace> {
+    getNamespace(abortController: AbortController, name: string): Promise<Readonly<Namespace>> {
         return Promise.resolve({
             name: 'foo',
             access: 'public',
@@ -167,11 +166,11 @@ export class MockAdminService extends AdminService {
         } as any);
     }
 
-    createNamespace(): Promise<SuccessResult> {
+    async createNamespace(abortController: AbortController, namespace: { name: string }): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
 
-    getPublisherInfo(): Promise<PublisherInfo> {
+    async getPublisherInfo(abortController: AbortController, provider: string, login: string): Promise<Readonly<PublisherInfo>> {
         return Promise.resolve({
             activeAccessTokenNum: 5,
             extensions: [],
@@ -181,8 +180,7 @@ export class MockAdminService extends AdminService {
         });
     }
 
-    revokePublisherContributions(provider: string, login: string): Promise<SuccessResult | ErrorResult> {
+    async revokePublisherContributions(abortController: AbortController, provider: string, login: string): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
-
 }

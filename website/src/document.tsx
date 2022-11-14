@@ -19,6 +19,8 @@ export class Document extends React.Component<Document.Props, Document.State> {
     static contextType = MainContext;
     declare context: MainContext;
 
+    protected abortController = new AbortController();
+
     private _isMounted = false;
 
     constructor(props: Document.Props) {
@@ -31,7 +33,7 @@ export class Document extends React.Component<Document.Props, Document.State> {
     async componentDidMount(): Promise<void> {
         this._isMounted = true;
         try {
-            const content = await this.context.service.getStaticContent(this.props.url);
+            const content = await this.context.service.getStaticContent(this.abortController, this.props.url);
             if (!this._isMounted) {
                 return;
             }
@@ -44,6 +46,7 @@ export class Document extends React.Component<Document.Props, Document.State> {
 
     componentWillUnmount(): void {
         this._isMounted = false;
+        this.abortController.abort();
     }
 
     render(): React.ReactNode {

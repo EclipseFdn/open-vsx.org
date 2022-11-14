@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Theme, Typography, MenuItem, Link } from '@material-ui/core';
+import { Theme, Typography, MenuItem, Link, Button } from '@material-ui/core';
 import { Link as RouteLink } from 'react-router-dom';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
@@ -18,6 +18,8 @@ import HelpIcon from '@material-ui/icons/Help';
 import ForumIcon from '@material-ui/icons/Forum';
 import InfoIcon from '@material-ui/icons/Info';
 import StarIcon from '@material-ui/icons/Star';
+import PublishIcon from '@material-ui/icons/Publish';
+import { UserSettingsRoutes } from 'openvsx-webui';
 
 const menuContentStyle = makeStyles((theme: Theme) => ({
     headerItem: {
@@ -32,6 +34,10 @@ const menuContentStyle = makeStyles((theme: Theme) => ({
             color: theme.palette.secondary.main,
             textDecoration: 'none'
         }
+    },
+    publishButton: {
+        marginLeft: theme.spacing(2.5),
+        marginRight: theme.spacing(2.5)
     },
     menuItem: {
         cursor: 'auto',
@@ -104,6 +110,18 @@ export const MobileMenuContent: React.FunctionComponent = () => {
                 </Typography>
             </Link>
         </MenuItem>
+        {
+            !location.pathname.startsWith(UserSettingsRoutes.ROOT)
+            ? <MenuItem className={classes.menuItem}>
+                <RouteLink to='/user-settings/extensions'>
+                    <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                        <PublishIcon className={classes.itemIcon} />
+                        Publish Extension
+                    </Typography>
+                </RouteLink>
+            </MenuItem>
+            : null
+        }
     </React.Fragment>;
 }
 
@@ -128,5 +146,8 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
         <Link href='https://www.eclipse.org/donate/openvsx/' className={classes.headerItem}>
             Sponsor
         </Link>
+        <Button variant='contained' color='secondary' href='/user-settings/extensions' className={classes.publishButton}>
+            Publish
+        </Button>
     </React.Fragment>;
 }
