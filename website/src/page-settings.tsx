@@ -24,7 +24,7 @@ import Adopters from './adopters';
 import Members from './members';
 
 //---------- HEAD TAGS
-const HeadTags: FunctionComponent<{title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string, type?: string}> = (props) => {
+const HeadTags: FunctionComponent<{ title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string, type?: string }> = (props) => {
     const handleChangeClientState = (newState: any, addedTags: HelmetTags, removedTags: HelmetTags): void => {
         if (addedTags.metaTags) {
             addedTags.metaTags.forEach((value: HTMLMetaElement) => {
@@ -41,38 +41,38 @@ const HeadTags: FunctionComponent<{title?: string, description?: string, keyword
         <title>{props.title}</title>
 
         {/* SEO Meta Tags */}
-        <meta name='description' content={props.description}/>
-        <meta name='keywords' content={props.keywords}/>
-        <meta property='og:url' content={props.url}/>
-        <meta property='og:type' content={type}/>
-        <meta property='og:title' content={props.title}/>
-        <meta property='og:description' content={props.description}/>
-        <meta property='og:image' content={props.imageUrl}/>
+        <meta name='description' content={props.description} />
+        <meta name='keywords' content={props.keywords} />
+        <meta property='og:url' content={props.url} />
+        <meta property='og:type' content={type} />
+        <meta property='og:title' content={props.title} />
+        <meta property='og:description' content={props.description} />
+        <meta property='og:image' content={props.imageUrl} />
 
         {/* Google Meta Tags */}
-        <meta itemProp='name' content={props.title}/>
-        <meta itemProp='description' content={props.description}/>
-        <meta itemProp='image' content={props.imageUrl}/>
+        <meta itemProp='name' content={props.title} />
+        <meta itemProp='description' content={props.description} />
+        <meta itemProp='image' content={props.imageUrl} />
 
         {/* Twitter Meta Tags */}
-        <meta name='twitter:card' content={twitterCard}/>
-        <meta name='twitter:title' content={props.title}/>
-        <meta name='twitter:description' content={props.description}/>
-        <meta name='twitter:image' content={props.imageUrl}/>
+        <meta name='twitter:card' content={twitterCard} />
+        <meta name='twitter:title' content={props.title} />
+        <meta name='twitter:description' content={props.description} />
+        <meta name='twitter:image' content={props.imageUrl} />
     </Helmet>;
 };
 
-const MainHeadTags: FunctionComponent<{pageSettings: PageSettings}> = (props) => {
+const MainHeadTags: FunctionComponent<{ pageSettings: PageSettings }> = (props) => {
     const title = props.pageSettings.pageTitle;
     const description = 'Open VSX is an Eclipse open-source project and alternative to the Visual Studio Marketplace. It is deployed by the Eclipse Foundation at open-vsx.org.';
     const keywords = 'eclipse,ide,open source,development environment,development,vs code,visual studio code,extension,plugin,plug-in,registry,theia';
     const url = `${location.protocol}//${location.host}`;
     const imageUrl = url + '/openvsx-preview.png';
 
-    return (<HeadTags title={title} description={description} keywords={keywords} url={url} imageUrl={imageUrl}/>);
+    return (<HeadTags title={title} description={description} keywords={keywords} url={url} imageUrl={imageUrl} />);
 };
 
-const ExtensionHeadTags: FunctionComponent<{extension?: Extension, pageSettings: PageSettings}> = (props) => {
+const ExtensionHeadTags: FunctionComponent<{ extension?: Extension, pageSettings: PageSettings }> = (props) => {
     const { name, namespace } = useParams();
     let title = ` – ${props.pageSettings.pageTitle}`;
     let url = `${location.protocol}//${location.host}/extension/`;
@@ -96,19 +96,19 @@ const ExtensionHeadTags: FunctionComponent<{extension?: Extension, pageSettings:
         url += `${namespace}/${name}`;
     }
 
-    return(<HeadTags title={title} url={url} description={description} keywords={keywords}/>)
+    return (<HeadTags title={title} url={url} description={description} keywords={keywords} />)
 };
 
-const NamespaceHeadTags: FunctionComponent<{namespaceDetails?: NamespaceDetails, pageSettings: PageSettings}> = (props) => {
+const NamespaceHeadTags: FunctionComponent<{ namespaceDetails?: NamespaceDetails, pageSettings: PageSettings }> = (props) => {
     const { name } = useParams();
     const namespaceName = props.namespaceDetails?.displayName ?? props.namespaceDetails?.name ?? name
     const title = `${namespaceName} – ${props.pageSettings.pageTitle}`;
     const url = `${location.protocol}//${location.host}/namespace/${namespaceName}`;
     const description = props.namespaceDetails?.description
-    return(<HeadTags title={title} url={url} description={description}/>)
+    return (<HeadTags title={title} url={url} description={description} />)
 };
 
-export default function createPageSettings(theme: Theme, prefersDarkMode: boolean, serverVersionPromise: Promise<string>): PageSettings {    
+export default function createPageSettings(theme: Theme, prefersDarkMode: boolean, serverVersionPromise: Promise<string>): PageSettings {
 
     //---------- SERVER VERSION
     const ServerVersion = lazy(async () => {
@@ -123,7 +123,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
             </RouteLink>
             <Suspense>
-                <ServerVersion/>
+                <ServerVersion />
             </Suspense>
         </>;
 
@@ -146,14 +146,14 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
 
     //---------- DOWNLOAD TERMS
     const downloadTerms: FunctionComponent = () =>
-    <Box mt={1}>
-        <Typography variant='body2'>
-            By clicking download, you accept this website&apos;s&nbsp;
-            <Link color='secondary' underline='hover' href='https://open-vsx.org/terms-of-use'>
-                Terms of Use
-            </Link>.
-        </Typography>
-    </Box>;
+        <Box mt={1}>
+            <Typography variant='body2'>
+                By clicking download, you accept this website&apos;s&nbsp;
+                <Link color='secondary' underline='hover' href='https://open-vsx.org/terms-of-use'>
+                    Terms of Use
+                </Link>.
+            </Typography>
+        </Box>;
 
     //---------- ADDITIONAL PAGES
     const additionalRoutes: ReactNode = <>
@@ -176,11 +176,11 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     };
 
     //---------- CLAIM NAMESPACE LINK
-    const claimNamespace: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ sx }) => <Link
-            href='https://github.com/EclipseFdn/open-vsx.org/issues/new/choose'
-            target='_blank' variant='body2' color='secondary' underline='hover' sx={sx} >
-            Claim Ownership
-        </Link>;
+    const claimNamespace: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ sx, extension }) => <Link
+        href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?labels=namespace&template=claim-namespace-ownership.md&title=${encodeURIComponent(`Claiming namespace \`${extension.namespace}\``)}`}
+        target='_blank' variant='body2' color='secondary' underline='hover' sx={sx} >
+        Claim Ownership
+    </Link>;
 
 
     return {
