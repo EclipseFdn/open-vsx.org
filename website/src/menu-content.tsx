@@ -91,7 +91,7 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             <Link href='https://gitter.im/eclipse/openvsx'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <ForumIcon className={classes.itemIcon} />
-                    Community Chat
+                    Community
                 </Typography>
             </Link>
         </MenuItem>
@@ -99,7 +99,7 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             <RouteLink to='/about'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <InfoIcon className={classes.itemIcon} />
-                    About This Service
+                    About
                 </Typography>
             </RouteLink>
         </MenuItem>
