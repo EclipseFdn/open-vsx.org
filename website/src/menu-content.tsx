@@ -18,6 +18,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import ForumIcon from '@material-ui/icons/Forum';
 import InfoIcon from '@material-ui/icons/Info';
 import StarIcon from '@material-ui/icons/Star';
+import StatusIcon from '@material-ui/icons/NetworkCheck';
 import PublishIcon from '@material-ui/icons/Publish';
 import { UserSettingsRoutes } from 'openvsx-webui';
 
@@ -110,6 +111,14 @@ export const MobileMenuContent: React.FunctionComponent = () => {
                 </Typography>
             </Link>
         </MenuItem>
+        <MenuItem className={classes.menuItem}>
+            <Link href='https://status.open-vsx.org/'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <StatusIcon className={classes.itemIcon} />
+                    Status
+                </Typography>
+            </Link>
+        </MenuItem>
         {
             !location.pathname.startsWith(UserSettingsRoutes.ROOT)
             ? <MenuItem className={classes.menuItem}>
@@ -145,6 +154,9 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
         </RouteLink>
         <Link href='https://www.eclipse.org/donate/openvsx/' className={classes.headerItem}>
             Sponsor
+        </Link>
+        <Link href='https://status.open-vsx.org/' className={classes.headerItem}>
+            Status
         </Link>
         <Button variant='contained' color='secondary' href='/user-settings/extensions' className={classes.publishButton}>
             Publish
