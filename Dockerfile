@@ -1,5 +1,5 @@
 # Builder image to compile the website
-FROM ubuntu:focal as builder
+FROM ubuntu as builder
 
 WORKDIR /workdir
 
