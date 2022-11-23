@@ -1,5 +1,5 @@
 # Builder image to compile the website
-FROM ubuntu:latest as builder
+FROM ubuntu:jammy as builder
 
 WORKDIR /workdir
 
