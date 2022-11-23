@@ -146,11 +146,6 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.45.tgz#e9387572998e5ecdac221950dab3e8c3b16af884"
   integrity sha512-jnqIUKDUqJbDIUxm0Uj7bnlMnRm1T/eZ9N+AVMqhPgzrba2GhGG5o/jCTwmdPK709nEZsGoMzXEDUjcXHa3W0g==
 
-"@types/highlight.js@^9.7.0":
-  version "9.12.4"
-  resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.4.tgz#8c3496bd1b50cc04aeefd691140aa571d4dbfa34"
-  integrity sha512-t2szdkwmg2JJyuCM20e8kR2X59WCE5Zkl4bzm1u1Oukjm79zpbiAv+QjnwLnuuV0WHEcX2NgUItu0pAMKuOPww==
-
 "@types/history@*":
   version "4.7.8"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.8.tgz#49348387983075705fe8f4e02fb67f7daaec4934"
@@ -166,15 +161,13 @@
   resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-3.0.0.tgz#c0ca4c253664492dbf47a646f31cfd483a6bbc95"
   integrity sha512-x9OaQQTb1N2hPZ/LWJsqushexDvz7NgzuZxiRmZio44WPuolTZNHDBCrOxCzRVOMwamJRO2dWax5NbygOf1OTQ==
 
-"@types/markdown-it@^10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-10.0.3.tgz#a9800d14b112c17f1de76ec33eff864a4815eec7"
-  integrity sha512-daHJk22isOUvNssVGF2zDnnSyxHhFYhtjeX4oQaKD6QzL3ZR1QSgiD1g+Q6/WSWYVogNXYDXODtbgW/WiFCtyw==
+"@types/markdown-it@^12.2.3":
+  version "12.2.3"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.2.3.tgz#0d6f6e5e413f8daaa26522904597be3d6cd93b51"
+  integrity sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==
   dependencies:
-    "@types/highlight.js" "^9.7.0"
     "@types/linkify-it" "*"
     "@types/mdurl" "*"
-    highlight.js "^9.7.0"
 
 "@types/mdurl@*":
   version "1.0.2"
@@ -993,11 +986,6 @@ has@^1.0.3:
   integrity sha512-f2dvO0VU6Oej7RkWJGrehjbzMAjFp5/VKPp5tTpWIV4JHHZK1/BxbFRtf/siA2SWTe09caDmVtYYzWEIbBS4zw==
   dependencies:
     function-bind "^1.1.1"
-
-highlight.js@^9.7.0:
-  version "9.18.5"
-  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.18.5.tgz#d18a359867f378c138d6819edfc2a8acd5f29825"
-  integrity sha512-a5bFyofd/BHCX52/8i8uJkjr9DYwXIPnM/plwI6W7ezItLGqzt7X2G2nXuYSfsIJdkwwj/g9DG1LkcGJI/dDoA==
 
 history@^4.9.0:
   version "4.10.1"
