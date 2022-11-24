@@ -18,14 +18,14 @@ RUN curl -sSL https://deb.nodesource.com/setup_12.x | bash - \
 RUN npm install --global yarn@1.*
 
 # bump to update website
-ENV WEBSITE_VERSION 0.3.2-next.9bc718f
+ENV WEBSITE_VERSION 0.3.3-next.170d367
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server
-FROM ghcr.io/eclipse/openvsx-server:9bc718f
+FROM ghcr.io/eclipse/openvsx-server:170d367
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/
