@@ -79,6 +79,14 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             </Link>
         </MenuItem>
         <MenuItem className={classes.menuItem}>
+            <Link href='https://status.open-vsx.org/'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <MenuBookIcon className={classes.itemIcon} />
+                    Status
+                </Typography>
+            </Link>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
             <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <HelpIcon className={classes.itemIcon} />
@@ -136,6 +144,9 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
         </Link>
         <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/' className={classes.headerItem}>
             FAQ
+        </Link>
+        <Link href='https://status.open-vsx.org/' className={classes.headerItem}>
+            Status
         </Link>
         <Link href='https://gitter.im/eclipse/openvsx' className={classes.headerItem}>
             Community
