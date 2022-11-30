@@ -18,6 +18,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import ForumIcon from '@material-ui/icons/Forum';
 import InfoIcon from '@material-ui/icons/Info';
 import StarIcon from '@material-ui/icons/Star';
+import StatusIcon from '@material-ui/icons/NetworkCheck';
 import PublishIcon from '@material-ui/icons/Publish';
 import { UserSettingsRoutes } from 'openvsx-webui';
 
@@ -79,6 +80,14 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             </Link>
         </MenuItem>
         <MenuItem className={classes.menuItem}>
+            <Link href='https://status.open-vsx.org/'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <MenuBookIcon className={classes.itemIcon} />
+                    Status
+                </Typography>
+            </Link>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
             <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <HelpIcon className={classes.itemIcon} />
@@ -90,7 +99,7 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             <Link href='https://gitter.im/eclipse/openvsx'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <ForumIcon className={classes.itemIcon} />
-                    Community Chat
+                    Community
                 </Typography>
             </Link>
         </MenuItem>
@@ -98,7 +107,7 @@ export const MobileMenuContent: React.FunctionComponent = () => {
             <RouteLink to='/about'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <InfoIcon className={classes.itemIcon} />
-                    About This Service
+                    About
                 </Typography>
             </RouteLink>
         </MenuItem>
@@ -107,6 +116,14 @@ export const MobileMenuContent: React.FunctionComponent = () => {
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <StarIcon className={classes.itemIcon} />
                     Sponsor
+                </Typography>
+            </Link>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
+            <Link href='https://status.open-vsx.org/'>
+                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
+                    <StatusIcon className={classes.itemIcon} />
+                    Status
                 </Typography>
             </Link>
         </MenuItem>
@@ -137,6 +154,9 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
         <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/' className={classes.headerItem}>
             FAQ
         </Link>
+        <Link href='https://status.open-vsx.org/' className={classes.headerItem}>
+            Status
+        </Link>
         <Link href='https://gitter.im/eclipse/openvsx' className={classes.headerItem}>
             Community
         </Link>
@@ -145,6 +165,9 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
         </RouteLink>
         <Link href='https://www.eclipse.org/donate/openvsx/' className={classes.headerItem}>
             Sponsor
+        </Link>
+        <Link href='https://status.open-vsx.org/' className={classes.headerItem}>
+            Status
         </Link>
         <Button variant='contained' color='secondary' href='/user-settings/extensions' className={classes.publishButton}>
             Publish

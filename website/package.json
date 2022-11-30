@@ -6,10 +6,10 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "0.3.2-next.9bc718f"
+        "openvsx-webui": "0.6.0"
     },
     "devDependencies": {
-        "@types/markdown-it": "^10.0.3",
+        "@types/markdown-it": "^12.2.3",
         "@types/react": "~16.9.46",
         "@types/react-dom": "~16.9.8",
         "@types/react-router-dom": "~5.1.5",
