@@ -10,7 +10,7 @@ The main artifact is the Docker image available at [ghcr.io/eclipsefdn/openvsx-w
 
 If you want to refute a previously granted ownership, please comment on the corresponding issue.
 
-## Getting started
+## Getting started - JK
 
 Install dependencies, build assets and start a dev server:
 
