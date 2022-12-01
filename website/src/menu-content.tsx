@@ -82,7 +82,7 @@ export const MobileMenuContent: React.FunctionComponent = () => {
         <MenuItem className={classes.menuItem}>
             <Link href='https://status.open-vsx.org/'>
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <MenuBookIcon className={classes.itemIcon} />
+                    <StatusIcon className={classes.itemIcon} />
                     Status
                 </Typography>
             </Link>
@@ -116,14 +116,6 @@ export const MobileMenuContent: React.FunctionComponent = () => {
                 <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
                     <StarIcon className={classes.itemIcon} />
                     Sponsor
-                </Typography>
-            </Link>
-        </MenuItem>
-        <MenuItem className={classes.menuItem}>
-            <Link href='https://status.open-vsx.org/'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <StatusIcon className={classes.itemIcon} />
-                    Status
                 </Typography>
             </Link>
         </MenuItem>
@@ -165,9 +157,6 @@ export const DefaultMenuContent: React.FunctionComponent = () => {
         </RouteLink>
         <Link href='https://www.eclipse.org/donate/openvsx/' className={classes.headerItem}>
             Sponsor
-        </Link>
-        <Link href='https://status.open-vsx.org/' className={classes.headerItem}>
-            Status
         </Link>
         <Button variant='contained' color='secondary' href='/user-settings/extensions' className={classes.publishButton}>
             Publish
