@@ -24,7 +24,7 @@ COPY . /workdir
 RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
-# Main image derived from openvsx-server
+# Test image derived from openvsx-server
 FROM docker.io/amvanbaren/openvsx-server:7420684
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
