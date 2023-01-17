@@ -23,7 +23,7 @@ spring:
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
-    clean-on-validation-error: true
+    clean-disabled: false
   jpa:
     open-in-view: false
     properties:
