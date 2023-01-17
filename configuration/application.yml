@@ -23,7 +23,6 @@ spring:
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
-    clean-disabled: false
   jpa:
     open-in-view: false
     properties:
@@ -126,6 +125,8 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
+  database:
+    clear-on-start: true
   request:
     duration:
       threshold: 20000
