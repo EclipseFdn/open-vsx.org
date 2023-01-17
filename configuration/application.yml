@@ -125,9 +125,6 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  request:
-    duration:
-      threshold: 20000
   storage:
     primary-service: azure-blob
   webui:
