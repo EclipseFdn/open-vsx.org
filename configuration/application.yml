@@ -125,10 +125,6 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  admins:
-    login-names:
-      - amvanbaren
-      - kineticsquid
   storage:
     primary-service: azure-blob
   webui:
