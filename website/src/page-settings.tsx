@@ -63,6 +63,17 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             Extensions for VS Code Compatible Editors
         </Typography>;
 
+    //---------- DOWNLOAD TERMS
+    const downloadTerms: React.FunctionComponent = () =>
+    <Box mt={1}>
+        <Typography variant='body2'>
+            By clicking download, you accept this website&apos;s&nbsp;
+            <Link color='secondary' href='https://open-vsx.org/terms-of-use'>
+                Terms of Use
+            </Link>.
+        </Typography>
+    </Box>;
+
     //---------- ADDITIONAL PAGES
     const additionalRoutes: React.FunctionComponent = () =>
         <>
@@ -120,6 +131,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 }
             },
             searchHeader,
+            downloadTerms,
             additionalRoutes,
             reportAbuse,
             claimNamespace,
