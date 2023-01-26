@@ -1574,10 +1574,10 @@ opener@^1.5.2:
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
-openvsx-webui@0.8.0-next.3149e9b:
-  version "0.8.0-next.3149e9b"
-  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.8.0-next.3149e9b.tgz#23362d36a2a83a6e8fd14f722242c26d902f4d4d"
-  integrity sha512-nJr0Fr0dMAWm4N3/CRvFoaOawr3kaB2qmZdXevx2pCByVgf6o6bSOhk/RCPUyfhIEmBsoSqtkm6gCvs2OIVbrA==
+openvsx-webui@0.8.0-next.acd1395:
+  version "0.8.0-next.acd1395"
+  resolved "https://registry.yarnpkg.com/openvsx-webui/-/openvsx-webui-0.8.0-next.acd1395.tgz#70d54419abdbd4ad11270d67abb27c91f1831b32"
+  integrity sha512-9usvpe+vk6AbKEsh+e1lcrUUsrRKCUMZVwUqh3yrWgy3Hp9k/gTUTtU1R6WSfBn3P48fXYgE9yqjl4ZXTDK2kQ==
   dependencies:
     "@material-ui/core" "~4.9.14"
     "@material-ui/icons" "~4.9.1"
@@ -1595,7 +1595,6 @@ openvsx-webui@0.8.0-next.3149e9b:
     react-infinite-scroller "^1.2.4"
     react-router-dom "^5.2.0"
     react-truncate "^2.4.0"
-    rimraf "^4.1.2"
 
 p-limit@^2.2.0:
   version "2.3.0"
@@ -1938,11 +1937,6 @@ resolve@^1.9.0:
   dependencies:
     is-core-module "^2.1.0"
     path-parse "^1.0.6"
-
-rimraf@^4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-4.1.2.tgz#20dfbc98083bdfaa28b01183162885ef213dbf7c"
-  integrity sha512-BlIbgFryTbw3Dz6hyoWFhKk+unCcHMSkZGrTFVAx2WmttdBSonsdtRlwiuTbDqTKr+UlXIUqJVS4QT5tUzGENQ==
 
 safe-buffer@5.2.1, safe-buffer@^5.1.0:
   version "5.2.1"
