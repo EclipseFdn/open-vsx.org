@@ -1,5 +1,5 @@
 # Builder image to compile the website
-FROM ubuntu:focal as builder
+FROM ubuntu as builder
 
 WORKDIR /workdir
 
@@ -12,13 +12,13 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # See https://github.com/nodesource/distributions/blob/main/README.md#debinstall
-RUN curl -sSL https://deb.nodesource.com/setup_12.x | bash - \
+RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
   && apt-get install -y nodejs
 
 RUN npm install --global yarn@1.*
 
 # bump to update website
-ENV WEBSITE_VERSION 0.7.1
+ENV WEBSITE_VERSION 0.8.0-next.3149e9b
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
