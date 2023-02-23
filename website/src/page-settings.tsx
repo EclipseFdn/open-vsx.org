@@ -120,7 +120,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                     color: 'info'
                 },
                 cookie: {
-                    key: 'open-vsx-whitepaper',
+                    key: 'open-vsx-contribute',
                     value: 'closed',
                     path: '/'
                 }
