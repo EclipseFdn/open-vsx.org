@@ -44,9 +44,9 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                We need your help to assure the long term viability of open-vsx.org. Details in this 
+                We need your help to assure the long term viability of open-vsx.org. Details in this&nbsp;
                 <Link color='secondary' href="https://blogs.eclipse.org/post/john-kellerman/help-us-sustain-open-vsxorg">blog</Link>. 
-                If you find value in this platform and are able to contribute, please contact us at 
+                If you find value in this platform and are able to contribute, please contact us at&nbsp;
                 <Link color='secondary' href="mailto:collaborations@eclipse-foundation.org">collaborations@eclipse-foundation.org</Link>.
             </Typography>
         </Box>;
