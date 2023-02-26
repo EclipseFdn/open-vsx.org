@@ -44,9 +44,10 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                Download this FREE white paper to learn more about Open VSX and why open source tools to 
-                support VS Code extensions are gaining in 
-                popularity. <Link color='secondary' href="https://outreach.eclipse.foundation/openvsx">Open VSX Registry: A Vendor Neutral, Open Source Marketplace for VS Code Extensions</Link>.
+                We need your help to assure the long term viability of open-vsx.org. Details in this 
+                <Link color='secondary' href="https://blogs.eclipse.org/post/john-kellerman/help-us-sustain-open-vsxorg">blog</Link>. 
+                If you find value in this platform and are able to contribute, please contact us at 
+                <Link color='secondary' href="mailto:collaborations@eclipse-foundation.org">collaborations@eclipse-foundation.org</Link>.
             </Typography>
         </Box>;
 
@@ -215,7 +216,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                     color: 'info'
                 },
                 cookie: {
-                    key: 'open-vsx-whitepaper',
+                    key: 'open-vsx-contribute',
                     value: 'closed',
                     path: '/'
                 }
