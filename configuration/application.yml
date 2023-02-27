@@ -143,3 +143,6 @@ ovsx:
       rating: 0.2
       downloads: 1.0
       timestamp: 3.0
+  migrations:
+    delay:
+      seconds: 300
