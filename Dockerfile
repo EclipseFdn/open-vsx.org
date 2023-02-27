@@ -1,5 +1,5 @@
 # Builder image to compile the website
-FROM ubuntu:focal as builder
+FROM ubuntu as builder
 
 WORKDIR /workdir
 
@@ -12,20 +12,20 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # See https://github.com/nodesource/distributions/blob/main/README.md#debinstall
-RUN curl -sSL https://deb.nodesource.com/setup_12.x | bash - \
+RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
   && apt-get install -y nodejs
 
 RUN npm install --global yarn@1.*
 
 # bump to update website
-ENV WEBSITE_VERSION 0.7.0
+ENV WEBSITE_VERSION 0.9.2
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server
-FROM ghcr.io/eclipse/openvsx-server:v0.7.0
+FROM ghcr.io/eclipse/openvsx-server:v0.9.0
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/
