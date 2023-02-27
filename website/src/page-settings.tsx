@@ -105,7 +105,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         </Link>;
 
     //---------- HEAD TAGS
-    const headTags: React.FunctionComponent<{title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string, type?: string, robots?: string}> = (props) => {
+    const headTags: React.FunctionComponent<{title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string, type?: string}> = (props) => {
         const handleChangeClientState = (newState: any, addedTags: HelmetTags, removedTags: HelmetTags): void => {
             if (addedTags.metaTags) {
                 addedTags.metaTags.forEach((value: HTMLMetaElement) => {
@@ -120,7 +120,6 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         const type = props.type || 'website';
         return <Helmet onChangeClientState={handleChangeClientState}>
             <title>{props.title}</title>
-            <meta name='robots' content={props.robots}/>
     
             {/* SEO Meta Tags */}
             <meta name='description' content={props.description}/>
@@ -170,7 +169,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 description = description.substring(0, lastWordIndex);
             }
             if (props.extension.tags) {
-                keywords = props.extension.tags.join();
+                keywords = props.extension.tags.filter(t => !t.startsWith('__')).join();
             }
         } else {
             title = props.params.name + title;
@@ -192,11 +191,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             title = props.params.name + title;
             url += props.params.name;
         }
-    
-        // deployed server version doesn't support namespace pages yet
-        const robots = 'noindex,nofollow';
 
-        return headTags({ title, url, description, robots });
+        return headTags({ title, url, description });
     };
     
     return {
