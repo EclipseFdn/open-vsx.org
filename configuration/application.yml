@@ -146,3 +146,6 @@ ovsx:
   migrations:
     delay:
       seconds: 300
+  request:
+    duration:
+      threshold: 10000
