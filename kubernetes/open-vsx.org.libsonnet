@@ -33,6 +33,11 @@ local newEnvironment(envName) = {
     }
   },
 
+  redis: {
+    name: "redis-%s" % envName,
+    password: "unsecure123"
+  },
+
   deploymentConfig: {
     secretName: "deployment-configuration-%s" % envName,
     path: "/run/secrets/open-vsx.org/deployment",
@@ -334,6 +339,56 @@ local newElasticSearchCluster(env) = {
   }
 };
 
+local newRedisCluster(env) = {
+  apiVersion: "v1",
+  kind: "Pod",
+  metadata: {
+    name: env.redis.name,
+    namespace: env.namespace,
+    labels: labels(env)
+  },
+  spec: {
+    replicas: 1,
+    selector: {
+      matchLabels: {
+        name: env.redis.name
+      }
+    },
+    template: {
+      metadata: {
+        labels: labels(env)
+      },
+      spec: {
+        containers: [
+          {
+            name: "redis",
+            image: "redis",
+            imagePullPolicy: "Always",
+            args: ["--requirepass", env.redis.password],
+            ports: [
+              {
+                containerPort: 6379,
+                name: "redis"
+              }
+            ],
+            resources: {
+              limits: {
+                cpu: 1
+              }
+            },
+            env: [
+              {
+                name: "MASTER",
+                value: "true"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+};
+
 local _newKubernetesResources(envName, image) = {
   local environment = newEnvironment(envName),
   local deployment = newDeployment(environment, image),
@@ -344,6 +399,7 @@ local _newKubernetesResources(envName, image) = {
     service,
     newRoute(environment, service),
     newElasticSearchCluster(environment),
+    newRedisCluster(environment),
   ] + if envName == "production" then [ newRoute(environment, service) {
       metadata+: {
         name: "www-%s" % environment.appName
@@ -365,6 +421,7 @@ local newKubernetesYamlStream(envName, image) =
   newService:: newService,
   newRoute:: newRoute,
   newElasticSearchCluster:: newElasticSearchCluster,
+  newRedisCluster:: newRedisCluster,
 
   newKubernetesResources:: newKubernetesResources,
   newKubernetesYamlStream:: newKubernetesYamlStream,
