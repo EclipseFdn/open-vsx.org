@@ -128,7 +128,7 @@ ovsx:
   storage:
     primary-service: azure-blob
   webui:
-    frontendRoutes: "/extension/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use"
+    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use"
   eclipse:
     base-url: https://api.eclipse.org/
     publisher-agreement:
@@ -148,4 +148,4 @@ ovsx:
       seconds: 300
   request:
     duration:
-      threshold: 10000
+      threshold: 1200
