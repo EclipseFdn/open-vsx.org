@@ -145,7 +145,7 @@ ovsx:
       timestamp: 3.0
   migrations:
     delay:
-      seconds: 300
+      seconds: 0
   request:
     duration:
       threshold: 60000
