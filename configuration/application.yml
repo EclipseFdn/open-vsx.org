@@ -148,4 +148,4 @@ ovsx:
       seconds: 300
   request:
     duration:
-      threshold: 20000
+      threshold: 5000
