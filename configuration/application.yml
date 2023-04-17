@@ -147,4 +147,4 @@ ovsx:
     delay:
       seconds: 300
   integrity:
-    key-pair: delete # create, renew, delete, 'undefined'
+    key-pair: create # create, renew, delete, 'undefined'
