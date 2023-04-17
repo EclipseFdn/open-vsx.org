@@ -146,5 +146,5 @@ ovsx:
   migrations:
     delay:
       seconds: 300
-  # integrity:
-  #   key-pair: renew # create, renew, delete, 'undefined'
+  integrity:
+    key-pair: create # create, renew, delete, 'undefined'
