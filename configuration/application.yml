@@ -146,3 +146,5 @@ ovsx:
   migrations:
     delay:
       seconds: 300
+  integrity:
+    key-pair: create
