@@ -130,7 +130,8 @@ ovsx:
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use"
   eclipse:
-    base-url: https://api-staging.eclipse.org
+    # TODO change back to https://api.eclipse.org/ after testing.
+    base-url: https://api-staging.eclipse.org/
     publisher-agreement:
       version: 1
       timezone: US/Eastern
