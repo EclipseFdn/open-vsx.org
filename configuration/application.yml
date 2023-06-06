@@ -130,6 +130,7 @@ ovsx:
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use"
   eclipse:
+    # TODO change back to https://api-staging.eclipse.org/ for testing.
     base-url: https://api.eclipse.org/
     publisher-agreement:
       version: 1
