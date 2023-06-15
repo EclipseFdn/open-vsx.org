@@ -3,13 +3,15 @@
 # for database access and ovsx.storage.azure for file storage access.
 # Additional properties are loaded from the file provided with the
 # DEPLOYMENT_CONFIG environment variable.
-logging:
-  level:
-    org:
-      apache:
-        http: DEBUG
-    httpclient:
-      wire: DEBUG
+
+# TODO re-enable when testing eclipse staging api
+# logging:
+#   level:
+#     org:
+#       apache:
+#         http: DEBUG
+#     httpclient:
+#       wire: DEBUG
 
 server:
   address: 0.0.0.0
@@ -138,8 +140,8 @@ ovsx:
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use"
   eclipse:
-    # TODO change back to https://api.eclipse.org/ for release.
-    base-url: https://api-staging.eclipse.org/
+    # TODO change back to https://api-staging.eclipse.org/ for testing.
+    base-url: https://api.eclipse.org/
     publisher-agreement:
       version: 1
       timezone: US/Eastern
