@@ -44,10 +44,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                We need your help to assure the long term viability of open-vsx.org. Details in this&nbsp;
-                <Link color='secondary' href="https://blogs.eclipse.org/post/john-kellerman/help-us-sustain-open-vsxorg">blog</Link>. 
-                If you find value in this platform and are able to contribute, please contact us at&nbsp;
-                <Link color='secondary' href="mailto:collaborations@eclipse-foundation.org">collaborations@eclipse-foundation.org</Link>.
+            We've established a working group devoted entirely to the operation, maintenance, and promotion of the Open VSX Registry. Read more in our recent&nbsp;
+                <Link color='secondary' href="https://www.globenewswire.com/news-release/2023/06/27/2695137/0/en/The-Open-VSX-Registry-a-Vendor-Neutral-Community-Supported-Alternative-to-the-Visual-Studio-Marketplace-Gets-its-Own-Working-Group-at-the-Eclipse-Foundation.html">press release</Link>. 
             </Typography>
         </Box>;
 
@@ -212,7 +210,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                     color: 'info'
                 },
                 cookie: {
-                    key: 'open-vsx-contribute',
+                    key: 'open-vsx-press-release',
                     value: 'closed',
                     path: '/'
                 }
