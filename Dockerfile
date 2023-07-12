@@ -24,8 +24,8 @@ COPY . /workdir
 RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
-# Main image derived from openvsx-server
-FROM ghcr.io/eclipse/openvsx-server:e5ba16b
+# Main image derived from openvsx-server 
+FROM ghcr.io/eclipse/openvsx-server:v0.13.1
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/

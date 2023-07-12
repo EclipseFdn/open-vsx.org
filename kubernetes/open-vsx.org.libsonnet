@@ -260,7 +260,7 @@ local newElasticSearchCluster(env) = {
     labels: labels(env),
   },
   spec: {
-    version: "7.11.0",
+    version: "8.7.1",
     nodeSets: [
       {
         name: "default",
