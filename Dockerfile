@@ -18,7 +18,7 @@ RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
 RUN npm install --global yarn@1.*
 
 # bump to update website
-ENV WEBSITE_VERSION 0.9.6
+ENV WEBSITE_VERSION 0.10.0
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
