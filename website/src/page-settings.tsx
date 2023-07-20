@@ -21,6 +21,7 @@ import OpenVSXRegistryLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import { Document } from './document';
 import About from './about';
+import Members from './members';
 
 export default function createPageSettings(theme: Theme, themeType: 'light' | 'dark'): PageSettings {
     //---------- MAIN LOGO / TOOLBAR
@@ -82,6 +83,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             <Route path='/publisher-agreement-v1.0' render={() =>
                 <Document url='/documents/publisher-agreement-v1.0.md' />
             } />
+            <Route path='/members' render={() => <Members />} />
         </>;
 
     //---------- REPORT ABUSE LINK
