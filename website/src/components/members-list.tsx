@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import React, { useState, useEffect } from 'react';
-import { CircularProgress, Grid, Box, Link, Typography } from '@material-ui/core';
+import { CircularProgress, Grid, Box, Link, Typography, createStyles, makeStyles } from '@material-ui/core';
 
 type MembershipLevel = 'SD' | 'AP' | 'AS';
 
@@ -67,17 +67,57 @@ interface MemberItemProps {
 }
 
 const MemberItem: React.FC<MemberItemProps> = ({ name, logo, url }) => {
+    const classes = useStyles();
+
     return (
-        <Grid item xs={12} md={3}>
-            <Box>
-                <Link href={url}>{name}</Link>
+        <Grid className={classes.container} item xs={12} md={4}>
+            <Box p={2} className={classes.bordered + ' ' + classes.header}>
+                <Link className={classes.heading} href={url} variant="h6">{name}</Link>
             </Box>
-            <Box>
-                { logo 
-                    ? <img src={logo} alt='' />
-                    : <Typography variant='h5'>{name}</Typography>
-                }
+            <Box className={classes.bordered + ' ' + classes.logoContainer} p={2}>
+                <Box>
+                    { logo 
+                        ? <img className={classes.logo} src={logo} alt='' />
+                        : <Typography variant='h5'>{name}</Typography>
+                    }
+                </Box>
             </Box>
         </Grid>
     );
 };
+
+const useStyles = makeStyles((theme) => 
+    createStyles({
+        container: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            height: '18rem',
+        },
+        bordered: {
+            border: '#424242 1px solid',            
+        },
+        header: {
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '6rem',
+            backgroundColor: '#424242',
+            textAlign: 'center',
+        },
+        heading: {
+            width: '100%',
+        },
+        logoContainer: {
+            display: 'flex',
+            height: '100%',
+            alignItems: 'center',
+            backgroundColor: '#363636',
+        },
+        logo: {
+            width: '100%',
+            maxWidth: '36rem',
+            maxHeight: '8rem',
+            objectFit: 'contain',
+        }
+    })
+);

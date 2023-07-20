@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import * as React from 'react';
-import { Container, Typography, makeStyles, createStyles } from '@material-ui/core';
+import { Container, Typography, Box, makeStyles, createStyles } from '@material-ui/core';
 import MembersList from './components/members-list';
 
 const useStyle = makeStyles((theme) => 
@@ -31,7 +31,9 @@ const Members = () => {
             >
                 Members
             </Typography>
-            <MembersList collaborationId='open-vsx' level='SD' />
+            <Box mb={4}>
+                <MembersList collaborationId='open-vsx' level='SD' />
+            </Box>
         </Container>
    );
 }
