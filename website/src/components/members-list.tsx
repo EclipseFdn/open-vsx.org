@@ -74,11 +74,11 @@ const MemberItem: React.FC<MemberItemProps> = ({ name, logo, url }) => {
             <Box p={2} className={classes.bordered + ' ' + classes.header}>
                 <Link className={classes.heading} href={url} variant="h6">{name}</Link>
             </Box>
-            <Box className={classes.bordered + ' ' + classes.logoContainer} p={2}>
-                <Box>
+            <Box className={classes.bordered + ' ' + classes.body} p={2}>
+                <Box className={classes.logoContainer}>
                     { logo 
                         ? <img className={classes.logo} src={logo} alt='' />
-                        : <Typography variant='h5'>{name}</Typography>
+                        : <Typography variant='h6'>{name}</Typography>
                     }
                 </Box>
             </Box>
@@ -86,13 +86,14 @@ const MemberItem: React.FC<MemberItemProps> = ({ name, logo, url }) => {
     );
 };
 
-const useStyles = makeStyles((theme) => 
+const useStyles = makeStyles(() => 
     createStyles({
         container: {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'stretch',
             height: '18rem',
+			textAlign: 'center',
         },
         bordered: {
             border: '#424242 1px solid',            
@@ -102,22 +103,26 @@ const useStyles = makeStyles((theme) =>
             alignItems: 'center',
             minHeight: '6rem',
             backgroundColor: '#424242',
-            textAlign: 'center',
         },
         heading: {
             width: '100%',
         },
-        logoContainer: {
+        body: {
             display: 'flex',
             height: '100%',
             alignItems: 'center',
+			justifyContent: 'center',
             backgroundColor: '#363636',
         },
+		logoContainer: {
+			width: '100%',	
+            maxWidth: '8rem',
+            maxHeight: '8rem',
+		},
         logo: {
             width: '100%',
-            maxWidth: '36rem',
-            maxHeight: '8rem',
+			height: '100%',
             objectFit: 'contain',
-        }
+        },
     })
 );
