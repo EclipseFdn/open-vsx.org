@@ -15,7 +15,8 @@ import MembersList from './components/members-list';
 const useStyle = makeStyles((theme) => 
     createStyles({
         heading: {
-            marginTop: theme.spacing(4)
+            marginTop: theme.spacing(4),
+			marginBottom: theme.spacing(2),
         }
     })
 );
