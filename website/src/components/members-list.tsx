@@ -14,6 +14,7 @@ import { CircularProgress, Grid, Box, Link, Typography, createStyles, makeStyles
 type MembershipLevel = 'SD' | 'AP' | 'AS';
 
 interface Member {
+    organization_id: number;
     name: string;
     logos: {
         web: string | null
@@ -32,16 +33,32 @@ interface MembersListProps {
 }
 
 const MembersList: React.FC<MembersListProps> = ({ collaborationId }) => {
+    const [loaded, setLoaded] = useState(false);
     const [members, setMembers] = useState<Member[]>([]);
 
     useEffect(() => {
-        fetch(`https://membership.eclipse.org/api/organizations?working_group=${collaborationId}`)
-            .then(res => res.ok 
-                ? res.json() 
-                : Promise.reject()
-            )
-            .then(data => setMembers(data))
-    }, [members]);
+        if (loaded) return;
+
+        const abortController = new AbortController();
+
+        fetch(`https://membership.eclipse.org/api/organizations?working_group=${collaborationId}`, { 
+            cache: 'force-cache',
+            signal: abortController.signal,
+        })
+            .then(async (res) => {
+                if (!res.ok) throw new Error('Failed to fetch members');
+            
+                const data = await res.json();
+                setMembers(data);
+            })
+            .catch((err) => {
+                if (err instanceof DOMException && err.name === 'AbortError') return;
+                console.error(err);
+            })
+            .finally(() => abortController.signal.aborted || setLoaded(true));
+
+        return () => abortController.abort();
+    }, [members, loaded]);
 
     if (members.length === 0) return <CircularProgress />;
 
@@ -49,6 +66,7 @@ const MembersList: React.FC<MembersListProps> = ({ collaborationId }) => {
         <Grid container spacing={3}>
             { members.map(member => 
                 <MemberItem 
+                    key={member.organization_id}
                     name={member.name}
                     logo={member.logos.web}
                     url={member.website}
