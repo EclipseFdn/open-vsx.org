@@ -32,6 +32,13 @@ const Members = () => {
             >
                 Members
             </Typography>
+            <Typography>
+              The Open VSX Working Group aims to ensure the continued sustainability, integrity,
+              evolution and adoption of the Open VSX Registry. In particular, it is formed to
+              provide governance, guidance, and funding for the communities that support the
+              implementation, deployment, maintenance and adoption of the Eclipse Foundation’s Open
+              VSX Registry at open-vsx.org.
+            </Typography>
             <Box mb={4}>
                 <MembersList collaborationId='open-vsx' level='SD' />
             </Box>
