@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import * as React from 'react';
-import { Container, Typography, Box, makeStyles, createStyles } from '@material-ui/core';
+import { Container, Typography, Box, Button, makeStyles, createStyles } from '@material-ui/core';
 import MembersList from './components/members-list';
 
 const useStyle = makeStyles((theme) => 
@@ -39,8 +39,17 @@ const Members = () => {
               implementation, deployment, maintenance and adoption of the Eclipse Foundation’s Open
               VSX Registry at open-vsx.org.
             </Typography>
-            <Box mb={4}>
+            <Box my={4}>
                 <MembersList collaborationId='open-vsx' level='SD' />
+            </Box>
+            <Box mb={4} textAlign='center'>
+              <Button 
+                  variant='contained' 
+                  color='secondary' 
+                  href='https://membership.eclipse.org/application'
+              >
+                Become a Member
+              </Button>
             </Box>
         </Container>
    );
