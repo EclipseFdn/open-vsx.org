@@ -42,7 +42,6 @@ const MembersList: React.FC<MembersListProps> = ({ collaborationId }) => {
         const abortController = new AbortController();
 
         fetch(`https://membership.eclipse.org/api/organizations?working_group=${collaborationId}`, { 
-            cache: 'force-cache',
             signal: abortController.signal,
         })
             .then(async (res) => {
@@ -104,7 +103,7 @@ const MemberItem: React.FC<MemberItemProps> = ({ name, logo, url }) => {
     );
 };
 
-const useStyles = makeStyles(() => 
+const useStyles = makeStyles((theme) => 
     createStyles({
         container: {
             display: 'flex',
@@ -114,13 +113,18 @@ const useStyles = makeStyles(() =>
 			textAlign: 'center',
         },
         bordered: {
-            border: '#424242 1px solid',            
+            border: '1px solid',            
+            borderColor: theme.palette.type === 'light' 
+                ? theme.palette.grey['300'] 
+                : theme.palette.grey['800'],
         },
         header: {
             display: 'flex',
             alignItems: 'center',
             minHeight: '6rem',
-            backgroundColor: '#424242',
+            backgroundColor: theme.palette.type === 'light' 
+                ? theme.palette.grey['300'] 
+                : theme.palette.grey['800'],
         },
         heading: {
             width: '100%',
@@ -130,7 +134,7 @@ const useStyles = makeStyles(() =>
             height: '100%',
             alignItems: 'center',
 			justifyContent: 'center',
-            backgroundColor: '#363636',
+            backgroundColor: theme.palette.background.default,
         },
 		logoContainer: {
 			width: '100%',	
@@ -142,5 +146,5 @@ const useStyles = makeStyles(() =>
 			height: '100%',
             objectFit: 'contain',
         },
-    })
+    }) 
 );
