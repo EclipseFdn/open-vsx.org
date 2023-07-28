@@ -94,7 +94,10 @@ const MemberItem: React.FC<MemberItemProps> = ({ name, logo, url }) => {
     return (
         <Grid className={classes.container} item xs={12} md={4}>
             <Box p={2} className={classes.bordered + ' ' + classes.header}>
-                <Link className={classes.heading} href={url} variant="h6">{name}</Link>
+                { url 
+                    ? <Link className={classes.heading} href={url} variant="h6">{name}</Link>
+                    : <Typography className={classes.heading} variant="h6">{name}</Typography>
+                }
             </Box>
             <Box className={classes.bordered + ' ' + classes.body} p={2}>
                 <Box className={classes.logoContainer}>
@@ -115,7 +118,7 @@ const useStyles = makeStyles((theme) =>
             flexDirection: 'column',
             alignItems: 'stretch',
             height: '18rem',
-			textAlign: 'center',
+            textAlign: 'center',
         },
         bordered: {
             border: '1px solid',            
@@ -138,11 +141,11 @@ const useStyles = makeStyles((theme) =>
             display: 'flex',
             height: '100%',
             alignItems: 'center',
-			justifyContent: 'center',
+            justifyContent: 'center',
             backgroundColor: theme.palette.background.default,
         },
-		logoContainer: {
-			width: '100%',	
+        logoContainer: {
+            width: '100%',	
             maxWidth: '8rem',
             maxHeight: '8rem',
 		},
@@ -151,5 +154,10 @@ const useStyles = makeStyles((theme) =>
 			height: '100%',
             objectFit: 'contain',
         },
+        noLink: {
+            '&:hover': {
+                textDecoration: 'none',
+            }
+        }
     }) 
 );
