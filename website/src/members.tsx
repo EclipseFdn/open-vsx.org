@@ -16,7 +16,7 @@ const useStyle = makeStyles((theme) =>
     createStyles({
         heading: {
             marginTop: theme.spacing(4),
-			marginBottom: theme.spacing(2),
+            marginBottom: theme.spacing(2),
         }
     })
 );
@@ -33,15 +33,19 @@ const Members = () => {
                 Members
             </Typography>
             <Typography>
-              The Open VSX Working Group aims to ensure the continued sustainability, integrity,
-              evolution and adoption of the Open VSX Registry. In particular, it is formed to
-              provide governance, guidance, and funding for the communities that support the
-              implementation, deployment, maintenance and adoption of the Eclipse Foundation’s Open
-              VSX Registry at open-vsx.org.
+                The Open VSX Working Group aims to ensure the continued sustainability, integrity,
+                evolution and adoption of the Open VSX Registry. In particular, it is formed to
+                provide governance, guidance, and funding for the communities that support the
+                implementation, deployment, maintenance and adoption of the Eclipse Foundation’s Open
+                VSX Registry at open-vsx.org.
             </Typography>
-            <Box my={4}>
-                <MembersList collaborationId='open-vsx' level='SD' />
-            </Box>
+
+            <Typography className={classes.heading} variant='h5'>Strategic Members</Typography>
+            <MembersList collaborationId='open-vsx' level='SD' />
+
+            <Typography className={classes.heading} variant='h5'>Contributing Members</Typography>
+            <MembersList collaborationId='open-vsx' level='AP' />
+
             <Box mb={4} textAlign='center'>
               <Button 
                   variant='contained' 

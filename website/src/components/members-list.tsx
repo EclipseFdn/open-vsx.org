@@ -32,7 +32,7 @@ interface MembersListProps {
     level: MembershipLevel;
 }
 
-const MembersList: React.FC<MembersListProps> = ({ collaborationId }) => {
+const MembersList: React.FC<MembersListProps> = ({ collaborationId, level }) => {
     const [loaded, setLoaded] = useState(false);
     const [members, setMembers] = useState<Member[]>([]);
 
@@ -47,8 +47,13 @@ const MembersList: React.FC<MembersListProps> = ({ collaborationId }) => {
             .then(async (res) => {
                 if (!res.ok) throw new Error('Failed to fetch members');
             
-                const data = await res.json();
-                setMembers(data);
+                const data = await res.json() as Member[];
+
+                setMembers(
+                  data.filter((member) => 
+                    member.levels.some((l) => l.level === level)
+                  )
+                );
             })
             .catch((err) => {
                 if (err instanceof DOMException && err.name === 'AbortError') return;
