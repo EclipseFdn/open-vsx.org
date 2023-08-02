@@ -129,7 +129,7 @@ ovsx:
   storage:
     primary-service: azure-blob
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use"
+    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members"
   eclipse:
     # TODO change back to https://api.eclipse.org/ for release.
     base-url: https://api-staging.eclipse.org/
