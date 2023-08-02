@@ -46,7 +46,7 @@ const Members = () => {
             <Typography className={classes.heading} variant='h5'>Contributing Members</Typography>
             <MembersList collaborationId='open-vsx' level='AP' />
 
-            <Box mb={4} textAlign='center'>
+            <Box mt={4} textAlign='center'>
               <Button 
                   variant='contained' 
                   color='secondary' 
