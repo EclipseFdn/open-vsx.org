@@ -98,8 +98,8 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
     };
 
     //---------- CLAIM NAMESPACE LINK
-    const claimNamespace: React.FunctionComponent<{ extension: Extension } & Styleable> = ({ className }) => <Link
-            href='https://github.com/EclipseFdn/open-vsx.org/issues/new/choose'
+    const claimNamespace: React.FunctionComponent<{ extension: Extension } & Styleable> = ({ className, extension }) => <Link
+            href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?assignees=&labels=namespace&template=claim-namespace-ownership.md&title=${encodeURIComponent(`Claiming namespace \`${extension.namespace}\``)}`}
             target='_blank' variant='body2' color='secondary' className={className} >
             Claim Ownership
         </Link>;
