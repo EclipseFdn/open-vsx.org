@@ -130,11 +130,19 @@ const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url }) => 
         heading: {
             width: '100%',
         },
+        body: {
+            display: 'flex',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#fff',
+        },
         logoContainer: {
             width: '100%',	
-            maxWidth: '8rem',
-            maxHeight: '8rem',
-        },
+            height: '100%',
+            maxWidth: '12rem',
+            maxHeight: '6rem',
+		},
         logo: {
             width: '100%',
             height: '100%',
