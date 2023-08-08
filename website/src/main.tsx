@@ -8,33 +8,37 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import * as ReactDOM from 'react-dom';
-import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+import React, { FunctionComponent, useMemo } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider } from '@material-ui/styles';
-import { useMediaQuery } from '@material-ui/core';
+import { ThemeProvider } from '@mui/material/styles';
+import { useMediaQuery } from '@mui/material';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import createPageSettings from './page-settings';
 
-const App: React.FunctionComponent = () => {
+const App: FunctionComponent = () => {
     const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
     const themeType = prefersDarkScheme ? 'dark' : 'light';
-    const theme = React.useMemo(() => createDefaultTheme(themeType), [themeType]);
+    const theme = useMemo(() => createDefaultTheme(themeType), [themeType]);
     const service = new ExtensionRegistryService();
-    const pageSettings = createPageSettings(theme, themeType);
+    const pageSettings = createPageSettings(theme, prefersDarkScheme);
 
     return (
-        <ThemeProvider theme={theme}>
-            <Main
-                service={service}
-                pageSettings={pageSettings}
-            />
-        </ThemeProvider>
+        <HelmetProvider>
+            <ThemeProvider theme={theme}>
+                <Main
+                    service={service}
+                    pageSettings={pageSettings}
+                />
+            </ThemeProvider>
+        </HelmetProvider>
     );
 }
 
-const node = document.getElementById('main');
-ReactDOM.render(<BrowserRouter>
+const node = document.getElementById('main') as HTMLElement;
+const root = createRoot(node);
+root.render(<BrowserRouter>
     <App />
-</BrowserRouter>, node);
+</BrowserRouter>);

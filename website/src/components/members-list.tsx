@@ -8,8 +8,9 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { useState, useEffect } from 'react';
-import { CircularProgress, Grid, Box, Link, Typography, createStyles, makeStyles } from '@material-ui/core';
+import React, { FunctionComponent, useState, useEffect } from 'react';
+import { CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
+import { styled, Theme } from '@mui/material/styles';
 
 type MembershipLevel = 'SD' | 'AP' | 'AS';
 
@@ -32,7 +33,7 @@ interface MembersListProps {
     level: MembershipLevel;
 }
 
-const MembersList: React.FC<MembersListProps> = ({ collaborationId, level }) => {
+const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId, level }) => {
     const [loaded, setLoaded] = useState(false);
     const [members, setMembers] = useState<Member[]>([]);
 
@@ -88,76 +89,75 @@ interface MemberItemProps {
     url: string;
 }
 
-const MemberItem: React.FC<MemberItemProps> = ({ name, logo, url }) => {
-    const classes = useStyles();
-
-    return (
-        <Grid className={classes.container} item xs={12} md={4}>
-            <Box p={2} className={classes.bordered + ' ' + classes.header}>
-                { url 
-                    ? <Link className={classes.heading} href={url} variant="h6">{name}</Link>
-                    : <Typography className={classes.heading} variant="h6">{name}</Typography>
-                }
-            </Box>
-            <Box className={classes.bordered + ' ' + classes.body} p={2}>
-                <Box className={classes.logoContainer}>
-                    { logo 
-                        ? <img className={classes.logo} src={logo} alt='' />
-                        : <Typography variant='h6'>{name}</Typography>
-                    }
-                </Box>
-            </Box>
-        </Grid>
-    );
+const bordered = (theme: Theme) => {
+    return {
+        border: '1px solid',            
+        borderColor: theme.palette.mode === 'light' 
+            ? theme.palette.grey['300'] 
+            : theme.palette.grey['800']
+    };
 };
 
-const useStyles = makeStyles((theme) => 
-    createStyles({
-        container: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            height: '18rem',
-            textAlign: 'center',
-        },
-        bordered: {
-            border: '1px solid',            
-            borderColor: theme.palette.type === 'light' 
-                ? theme.palette.grey['300'] 
-                : theme.palette.grey['800'],
-        },
-        header: {
-            display: 'flex',
-            alignItems: 'center',
-            minHeight: '6rem',
-            backgroundColor: theme.palette.type === 'light' 
-                ? theme.palette.grey['300'] 
-                : theme.palette.grey['800'],
-        },
+const HeaderBox = styled(Box)(({ theme }: { theme: Theme }) => ({
+    ...bordered(theme),
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '6rem',
+    backgroundColor: theme.palette.mode === 'light' 
+        ? theme.palette.grey['300'] 
+        : theme.palette.grey['800']
+}));
+
+const BodyBox = styled(Box)(({ theme }: { theme: Theme }) => ({
+    ...bordered(theme),
+    display: 'flex',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.palette.background.default
+}));
+
+const GridContainer = styled(Grid)({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    height: '18rem',
+    textAlign: 'center',
+});
+
+const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url }) => {
+    const styles = {
         heading: {
             width: '100%',
-        },
-        body: {
-            display: 'flex',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: theme.palette.background.default,
         },
         logoContainer: {
             width: '100%',	
             maxWidth: '8rem',
             maxHeight: '8rem',
-		},
+        },
         logo: {
             width: '100%',
-			height: '100%',
+            height: '100%',
             objectFit: 'contain',
-        },
-        noLink: {
-            '&:hover': {
-                textDecoration: 'none',
-            }
         }
-    }) 
-);
+    };
+
+    return (
+        <GridContainer item xs={12} md={4}>
+            <HeaderBox p={2}>
+                { url 
+                    ? <Link sx={styles.heading} href={url} variant="h6">{name}</Link>
+                    : <Typography sx={styles.heading} variant="h6">{name}</Typography>
+                }
+            </HeaderBox>
+            <BodyBox p={2}>
+                <Box sx={styles.logoContainer}>
+                    { logo 
+                        ? <Box component='img' sx={styles.logo} src={logo} alt='' />
+                        : <Typography variant='h6'>{name}</Typography>
+                    }
+                </Box>
+            </BodyBox>
+        </GridContainer>
+    );
+};

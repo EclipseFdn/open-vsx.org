@@ -3,7 +3,10 @@ ports:
 
 tasks:
   - init: |
+      corepack enable
+      corepack prepare yarn@stable --activate
       yarn --cwd website
+      yarn --cwd website compile
       yarn --cwd website build
       yarn --cwd website build:dev
     command: |

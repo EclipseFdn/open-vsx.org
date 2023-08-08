@@ -9,29 +9,21 @@
  ********************************************************************************/
 
 import * as React from 'react';
-import { Container, Typography, Box, Button, makeStyles, createStyles } from '@material-ui/core';
+import { Container, Typography, Box, Button } from '@mui/material';
+import { styled, Theme } from '@mui/material/styles';
 import MembersList from './components/members-list';
 
-const useStyle = makeStyles((theme) => 
-    createStyles({
-        heading: {
-            marginTop: theme.spacing(4),
-            marginBottom: theme.spacing(2),
-        }
-    })
-);
+const Heading = styled(Typography)(({ theme }: { theme: Theme }) => ({
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(2)
+}));
 
 const Members = () => {
-    const classes = useStyle();
-
     return (
         <Container maxWidth='md'>
-            <Typography 
-                variant='h4' 
-                className={classes.heading}
-            >
+            <Heading variant='h4'>
                 Members
-            </Typography>
+            </Heading>
             <Typography>
                 The Open VSX Working Group aims to ensure the continued sustainability, integrity,
                 evolution and adoption of the Open VSX Registry. In particular, it is formed to
@@ -40,10 +32,10 @@ const Members = () => {
                 VSX Registry at open-vsx.org.
             </Typography>
 
-            <Typography className={classes.heading} variant='h5'>Strategic Members</Typography>
+            <Heading variant='h5'>Strategic Members</Heading>
             <MembersList collaborationId='open-vsx' level='SD' />
 
-            <Typography className={classes.heading} variant='h5'>Contributing Members</Typography>
+            <Heading variant='h5'>Contributing Members</Heading>
             <MembersList collaborationId='open-vsx' level='AP' />
 
             <Box mt={4} textAlign='center'>
