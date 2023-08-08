@@ -37,7 +37,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             </Box>
             <Typography variant='body1'>
             We've established a working group devoted entirely to the operation, maintenance, and promotion of the Open VSX Registry. Read more in our recent&nbsp;
-                <Link color='secondary' href="https://www.globenewswire.com/news-release/2023/06/27/2695137/0/en/The-Open-VSX-Registry-a-Vendor-Neutral-Community-Supported-Alternative-to-the-Visual-Studio-Marketplace-Gets-its-Own-Working-Group-at-the-Eclipse-Foundation.html">press release</Link>. 
+                <Link color='secondary' underline='hover' href="https://www.globenewswire.com/news-release/2023/06/27/2695137/0/en/The-Open-VSX-Registry-a-Vendor-Neutral-Community-Supported-Alternative-to-the-Visual-Studio-Marketplace-Gets-its-Own-Working-Group-at-the-Eclipse-Foundation.html">press release</Link>. 
             </Typography>
         </Box>;
 
@@ -52,7 +52,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     <Box mt={1}>
         <Typography variant='body2'>
             By clicking download, you accept this website&apos;s&nbsp;
-            <Link color='secondary' href='https://open-vsx.org/terms-of-use'>
+            <Link color='secondary' underline='hover' href='https://open-vsx.org/terms-of-use'>
                 Terms of Use
             </Link>.
         </Typography>
@@ -72,7 +72,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         const extensionURL = encodeURIComponent(`${location.protocol}//${location.hostname}/extension/${extension.namespace}/${extension.name}`);
         return <Link
             href={`mailto:license@eclipse.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
-            variant='body2' color='secondary' sx={sx} >
+            variant='body2' color='secondary' underline='hover' sx={sx} >
             Report Abuse
         </Link>;
     };
@@ -80,7 +80,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     //---------- CLAIM NAMESPACE LINK
     const claimNamespace: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ sx }) => <Link
             href='https://github.com/EclipseFdn/open-vsx.org/issues/new/choose'
-            target='_blank' variant='body2' color='secondary' sx={sx} >
+            target='_blank' variant='body2' color='secondary' underline='hover' sx={sx} >
             Claim Ownership
         </Link>;
 

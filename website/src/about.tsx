@@ -33,7 +33,7 @@ const About = () => {
         <Paragraph variant='body1'>
             Open VSX is an open-source registry for VS Code extensions.
             It can be used by any development environment that supports such extensions.
-            See <Link color='secondary' href='https://www.eclipse.org/community/eclipse_newsletter/2020/march/1.php'>this article</Link> for
+            See <Link color='secondary' underline='hover' href='https://www.eclipse.org/community/eclipse_newsletter/2020/march/1.php'>this article</Link> for
             more information.
         </Paragraph>
         <Paragraph variant='body1'>
@@ -41,19 +41,19 @@ const About = () => {
         </Paragraph>
         <Paragraph variant='body1'>
             The source code of Open VSX is managed by
-            the <Link color='secondary' href='https://projects.eclipse.org/projects/ecd.openvsx'>Eclipse Open VSX</Link> project
+            the <Link color='secondary' underline='hover' href='https://projects.eclipse.org/projects/ecd.openvsx'>Eclipse Open VSX</Link> project
             and is licensed under
-            the <Link color='secondary' href='https://www.eclipse.org/legal/epl-2.0/'>Eclipse Public License v2.0</Link>.
+            the <Link color='secondary' underline='hover' href='https://www.eclipse.org/legal/epl-2.0/'>Eclipse Public License v2.0</Link>.
             The code is split in two repositories:
         </Paragraph>
         <RepositoryList>
             <li>
-                <Link color='secondary' href='https://github.com/eclipse/openvsx'>eclipse/openvsx</Link> &ndash;
+                <Link color='secondary' underline='hover' href='https://github.com/eclipse/openvsx'>eclipse/openvsx</Link> &ndash;
                 main code with server, web UI and CLI. These components can be reused to deploy other registry instances
                 (both public and private).
             </li>
             <li>
-                <Link color='secondary' href='https://github.com/EclipseFdn/open-vsx.org'>EclipseFdn/open-vsx.org</Link> &ndash;
+                <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org'>EclipseFdn/open-vsx.org</Link> &ndash;
                 additional code for this website.
             </li>
         </RepositoryList>
@@ -61,7 +61,7 @@ const About = () => {
         <Heading variant='h5'>Publishing Extensions</Heading>
         <Paragraph variant='body1'>
             The publishing process is described in
-            the <Link color='secondary' href='https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension'>openvsx Wiki</Link>.
+            the <Link color='secondary' underline='hover' href='https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension'>openvsx Wiki</Link>.
         </Paragraph>
     </Container>;
 }

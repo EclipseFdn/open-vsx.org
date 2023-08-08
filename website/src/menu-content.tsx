@@ -39,7 +39,7 @@ const itemIcon = {
 
 const MobileMenuItemText: FunctionComponent<PropsWithChildren> = ({ children }) => {
     return (
-        <Typography variant='body2' color='textPrimary' sx={{ display: 'flex', alignItems: 'center' }}>
+        <Typography variant='body2' sx={{ color: 'text.primary', display: 'flex', alignItems: 'center' }}>
             {children}
         </Typography>
     );

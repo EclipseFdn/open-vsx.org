@@ -16,14 +16,14 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const styles = {
-    link: {
-        color: 'text.primary',
+    link: (theme: Theme) =>({
+        color: theme.palette.text.primary,
         textDecoration: 'none',
         '&:hover': {
-            color: 'secondary.main',
+            color: theme.palette.secondary.main,
             textDecoration: 'none'
         }
-    },
+    }),
     repositoryLink: {
         display: 'flex',
         alignItems: 'center',
@@ -39,7 +39,7 @@ const styles = {
 };
 
 const LegalLink = styled(RouteLink)(({ theme }: { theme: Theme }) => ({
-    ...styles.link,
+    ...styles.link(theme),
     fontWeight: theme.typography.fontWeightLight
 }));
 
