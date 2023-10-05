@@ -282,11 +282,11 @@ local newElasticSearchCluster(env) = {
                 },
                 resources: {
                   requests: {
-                    memory: if (env.envName == "staging") then "2Gi" else "6Gi",
+                    memory: if (env.envName == "staging") then "2Gi" else "8Gi",
                     cpu: 1
                   },
                   limits: {
-                    memory: if (env.envName == "staging") then "2Gi" else "6Gi",
+                    memory: if (env.envName == "staging") then "2Gi" else "8Gi",
                     cpu: if (env.envName == "staging") then 1 else 4,
                   }
                 }
