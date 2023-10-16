@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import * as React from 'react';
-import { Link, Typography, Container } from '@mui/material';
+import { Link, Typography, Container, List, ListItem, ListItemText } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
 const Heading = styled(Typography)(({ theme }: { theme: Theme }) => ({
@@ -58,11 +58,24 @@ const About = () => {
             </li>
         </RepositoryList>
 
-        <Heading variant='h5'>Publishing Extensions</Heading>
-        <Paragraph variant='body1'>
-            The publishing process is described in
-            the <Link color='secondary' underline='hover' href='https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension'>openvsx Wiki</Link>.
-        </Paragraph>
+        <Heading variant='h5'>Resources</Heading>
+        <List>
+            <ListItem>
+                <ListItemText>
+                    The publishing process is described in the <Link color='secondary' underline='hover' href='https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension'>openvsx Wiki</Link>.
+                </ListItemText>
+            </ListItem>
+            <ListItem>
+                <ListItemText>
+                    The <Link color='secondary' underline='hover' href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>FAQ</Link> section explains what you can and cannot do as a user of our service.
+                </ListItemText>
+            </ListItem>
+            <ListItem>
+                <ListItemText>
+                    Get involved in the <Link color='secondary' underline='hover' href='https://gitter.im/eclipse/openvsx'>community</Link>.
+                </ListItemText>
+            </ListItem>
+        </List>
     </Container>;
 }
 

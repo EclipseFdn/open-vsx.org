@@ -20,6 +20,7 @@ import OpenVSXLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import { Document } from './document';
 import About from './about';
+import Adopters from './adopters';
 import Members from './members';
 
 export default function createPageSettings(theme: Theme, prefersDarkMode: boolean): PageSettings {
@@ -64,6 +65,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         <Route path='/terms-of-use' element={<Document url='/documents/terms-of-use.md' />} />
         <Route path='/publisher-agreement-v1.0' element={<Document url='/documents/publisher-agreement-v1.0.md' />} />
         <Route path='/members' element={<Members />} />
+        <Route path='/adopters' element={<Adopters />} />
     </>;
 
     //---------- REPORT ABUSE LINK
