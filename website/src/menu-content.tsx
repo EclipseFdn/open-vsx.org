@@ -8,18 +8,20 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, PropsWithChildren } from 'react';
-import { Theme, Typography, MenuItem, Link, Button } from '@mui/material';
+import React, { FunctionComponent, PropsWithChildren, useState, useRef } from 'react';
+import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import HelpIcon from '@mui/icons-material/Help';
-import ForumIcon from '@mui/icons-material/Forum';
 import InfoIcon from '@mui/icons-material/Info';
 import StarIcon from '@mui/icons-material/Star';
 import StatusIcon from '@mui/icons-material/NetworkCheck';
 import PublishIcon from '@mui/icons-material/Publish';
+import GroupWorkIcon from '@mui/icons-material/GroupWork';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import HubIcon from '@mui/icons-material/Hub';
 import { UserSettingsRoutes } from 'openvsx-webui';
 
 //-------------------- Mobile View --------------------//
@@ -71,19 +73,41 @@ export const MobileMenuContent: FunctionComponent = () => {
                 </MobileMenuItemText>
             </Link>
         </MobileMenuItem>
-        <MobileMenuItem>
-            <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>
+        <Accordion sx={{border: 0, borderRadius: 0, boxShadow: '0 0'}}>
+            <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="working-group-content"
+            id="working-group-header"
+            >
                 <MobileMenuItemText>
-                    <HelpIcon sx={itemIcon} />
-                    FAQ
+                    <GroupWorkIcon sx={itemIcon} />
+                    Working Group
                 </MobileMenuItemText>
-            </Link>
-        </MobileMenuItem>
+            </AccordionSummary>
+            <AccordionDetails>
+                <MobileMenuItem>
+                    <RouteLink to='/members'>
+                        <MobileMenuItemText>
+                            <PeopleAltIcon sx={itemIcon} />
+                            Members
+                        </MobileMenuItemText>
+                    </RouteLink>
+                </MobileMenuItem>
+                <MobileMenuItem>
+                    <RouteLink to='/adopters'>
+                        <MobileMenuItemText>
+                            <HubIcon sx={itemIcon} />
+                            Adopters
+                        </MobileMenuItemText>
+                    </RouteLink>
+                </MobileMenuItem>
+            </AccordionDetails>
+        </Accordion>
         <MobileMenuItem>
-            <Link href='https://gitter.im/eclipse/openvsx'>
+            <Link href='https://www.eclipse.org/donate/openvsx/'>
                 <MobileMenuItemText>
-                    <ForumIcon sx={itemIcon} />
-                    Community
+                    <StarIcon sx={itemIcon} />
+                    Sponsor
                 </MobileMenuItemText>
             </Link>
         </MobileMenuItem>
@@ -94,14 +118,6 @@ export const MobileMenuContent: FunctionComponent = () => {
                     About
                 </MobileMenuItemText>
             </RouteLink>
-        </MobileMenuItem>
-        <MobileMenuItem>
-            <Link href='https://www.eclipse.org/donate/openvsx/'>
-                <MobileMenuItemText>
-                    <StarIcon sx={itemIcon} />
-                    Sponsor
-                </MobileMenuItemText>
-            </Link>
         </MobileMenuItem>
         {
             !location.pathname.startsWith(UserSettingsRoutes.ROOT)
@@ -135,29 +151,62 @@ const headerItem = ({ theme }: { theme: Theme }) => ({
     }
 });
 
+const headerTypography = ({ theme }: { theme: Theme }) => ({
+    ...headerItem({theme}),
+    cursor: 'pointer'
+});
+
 const MenuLink = styled(Link)(headerItem);
 const MenuRouteLink = styled(RouteLink)(headerItem);
+const MenuTypography = styled(Typography)(headerTypography);
+
+const subMenuItem = ({ theme }: { theme: Theme }) => ({
+    '&:focus, &:hover': {
+        background: 'transparent'
+    }
+});
+
+const subMenuLink = ({ theme }: { theme: Theme }) => ({
+    ...headerItem({theme}),
+    margin: theme.spacing(0.5)
+});
+
+const SubMenuItem = styled(MenuItem)(subMenuItem);
+const SubMenuLink = styled(Link)(subMenuLink);
+
 
 export const DefaultMenuContent: FunctionComponent = () => {
+    const [workingGroupMenuOpen, setWorkingGroupOpen] = useState(false);
+    const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
+    const toggleWorkingGroupMenu = () => setWorkingGroupOpen(!workingGroupMenuOpen);
+    const closeWorkingGroupMenu = () => setWorkingGroupOpen(false);
+
     return <>
         <MenuLink href='https://github.com/eclipse/openvsx/wiki'>
             Documentation
         </MenuLink>
-        <MenuLink href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>
-            FAQ
-        </MenuLink>
         <MenuLink href='https://status.open-vsx.org/'>
             Status
         </MenuLink>
-        <MenuLink href='https://gitter.im/eclipse/openvsx'>
-            Community
+        <MenuTypography onClick={toggleWorkingGroupMenu} ref={workingGroupMenuEl}>Working Group</MenuTypography>
+        <Menu open={workingGroupMenuOpen} onClose={closeWorkingGroupMenu} anchorEl={workingGroupMenuEl.current}>
+            <SubMenuItem>
+                <SubMenuLink href='/members' onClick={closeWorkingGroupMenu}>
+                    Members
+                </SubMenuLink>
+            </SubMenuItem>
+            <SubMenuItem>
+                <SubMenuLink href='/adopters' onClick={closeWorkingGroupMenu}>
+                    Adopters
+                </SubMenuLink>
+            </SubMenuItem>
+        </Menu>
+        <MenuLink href='https://www.eclipse.org/donate/openvsx/'>
+            Sponsor
         </MenuLink>
         <MenuRouteLink to='/about'>
             About
         </MenuRouteLink>
-        <MenuLink href='https://www.eclipse.org/donate/openvsx/'>
-            Sponsor
-        </MenuLink>
         <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
             Publish
         </Button>
