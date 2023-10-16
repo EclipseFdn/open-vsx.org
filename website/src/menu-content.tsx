@@ -73,7 +73,7 @@ export const MobileMenuContent: FunctionComponent = () => {
                 </MobileMenuItemText>
             </Link>
         </MobileMenuItem>
-        <Accordion sx={{border: 0, borderRadius: 0, boxShadow: '0 0'}}>
+        <Accordion sx={{border: 0, borderRadius: 0, boxShadow: '0 0', background: 'transparent', backgroundImage: 'none'}}>
             <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="working-group-content"
