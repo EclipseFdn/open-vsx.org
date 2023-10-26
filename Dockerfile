@@ -12,7 +12,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # See https://github.com/nodesource/distributions/blob/main/README.md#debinstall
-RUN curl -sSL https://deb.nodesource.com/setup_18.x | bash - \
+RUN curl -sSL https://deb.nodesource.com/setup_20.x | bash - \
   && apt-get install -y nodejs
 
 RUN corepack enable
