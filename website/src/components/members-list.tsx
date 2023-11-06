@@ -110,7 +110,7 @@ const BodyBox = styled(Box)(({ theme }: { theme: Theme }) => ({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.palette.background.default
+    backgroundColor: '#fff',
 }));
 
 const GridContainer = styled(Grid)({
@@ -126,24 +126,18 @@ const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url, membe
         heading: {
             width: '100%',
         },
-        body: {
-            display: 'flex',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#fff',
-        },
         logoContainer: {
             width: '100%',	
             height: '100%',
             maxWidth: '12rem',
             maxHeight: '6rem',
-		},
+            backgroundColor: '#fff',
+		    },
         logo: {
             width: '100%',
             height: '100%',
             objectFit: 'contain',
-        }
+        },
     };
 
     // Use url prop if provided, otherwise use their eclipse.org page url.
@@ -158,7 +152,7 @@ const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url, membe
                 <Box sx={styles.logoContainer}>
                     { logo 
                         ? <Box component='img' sx={styles.logo} src={logo} alt='' />
-                        : <Typography variant='h6'>{name}</Typography>
+                        : <Typography color="#333" variant='h6'>{name}</Typography>
                     }
                 </Box>
             </BodyBox>
