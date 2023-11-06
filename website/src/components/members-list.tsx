@@ -30,10 +30,9 @@ interface Member {
 
 interface MembersListProps {
     collaborationId: string;
-    level: MembershipLevel;
 }
 
-const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId, level }) => {
+const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId }) => {
     const [loaded, setLoaded] = useState(false);
     const [members, setMembers] = useState<Member[]>([]);
 
@@ -48,13 +47,8 @@ const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId, lev
             .then(async (res) => {
                 if (!res.ok) throw new Error('Failed to fetch members');
             
-                const data = await res.json() as Member[];
-
-                setMembers(
-                  data.filter((member) => 
-                    member.levels.some((l) => l.level === level)
-                  )
-                );
+                const members = await res.json() as Member[];
+                setMembers(members);
             })
             .catch((err) => {
                 if (err instanceof DOMException && err.name === 'AbortError') return;
@@ -72,6 +66,7 @@ const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId, lev
             { members.map(member => 
                 <MemberItem 
                     key={member.organization_id}
+                    memberId={member.organization_id}
                     name={member.name}
                     logo={member.logos.web}
                     url={member.website}
@@ -84,9 +79,10 @@ const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId, lev
 export default MembersList;
 
 interface MemberItemProps {
+    memberId?: number;
     name: string;
     logo?: string | null;
-    url: string;
+    url?: string;
 }
 
 const bordered = (theme: Theme) => {
@@ -95,7 +91,7 @@ const bordered = (theme: Theme) => {
         borderColor: theme.palette.mode === 'light' 
             ? theme.palette.grey['300'] 
             : theme.palette.grey['800']
-    };
+    }
 };
 
 const HeaderBox = styled(Box)(({ theme }: { theme: Theme }) => ({
@@ -125,7 +121,7 @@ const GridContainer = styled(Grid)({
     textAlign: 'center',
 });
 
-const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url }) => {
+const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url, memberId }) => {
     const styles = {
         heading: {
             width: '100%',
@@ -150,13 +146,13 @@ const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url }) => 
         }
     };
 
+    // Use url prop if provided, otherwise use their eclipse.org page url.
+    const websiteUrl = url || `https://www.eclipse.org/membership/showMember.php?member_id=${memberId}`;
+
     return (
         <GridContainer item xs={12} md={4}>
             <HeaderBox p={2}>
-                { url 
-                    ? <Link sx={styles.heading} href={url} variant="h6">{name}</Link>
-                    : <Typography sx={styles.heading} variant="h6">{name}</Typography>
-                }
+                <Link sx={styles.heading} href={websiteUrl} variant="h6">{name}</Link>
             </HeaderBox>
             <BodyBox p={2}>
                 <Box sx={styles.logoContainer}>
