@@ -32,13 +32,7 @@ const Members = () => {
                 VSX Registry at open-vsx.org.
             </Typography>
 
-            <Heading variant='h5'>Strategic Members</Heading>
-            <MembersList collaborationId='open-vsx' level='SD' />
-
-            <Heading variant='h5'>Contributing Members</Heading>
-            <MembersList collaborationId='open-vsx' level='AP' />
-
-            <Box mt={4} textAlign='center'>
+            <Box my={4} textAlign='center'>
               <Button 
                   variant='contained' 
                   color='secondary' 
@@ -47,6 +41,8 @@ const Members = () => {
                 Become a Member
               </Button>
             </Box>
+
+            <MembersList collaborationId='open-vsx' />
         </Container>
    );
 }
