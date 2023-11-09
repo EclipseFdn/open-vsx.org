@@ -69,7 +69,6 @@ const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId }) =
                     memberId={member.organization_id}
                     name={member.name}
                     logo={member.logos.web}
-                    url={member.website}
                 />
             )}
         </Grid>
