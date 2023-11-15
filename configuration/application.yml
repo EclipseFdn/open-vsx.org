@@ -131,8 +131,7 @@ ovsx:
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters"
   eclipse:
-    # TODO change back to https://api.eclipse.org/ for release.
-    base-url: https://api-staging.eclipse.org/
+    base-url: https://api.eclipse.org/
     publisher-agreement:
       version: 1
       timezone: US/Eastern
