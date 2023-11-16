@@ -8,158 +8,207 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import * as React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Theme, Typography, MenuItem, Link, Button } from '@material-ui/core';
+import React, { FunctionComponent, PropsWithChildren, useState, useRef } from 'react';
+import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import HelpIcon from '@material-ui/icons/Help';
-import ForumIcon from '@material-ui/icons/Forum';
-import InfoIcon from '@material-ui/icons/Info';
-import StarIcon from '@material-ui/icons/Star';
-import StatusIcon from '@material-ui/icons/NetworkCheck';
-import PublishIcon from '@material-ui/icons/Publish';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import InfoIcon from '@mui/icons-material/Info';
+import StarIcon from '@mui/icons-material/Star';
+import StatusIcon from '@mui/icons-material/NetworkCheck';
+import PublishIcon from '@mui/icons-material/Publish';
+import GroupWorkIcon from '@mui/icons-material/GroupWork';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import HubIcon from '@mui/icons-material/Hub';
 import { UserSettingsRoutes } from 'openvsx-webui';
-
-const menuContentStyle = makeStyles((theme: Theme) => ({
-    headerItem: {
-        margin: theme.spacing(2.5),
-        color: theme.palette.text.primary,
-        textDecoration: 'none',
-        fontSize: '1.1rem',
-        fontFamily: theme.typography.fontFamily,
-        fontWeight: theme.typography.fontWeightLight,
-        letterSpacing: 1,
-        '&:hover': {
-            color: theme.palette.secondary.main,
-            textDecoration: 'none'
-        }
-    },
-    publishButton: {
-        marginLeft: theme.spacing(2.5),
-        marginRight: theme.spacing(2.5)
-    },
-    menuItem: {
-        cursor: 'auto',
-        '&>a': {
-            textDecoration: 'none'
-        }
-    },
-    itemIcon: {
-        marginRight: theme.spacing(1),
-        width: '16px',
-        height: '16px',
-    },
-    alignVertically: {
-        display: 'flex',
-        alignItems: 'center'
-    }
-}));
-
 
 //-------------------- Mobile View --------------------//
 
-export const MobileMenuContent: React.FunctionComponent = () => {
-    const classes = menuContentStyle();
-    return <React.Fragment>
-        <MenuItem className={classes.menuItem}>
+const MobileMenuItem = styled(MenuItem)({
+    cursor: 'auto',
+    '&>a': {
+        textDecoration: 'none'
+    }
+});
+
+const itemIcon = {
+    mr: 1,
+    width: '16px',
+    height: '16px',
+};
+
+const MobileMenuItemText: FunctionComponent<PropsWithChildren> = ({ children }) => {
+    return (
+        <Typography variant='body2' sx={{ color: 'text.primary', display: 'flex', alignItems: 'center' }}>
+            {children}
+        </Typography>
+    );
+};
+
+export const MobileMenuContent: FunctionComponent = () => {
+    return <>
+        <MobileMenuItem>
             <Link target='_blank' href='https://github.com/eclipse/openvsx'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <GitHubIcon className={classes.itemIcon} />
+                <MobileMenuItemText>
+                    <GitHubIcon sx={itemIcon} />
                     Source Code
-                </Typography>
+                </MobileMenuItemText>
             </Link>
-        </MenuItem>
-        <MenuItem className={classes.menuItem}>
+        </MobileMenuItem>
+        <MobileMenuItem>
             <Link href='https://github.com/eclipse/openvsx/wiki'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <MenuBookIcon className={classes.itemIcon} />
+                <MobileMenuItemText>
+                    <MenuBookIcon sx={itemIcon} />
                     Documentation
-                </Typography>
+                </MobileMenuItemText>
             </Link>
-        </MenuItem>
-        <MenuItem className={classes.menuItem}>
+        </MobileMenuItem>
+        <MobileMenuItem>
             <Link href='https://status.open-vsx.org/'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <StatusIcon className={classes.itemIcon} />
+                <MobileMenuItemText>
+                    <StatusIcon sx={itemIcon} />
                     Status
-                </Typography>
+                </MobileMenuItemText>
             </Link>
-        </MenuItem>
-        <MenuItem className={classes.menuItem}>
-            <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <HelpIcon className={classes.itemIcon} />
-                    FAQ
-                </Typography>
-            </Link>
-        </MenuItem>
-        <MenuItem className={classes.menuItem}>
-            <Link href='https://gitter.im/eclipse/openvsx'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <ForumIcon className={classes.itemIcon} />
-                    Community
-                </Typography>
-            </Link>
-        </MenuItem>
-        <MenuItem className={classes.menuItem}>
-            <RouteLink to='/about'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <InfoIcon className={classes.itemIcon} />
-                    About
-                </Typography>
-            </RouteLink>
-        </MenuItem>
-        <MenuItem className={classes.menuItem}>
+        </MobileMenuItem>
+        <Accordion sx={{border: 0, borderRadius: 0, boxShadow: '0 0', background: 'transparent'}}>
+            <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="working-group-content"
+            id="working-group-header"
+            >
+                <MobileMenuItemText>
+                    <GroupWorkIcon sx={itemIcon} />
+                    Working Group
+                </MobileMenuItemText>
+            </AccordionSummary>
+            <AccordionDetails>
+                <MobileMenuItem>
+                    <RouteLink to='/members'>
+                        <MobileMenuItemText>
+                            <PeopleAltIcon sx={itemIcon} />
+                            Members
+                        </MobileMenuItemText>
+                    </RouteLink>
+                </MobileMenuItem>
+                <MobileMenuItem>
+                    <RouteLink to='/adopters'>
+                        <MobileMenuItemText>
+                            <HubIcon sx={itemIcon} />
+                            Adopters
+                        </MobileMenuItemText>
+                    </RouteLink>
+                </MobileMenuItem>
+            </AccordionDetails>
+        </Accordion>
+        <MobileMenuItem>
             <Link href='https://www.eclipse.org/donate/openvsx/'>
-                <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                    <StarIcon className={classes.itemIcon} />
+                <MobileMenuItemText>
+                    <StarIcon sx={itemIcon} />
                     Sponsor
-                </Typography>
+                </MobileMenuItemText>
             </Link>
-        </MenuItem>
+        </MobileMenuItem>
+        <MobileMenuItem>
+            <RouteLink to='/about'>
+                <MobileMenuItemText>
+                    <InfoIcon sx={itemIcon} />
+                    About
+                </MobileMenuItemText>
+            </RouteLink>
+        </MobileMenuItem>
         {
             !location.pathname.startsWith(UserSettingsRoutes.ROOT)
-            ? <MenuItem className={classes.menuItem}>
+            ? <MobileMenuItem>
                 <RouteLink to='/user-settings/extensions'>
-                    <Typography variant='body2' color='textPrimary' className={classes.alignVertically}>
-                        <PublishIcon className={classes.itemIcon} />
+                    <MobileMenuItemText>
+                        <PublishIcon sx={itemIcon} />
                         Publish Extension
-                    </Typography>
+                    </MobileMenuItemText>
                 </RouteLink>
-            </MenuItem>
+            </MobileMenuItem>
             : null
         }
-    </React.Fragment>;
+    </>;
 }
 
 
 //-------------------- Default View --------------------//
 
-export const DefaultMenuContent: React.FunctionComponent = () => {
-    const classes = menuContentStyle();
-    return <React.Fragment>
-        <Link href='https://github.com/eclipse/openvsx/wiki' className={classes.headerItem}>
+const headerItem = ({ theme }: { theme: Theme }) => ({
+    margin: theme.spacing(2.5),
+    color: theme.palette.text.primary,
+    textDecoration: 'none',
+    fontSize: '1.1rem',
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: theme.typography.fontWeightLight,
+    letterSpacing: 1,
+    '&:hover': {
+        color: theme.palette.secondary.main,
+        textDecoration: 'none'
+    }
+});
+
+const headerTypography = ({ theme }: { theme: Theme }) => ({
+    ...headerItem({theme}),
+    cursor: 'pointer'
+});
+
+const MenuLink = styled(Link)(headerItem);
+const MenuRouteLink = styled(RouteLink)(headerItem);
+const MenuTypography = styled(Typography)(headerTypography);
+
+const subMenuItem = ({ theme }: { theme: Theme }) => ({
+    '&:focus, &:hover': {
+        background: 'transparent'
+    }
+});
+
+const subMenuLink = ({ theme }: { theme: Theme }) => ({
+    ...headerItem({theme}),
+    margin: theme.spacing(0.5)
+});
+
+const SubMenuItem = styled(MenuItem)(subMenuItem);
+const SubMenuLink = styled(Link)(subMenuLink);
+
+
+export const DefaultMenuContent: FunctionComponent = () => {
+    const [workingGroupMenuOpen, setWorkingGroupOpen] = useState(false);
+    const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
+    const toggleWorkingGroupMenu = () => setWorkingGroupOpen(!workingGroupMenuOpen);
+    const closeWorkingGroupMenu = () => setWorkingGroupOpen(false);
+
+    return <>
+        <MenuLink href='https://github.com/eclipse/openvsx/wiki'>
             Documentation
-        </Link>
-        <Link href='https://www.eclipse.org/legal/open-vsx-registry-faq/' className={classes.headerItem}>
-            FAQ
-        </Link>
-        <Link href='https://status.open-vsx.org/' className={classes.headerItem}>
+        </MenuLink>
+        <MenuLink href='https://status.open-vsx.org/'>
             Status
-        </Link>
-        <Link href='https://gitter.im/eclipse/openvsx' className={classes.headerItem}>
-            Community
-        </Link>
-        <RouteLink to='/about' className={classes.headerItem}>
-            About
-        </RouteLink>
-        <Link href='https://www.eclipse.org/donate/openvsx/' className={classes.headerItem}>
+        </MenuLink>
+        <MenuTypography onClick={toggleWorkingGroupMenu} ref={workingGroupMenuEl}>Working Group</MenuTypography>
+        <Menu open={workingGroupMenuOpen} onClose={closeWorkingGroupMenu} anchorEl={workingGroupMenuEl.current}>
+            <SubMenuItem>
+                <SubMenuLink href='/members' onClick={closeWorkingGroupMenu}>
+                    Members
+                </SubMenuLink>
+            </SubMenuItem>
+            <SubMenuItem>
+                <SubMenuLink href='/adopters' onClick={closeWorkingGroupMenu}>
+                    Adopters
+                </SubMenuLink>
+            </SubMenuItem>
+        </Menu>
+        <MenuLink href='https://www.eclipse.org/donate/openvsx/'>
             Sponsor
-        </Link>
-        <Button variant='contained' color='secondary' href='/user-settings/extensions' className={classes.publishButton}>
+        </MenuLink>
+        <MenuRouteLink to='/about'>
+            About
+        </MenuRouteLink>
+        <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
             Publish
         </Button>
-    </React.Fragment>;
+    </>;
 }

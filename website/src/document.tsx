@@ -8,67 +8,39 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import * as React from 'react';
-import { Box } from '@material-ui/core';
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react';
+import { Box } from '@mui/material';
 import { SanitizedMarkdown } from 'openvsx-webui/lib/components/sanitized-markdown';
 import { DelayedLoadIndicator } from 'openvsx-webui/lib/components/delayed-load-indicator';
 import { MainContext } from 'openvsx-webui/lib/context';
 
-export class Document extends React.Component<Document.Props, Document.State> {
+export const Document: FunctionComponent<DocumentProps> = props => {
+    const [content, setContent] = useState<string>();
+    const [loading, setLoading] = useState<boolean>(true);
+    const context = useContext(MainContext);
+    const abortController = new AbortController();
 
-    static contextType = MainContext;
-    declare context: MainContext;
+    useEffect(() => {
+        context.service.getStaticContent(abortController, props.url)
+            .then(content => setContent(content))
+            .catch(err => context.handleError(err))
+            .finally(() => setLoading(false));
 
-    protected abortController = new AbortController();
+        return () => abortController.abort();
+    }, []);
 
-    private _isMounted = false;
-
-    constructor(props: Document.Props) {
-        super(props);
-        this.state = {
-            loading: true
-        };
-    }
-
-    async componentDidMount(): Promise<void> {
-        this._isMounted = true;
-        try {
-            const content = await this.context.service.getStaticContent(this.abortController, this.props.url);
-            if (!this._isMounted) {
-                return;
+    return <Box p={5} display='flex' width='100%' justifyContent='center'>
+        <DelayedLoadIndicator loading={loading} />
+        <Box maxWidth='1040px'>
+            {
+                content ?
+                <SanitizedMarkdown content={content} />
+                : null
             }
-            this.setState({ content, loading: false });
-        } catch (err) {
-            this.context.handleError(err);
-            this.setState({ loading: false });
-        }
-    }
+        </Box>
+    </Box>;
+};
 
-    componentWillUnmount(): void {
-        this._isMounted = false;
-        this.abortController.abort();
-    }
-
-    render(): React.ReactNode {
-        return <Box p={5} display='flex' width='100%' justifyContent='center'>
-            <DelayedLoadIndicator loading={this.state.loading} />
-            <Box maxWidth='1040px'>
-                {
-                    this.state.content ?
-                    <SanitizedMarkdown content={this.state.content} />
-                    : null
-                }
-            </Box>
-        </Box>;
-    }
-}
-
-export namespace Document {
-    export interface Props {
-        url: string;
-    }
-    export interface State {
-        content?: string;
-        loading: boolean;
-    }
+export interface DocumentProps {
+    url: string;
 }

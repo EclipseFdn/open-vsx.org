@@ -129,9 +129,8 @@ ovsx:
   storage:
     primary-service: azure-blob
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use"
+    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters"
   eclipse:
-    # TODO change back to https://api-staging.eclipse.org/ for testing.
     base-url: https://api.eclipse.org/
     publisher-agreement:
       version: 1
@@ -139,6 +138,7 @@ ovsx:
   publishing:
     require-license: true
   elasticsearch:
+    clear-on-start: true
     enabled: true
     clear-on-start: true
     ssl: true

@@ -14,7 +14,7 @@ import {
     NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole
 } from "openvsx-webui";
 
-const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spongebob_Squarepants_as_a_balloon.jpg';
+const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Avatar_cupcake.png';
 
 export class MockRegistryService extends ExtensionRegistryService {
 

@@ -8,102 +8,86 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import * as React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Link, Typography, Theme, Box } from '@material-ui/core';
-import { Helmet, HelmetTags } from 'react-helmet';
-import { Link as RouteLink, Route } from 'react-router-dom';
-import { PageSettings, Extension, NamespaceDetails, Styleable, ExtensionDetailComponent, NamespaceDetailComponent } from 'openvsx-webui';
+import React, { FunctionComponent, ReactNode } from 'react';
+import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
+import { Helmet, HelmetTags } from 'react-helmet-async';
+import { Link as RouteLink, Route, useParams } from 'react-router-dom';
+import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
-import InfoIcon from '@material-ui/icons/Info';
-import OpenVSXRegistryLogo from './openvsx-registry-logo';
+import InfoIcon from '@mui/icons-material/Info';
+import OpenVSXLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import { Document } from './document';
 import About from './about';
+import Adopters from './adopters';
+import Members from './members';
 
-export default function createPageSettings(theme: Theme, themeType: 'light' | 'dark'): PageSettings {
+export default function createPageSettings(theme: Theme, prefersDarkMode: boolean): PageSettings {
     //---------- MAIN LOGO / TOOLBAR
-    const toolbarStyle = makeStyles({
-        logo: {
-            width: 'auto',
-            height: '40px',
-            marginTop: '8px'
-        }
-    });
-    const toolbarContent: React.FunctionComponent = () =>
-        <RouteLink
-            to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
-            <OpenVSXRegistryLogo themeType={themeType} className={toolbarStyle().logo}/>
+    const toolbarContent: FunctionComponent = () =>
+        <RouteLink to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
+            <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
         </RouteLink>;
 
     //---------- ANNOUNCEMENT BANNER
-    const bannerContent: React.FunctionComponent = () =>
+    const bannerContent: FunctionComponent = () =>
         <Box display='flex' alignItems='center' pt={1} pb={1}>
             <Box mr={2}>
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
             We've established a working group devoted entirely to the operation, maintenance, and promotion of the Open VSX Registry. Read more in our recent&nbsp;
-                <Link color='secondary' href="https://www.globenewswire.com/news-release/2023/06/27/2695137/0/en/The-Open-VSX-Registry-a-Vendor-Neutral-Community-Supported-Alternative-to-the-Visual-Studio-Marketplace-Gets-its-Own-Working-Group-at-the-Eclipse-Foundation.html">press release</Link>. 
+                <Link color='secondary' underline='hover' href="https://www.globenewswire.com/news-release/2023/06/27/2695137/0/en/The-Open-VSX-Registry-a-Vendor-Neutral-Community-Supported-Alternative-to-the-Visual-Studio-Marketplace-Gets-its-Own-Working-Group-at-the-Eclipse-Foundation.html">press release</Link>. 
             </Typography>
         </Box>;
 
     //---------- SEARCH HEADER
-    const searchStyle = makeStyles({
-        typography: {
-            marginBottom: theme.spacing(2),
-            fontWeight: theme.typography.fontWeightLight,
-            letterSpacing: 4,
-            textAlign: 'center'
-        }
-    });
-    const searchHeader: React.FunctionComponent = () =>
-        <Typography variant='h4' classes={{ root: searchStyle().typography }}>
+    const searchHeader: FunctionComponent = () =>
+        <Typography variant='h4' sx={{ mb: 2, fontWeight: 'fontWeightLight', letterSpacing: 4, textAlign: 'center' }}>
             Extensions for VS Code Compatible Editors
         </Typography>;
 
     //---------- DOWNLOAD TERMS
-    const downloadTerms: React.FunctionComponent = () =>
+    const downloadTerms: FunctionComponent = () =>
     <Box mt={1}>
         <Typography variant='body2'>
             By clicking download, you accept this website&apos;s&nbsp;
-            <Link color='secondary' href='https://open-vsx.org/terms-of-use'>
+            <Link color='secondary' underline='hover' href='https://open-vsx.org/terms-of-use'>
                 Terms of Use
             </Link>.
         </Typography>
     </Box>;
 
     //---------- ADDITIONAL PAGES
-    const additionalRoutes: React.FunctionComponent = () =>
-        <>
-            <Route path='/about' render={() => <About />} />
-            <Route path='/terms-of-use' render={() => <Document url='/documents/terms-of-use.md' />} />
-            <Route path='/publisher-agreement-v1.0' render={() =>
-                <Document url='/documents/publisher-agreement-v1.0.md' />
-            } />
-        </>;
+    const additionalRoutes: ReactNode = <>
+        <Route path='/about' element={<About />} />
+        <Route path='/terms-of-use' element={<Document url='/documents/terms-of-use.md' />} />
+        <Route path='/publisher-agreement-v1.0' element={<Document url='/documents/publisher-agreement-v1.0.md' />} />
+        <Route path='/members' element={<Members />} />
+        <Route path='/adopters' element={<Adopters />} />
+    </>;
 
     //---------- REPORT ABUSE LINK
-    const reportAbuse: React.FunctionComponent<{ extension: Extension } & Styleable> = ({ extension, className }) => {
+    const reportAbuse: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ extension, sx }) => {
         const reportAbuseText = encodeURIComponent('<Please describe the issue>');
         const extensionURL = encodeURIComponent(`${location.protocol}//${location.hostname}/extension/${extension.namespace}/${extension.name}`);
         return <Link
             href={`mailto:license@eclipse.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
-            variant='body2' color='secondary' className={className} >
+            variant='body2' color='secondary' underline='hover' sx={sx} >
             Report Abuse
         </Link>;
     };
 
     //---------- CLAIM NAMESPACE LINK
-    const claimNamespace: React.FunctionComponent<{ extension: Extension } & Styleable> = ({ className }) => <Link
+    const claimNamespace: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ sx }) => <Link
             href='https://github.com/EclipseFdn/open-vsx.org/issues/new/choose'
-            target='_blank' variant='body2' color='secondary' className={className} >
+            target='_blank' variant='body2' color='secondary' underline='hover' sx={sx} >
             Claim Ownership
         </Link>;
 
     //---------- HEAD TAGS
-    const headTags: React.FunctionComponent<{title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string, type?: string}> = (props) => {
+    const headTags: FunctionComponent<{title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string, type?: string}> = (props) => {
         const handleChangeClientState = (newState: any, addedTags: HelmetTags, removedTags: HelmetTags): void => {
             if (addedTags.metaTags) {
                 addedTags.metaTags.forEach((value: HTMLMetaElement) => {
@@ -141,7 +125,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         </Helmet>;
     };
     
-    const mainHeadTags: React.FunctionComponent<{pageSettings: PageSettings}> = (props) => {
+    const mainHeadTags: FunctionComponent<{pageSettings: PageSettings}> = (props) => {
         const title = props.pageSettings.pageTitle;
         const description = 'Open VSX is an Eclipse open-source project and alternative to the Visual Studio Marketplace. It is deployed by the Eclipse Foundation at open-vsx.org.';
         const keywords = 'eclipse,ide,open source,development environment,development,vs code,visual studio code,extension,plugin,plug-in,registry,theia';
@@ -151,7 +135,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
         return headTags({ title, description, keywords, url, imageUrl });
     };
     
-    const extensionHeadTags: React.FunctionComponent<{extension?: Extension, params: ExtensionDetailComponent.Params, pageSettings: PageSettings}> = (props) => {
+    const extensionHeadTags: FunctionComponent<{extension?: Extension, pageSettings: PageSettings}> = (props) => {
         let title = ` – ${props.pageSettings.pageTitle}`;
         let url = `${location.protocol}//${location.host}/extension/`;
         let description: string | undefined;
@@ -170,14 +154,15 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
                 keywords = props.extension.tags.filter(t => !t.startsWith('__')).join();
             }
         } else {
-            title = props.params.name + title;
-            url += `${props.params.namespace}/${props.params.name}`;
+            const { name, namespace } = useParams();
+            title = name + title;
+            url += `${namespace}/${name}`;
         }
     
         return headTags({ title, url, description, keywords });
     };
     
-    const namespaceHeadTags: React.FunctionComponent<{namespaceDetails?: NamespaceDetails, params: NamespaceDetailComponent.Params, pageSettings: PageSettings}> = (props) => {
+    const namespaceHeadTags: FunctionComponent<{namespaceDetails?: NamespaceDetails, pageSettings: PageSettings}> = (props) => {
         let title = ` – ${props.pageSettings.pageTitle}`;
         let url = `${location.protocol}//${location.host}/namespace/`;
         let description: string | undefined;
@@ -186,8 +171,9 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
             url += props.namespaceDetails.name;
             description = props.namespaceDetails.description;
         } else {
-            title = props.params.name + title;
-            url += props.params.name;
+            const { name } = useParams();
+            title = name + title;
+            url += name;
         }
 
         return headTags({ title, url, description });
@@ -195,7 +181,7 @@ export default function createPageSettings(theme: Theme, themeType: 'light' | 'd
     
     return {
         pageTitle: 'Open VSX Registry',
-        themeType,
+        themeType: prefersDarkMode ? 'dark' : 'light',
         elements: {
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,

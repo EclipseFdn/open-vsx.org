@@ -8,38 +8,44 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import * as React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Link, Theme, Box, useMediaQuery, useTheme } from '@material-ui/core';
+import React, { FunctionComponent } from 'react';
+import { styled } from '@mui/material/styles';
+import { Link, Theme, Box, useMediaQuery, useTheme } from '@mui/material';
 import { Link as RouteLink } from 'react-router-dom';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
-const footerStyle = makeStyles((theme: Theme) => ({
-    link: {
+const styles = {
+    link: (theme: Theme) =>({
         color: theme.palette.text.primary,
         textDecoration: 'none',
         '&:hover': {
             color: theme.palette.secondary.main,
             textDecoration: 'none'
         }
-    },
+    }),
     repositoryLink: {
         display: 'flex',
         alignItems: 'center',
         fontSize: '1.1rem'
     },
     legalText: {
-        fontWeight: theme.typography.fontWeightLight
+        fontWeight: 'fontWeightLight'
     },
     cookieText: {
         cursor: 'pointer',
         fontWeight: 300
     }
+};
+
+const LegalLink = styled(RouteLink)(({ theme }: { theme: Theme }) => ({
+    ...styles.link(theme),
+    fontWeight: theme.typography.fontWeightLight
 }));
 
-const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expanded }) => {
-    const classes = footerStyle();
+
+
+const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) => {
     const theme = useTheme();
     const isSmallDisplay = useMediaQuery(theme.breakpoints.down('sm'));
     const isLargeDisplay = useMediaQuery(theme.breakpoints.up('xl'));
@@ -47,38 +53,38 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
     const MainFooter = () => {
         const itemSpacing = 2.5;
         return <Box display='flex' justifyContent='space-between' alignItems='center'>
-            {isSmallDisplay ? null : repositoryLink(classes)}
+            {isSmallDisplay ? null : repositoryLink()}
             {
                 isLargeDisplay ?
                 <Box display='flex'>
                     <Box>
-                        {privacyPolicy(classes)}
+                        {privacyPolicy()}
                     </Box>
                     <Box ml={itemSpacing}>
-                        {termsOfUse(classes)}
+                        {termsOfUse()}
                     </Box>
                     <Box ml={itemSpacing}>
-                        {publisherAgreement(classes)}
+                        {publisherAgreement()}
                     </Box>
                     <Box ml={itemSpacing}>
-                        {copyrightAgent(classes)}
+                        {copyrightAgent()}
                     </Box>
                     <Box ml={itemSpacing}>
-                        {legalResources(classes)}
+                        {legalResources()}
                     </Box>
                     <Box ml={itemSpacing}>
-                        {manageCookies(classes)}
+                        {manageCookies()}
                     </Box>
                     <Box ml={itemSpacing}>
-                        {copyrightText(classes)}
+                        {copyrightText()}
                     </Box>
                     <Box ml={itemSpacing}>
-                        {rightsReservedText(classes)}
+                        {rightsReservedText()}
                     </Box>
                 </Box>
                 :
                 <>
-                    {copyrightText(classes)}
+                    {copyrightText()}
                     <Box display='flex' alignItems='center'>
                         <ExpandLessIcon /> Legal
                     </Box>
@@ -92,22 +98,22 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
         return <Box display='flex' flexDirection='column' alignItems='stretch'>
             <Box display='flex' flexDirection='column' alignItems='flex-end'>
                 <Box mb={itemSpacing}>
-                    {privacyPolicy(classes)}
+                    {privacyPolicy()}
                 </Box>
                 <Box mb={itemSpacing}>
-                    {termsOfUse(classes)}
+                    {termsOfUse()}
                 </Box>
                 <Box mb={itemSpacing}>
-                    {publisherAgreement(classes)}
+                    {publisherAgreement()}
                 </Box>
                 <Box mb={itemSpacing}>
-                    {copyrightAgent(classes)}
+                    {copyrightAgent()}
                 </Box>
                 <Box mb={itemSpacing}>
-                    {legalResources(classes)}
+                    {legalResources()}
                 </Box>
                 <Box mb={itemSpacing + 1}>
-                    {manageCookies(classes)}
+                    {manageCookies()}
                 </Box>
             </Box>
             <MainFooter />
@@ -117,67 +123,61 @@ const FooterContent: React.FunctionComponent<{ expanded: boolean }> = ({ expande
     }
 };
 
-type FooterStyle = ReturnType<typeof footerStyle>;
-
-const repositoryLink = (classes: FooterStyle) =>
+const repositoryLink = () =>
     <Link
         target='_blank'
         href='https://github.com/eclipse/openvsx'
-        className={`${classes.link} ${classes.repositoryLink}`} >
+        sx={[styles.link, styles.repositoryLink]}>
         <GitHubIcon />&nbsp;eclipse/openvsx
     </Link>;
 
-const privacyPolicy = (classes: FooterStyle) =>
+const privacyPolicy = () =>
     <Link
         href='https://www.eclipse.org/legal/privacy.php'
-        className={`${classes.link} ${classes.legalText}`} >
+        sx={[styles.link, styles.legalText]}>
         Privacy Policy
     </Link>;
 
-const termsOfUse = (classes: FooterStyle) =>
-    <RouteLink
-        to='/terms-of-use'
-        className={`${classes.link} ${classes.legalText}`} >
+const termsOfUse = () =>
+    <LegalLink to='/terms-of-use'>
         Terms of Use
-    </RouteLink>;
+    </LegalLink>;
 
-const publisherAgreement = (classes: FooterStyle) =>
-    <RouteLink
-        to='/publisher-agreement-v1.0'
-        className={`${classes.link} ${classes.legalText}`} >
+const publisherAgreement = () =>
+    <LegalLink to='/publisher-agreement-v1.0'>
         Publisher Agreement
-    </RouteLink>;
+    </LegalLink>;
 
-const copyrightAgent = (classes: FooterStyle) =>
+const copyrightAgent = () =>
     <Link
         href='https://www.eclipse.org/legal/copyright.php'
-        className={`${classes.link} ${classes.legalText}`} >
+        sx={[styles.link, styles.legalText]}>
         Copyright Agent
     </Link>;
 
-const legalResources = (classes: FooterStyle) =>
+const legalResources = () =>
     <Link
         href='http://www.eclipse.org/legal'
-        className={`${classes.link} ${classes.legalText}`} >
+        sx={[styles.link, styles.legalText]}>
         Legal Resources
     </Link>;
 
-const copyrightText = (classes: FooterStyle) =>
-    <Box className={classes.legalText}>
+const copyrightText = () =>
+    <Box sx={styles.legalText}>
         Copyright &copy; <Link
             href='https://www.eclipse.org'
-            className={classes.link} >
+            sx={styles.link}>
             Eclipse Foundation, Inc.
         </Link>
     </Box>;
 
-const rightsReservedText = (classes: FooterStyle) =>
-    <Box className={classes.legalText}>
+const rightsReservedText = () =>
+    <Box sx={styles.legalText}>
         All Rights Reserved.
     </Box>;
 
-const manageCookies = (classes: FooterStyle) =>
-    <Box className={`${classes.link} ${classes.cookieText} toolbar-manage-cookies`}>
+const manageCookies = () =>
+    <Box sx={[styles.link, styles.cookieText]} className='toolbar-manage-cookies'>
         Manage Cookies
     </Box>;
 export default FooterContent;
