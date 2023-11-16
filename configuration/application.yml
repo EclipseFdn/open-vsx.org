@@ -140,7 +140,6 @@ ovsx:
   elasticsearch:
     clear-on-start: true
     enabled: true
-    clear-on-start: true
     ssl: true
     relevance:
       rating: 0.2
