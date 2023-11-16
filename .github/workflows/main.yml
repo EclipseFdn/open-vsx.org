@@ -6,10 +6,16 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  trigger:
-    name: Trigger Sonar
+  pr:
+    name: Save PR Info
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Save PR number to file
+        if: github.event_name == 'pull_request'
+        run: echo ${{ github.event.number }} > PR_NUMBER.txt
+      - name: Archive PR number
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v3
         with:
-          fetch-depth: 0
+          name: PR_NUMBER
+          path: PR_NUMBER.txt
