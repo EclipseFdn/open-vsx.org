@@ -138,7 +138,6 @@ ovsx:
   publishing:
     require-license: true
   elasticsearch:
-    clear-on-start: true
     enabled: true
     ssl: true
     relevance:
