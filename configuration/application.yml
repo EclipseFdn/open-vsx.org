@@ -158,4 +158,3 @@ ovsx:
   vscode:
     upstream:
       update-on-start: true
-      gallery-url: https://marketplace.visualstudio.com/_apis/public/gallery/
