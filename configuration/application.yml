@@ -3,6 +3,12 @@
 # for database access and ovsx.storage.azure for file storage access.
 # Additional properties are loaded from the file provided with the
 # DEPLOYMENT_CONFIG environment variable.
+logging:
+  level:
+    org:
+      eclipse:
+        openvsx:
+          adapter: DEBUG
 
 server:
   address: 0.0.0.0
@@ -149,3 +155,6 @@ ovsx:
       seconds: 300
   integrity:
     key-pair: create
+  vscode:
+    upstream:
+      update-on-start: true
