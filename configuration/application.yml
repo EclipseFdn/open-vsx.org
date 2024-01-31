@@ -68,6 +68,7 @@ management:
     web:
       exposure:
         include:
+          - health
           - prometheus
 org:
   jobrunr:
