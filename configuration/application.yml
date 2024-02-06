@@ -70,6 +70,7 @@ management:
         include:
           - health
           - prometheus
+          - metrics
 org:
   jobrunr:
     job-scheduler:
