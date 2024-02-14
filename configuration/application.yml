@@ -166,3 +166,8 @@ ovsx:
   vscode:
     upstream:
       update-on-start: true
+  metrics:
+    prometheus:
+      params:
+        exemplars:
+          enabled: true
