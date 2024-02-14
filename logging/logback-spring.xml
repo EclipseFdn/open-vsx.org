@@ -13,7 +13,7 @@
         </http>
         <format>
             <label>
-                <pattern>app=${appName},host=${HOSTNAME},traceID=%X{traceId:-NONE},level=%level</pattern>
+                <pattern>job=openvsx-logs,instance=${POD_NAME},application=${appName},traceID=%X{traceId:-NONE},level=%level</pattern>
             </label>
             <message>
                 <pattern>${FILE_LOG_PATTERN}</pattern>
