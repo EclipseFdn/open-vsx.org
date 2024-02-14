@@ -5,12 +5,14 @@
 
     <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
         <verbose>true</verbose>
+        <batchMaxBytes>65536</batchMaxBytes>
         <http>
             <url>${LOKI_URL}</url>
             <auth>
                 <username>${LOKI_USERNAME}</username>
                 <password>${LOKI_PASSWORD}</password>
             </auth>
+            <requestTimeoutMs>15000</requestTimeoutMs>
         </http>
         <format>
             <label>
