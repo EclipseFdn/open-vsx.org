@@ -3,10 +3,6 @@
 # for database access and ovsx.storage.azure for file storage access.
 # Additional properties are loaded from the file provided with the
 # DEPLOYMENT_CONFIG environment variable.
-logging:
-  pattern:
-    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
-
 server:
   address: 0.0.0.0
   port: 8080
@@ -16,8 +12,6 @@ server:
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
     min-response-size: 1024
 spring:
-  application:
-    name: openvsx-server
   config:
     import: file:${DEPLOYMENT_CONFIG}
   cache:
@@ -63,15 +57,6 @@ management:
   health:
     probes:
       enabled: true
-  endpoints:
-    web:
-      exposure:
-        include:
-          - health
-          - prometheus
-  tracing:
-    sampling:
-      probability: 1.0
 org:
   jobrunr:
     job-scheduler:
@@ -163,11 +148,3 @@ ovsx:
       seconds: 300
   integrity:
     key-pair: create
-  vscode:
-    upstream:
-      update-on-start: true
-  metrics:
-    prometheus:
-      params:
-        exemplars:
-          enabled: true
