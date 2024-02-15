@@ -264,6 +264,22 @@ local newElasticSearchCluster(env) = {
     nodeSets: [
       {
         name: "default",
+        volumeClaimTemplates: [
+          {
+            metadata: {
+              name: "elasticsearch-data"
+            },
+            spec: {
+              accessModes: [ "ReadWriteMany" ],
+              resources: {
+                requests: {
+                  storage: "1Gi"
+                }
+              },
+              storageClassName: "cephfs-2repl"
+            }
+          }
+        ],
         config: {
           "node.roles": [ "master", "data" ],
           "node.store.allow_mmap": false
