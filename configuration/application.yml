@@ -64,9 +64,9 @@ management:
       enabled: true
   metrics:
     tags:
-      "[service.name]": ${spring.application.name}
-      "[deployment.environment]": ${ENVNAME}
-      "[service.instance.id]": ${HOSTNAME}
+      application: ${spring.application.name}
+      environment: ${ENVNAME}
+      instance: ${HOSTNAME}
   endpoints:
     web:
       exposure:
@@ -76,6 +76,12 @@ management:
   tracing:
     sampling:
       probability: 1.0 # TODO lower to 0.1 for production
+otel:
+  resource:
+    attributes:
+      "[service.name]": ${spring.application.name}
+      "[deployment.environment]": ${ENVNAME}
+      "[service.instance.id]": ${HOSTNAME}
 org:
   jobrunr:
     job-scheduler:
