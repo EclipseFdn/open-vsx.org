@@ -62,11 +62,6 @@ management:
   health:
     probes:
       enabled: true
-  metrics:
-    tags:
-      application: ${spring.application.name}
-      environment: ${ENVNAME}
-      instance: ${HOSTNAME}
   endpoints:
     web:
       exposure:
@@ -167,3 +162,6 @@ ovsx:
       seconds: 300
   integrity:
     key-pair: create
+  metrics:
+    environment: ${ENVNAME}
+    instance: ${HOSTNAME}
