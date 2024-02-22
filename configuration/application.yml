@@ -76,11 +76,13 @@ management:
   tracing:
     sampling:
       probability: 1.0 # TODO lower to 0.1 for production
-  opentelemetry:
-    resource-attributes:
-      "[service.name]": ${spring.application.name}
-      "[deployment.environment]": ${ENVNAME}
-      "[service.instance.id]": ${HOSTNAME}
+  otlp:
+    metrics:
+      export:
+        resource-attributes:
+          "[service.name]": ${spring.application.name}
+          "[deployment.environment]": ${ENVNAME}
+          "[service.instance.id]": ${HOSTNAME}
 org:
   jobrunr:
     job-scheduler:
