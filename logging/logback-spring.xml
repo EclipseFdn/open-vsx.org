@@ -16,7 +16,7 @@
         </http>
         <format>
             <label>
-                <pattern>job=loki4j,instance=${HOSTNAME},application=${appName},traceID=%X{traceId:-NONE},level=%level</pattern>
+                <pattern>job=loki4j,environment=${ENVNAME},instance=${HOSTNAME},application=${appName},traceID=%X{traceId:-NONE},level=%level</pattern>
             </label>
             <message>
                 <pattern>${FILE_LOG_PATTERN}</pattern>

@@ -86,12 +86,21 @@ local newGrafanaAgentConfigMap() = {
                 target_label: instance
             static_configs:
               - targets: ['localhost:8081']
+                labels:
+                  environment: ${ENVNAME}
             metrics_path: /actuator/prometheus
         global:
           scrape_interval: 60s
       traces:
         configs:
         - name: default
+          attributes:
+          - key: environment
+            action: upsert
+            value: ${ENVNAME}
+          - key: instance
+            action: upsert
+            value: ${HOSTNAME}
           remote_write:
           - endpoint: ${TEMPO_URL}
             basic_auth:
@@ -163,7 +172,8 @@ local newDeployment(env, dockerImage) = {
             env: utils.pairList(self._env),
             _env:: {
               CONFIG_FILE_PATH: "/etc/grafana-agent/agent.yml",
-              DATA_FILE_PATH: "/etc/grafana-agent/data"
+              DATA_FILE_PATH: "/etc/grafana-agent/data",
+              ENVNAME: env.envName
             },
             envFrom: [
               {
@@ -187,6 +197,7 @@ local newDeployment(env, dockerImage) = {
             _env:: {
               JVM_ARGS: (if (env.envName == "staging") then "-Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M" else "-Xms4G -Xmx6G") + jvmPerfOptions,
               DEPLOYMENT_CONFIG: "%s/%s" % [ env.deploymentConfig.path, env.deploymentConfig.filename, ],
+              ENVNAME: env.envName
             },
             envFrom: [
               {
