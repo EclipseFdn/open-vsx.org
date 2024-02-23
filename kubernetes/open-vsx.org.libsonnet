@@ -85,7 +85,9 @@ local newGrafanaAgentConfigMap() = {
               - targets: ['localhost:8081']
             metrics_path: /actuator/prometheus
             metric_relabel_configs:
-            - regex: "exported_instance|deployment_environment|service_instance_id|service_name"
+            - source_labels: [exported_instance]
+              target_label: instance
+            - regex: "^(exported_instance|deployment_environment|service_instance_id|service_name)$"
               action: labeldrop
         global:
           scrape_interval: 60s
