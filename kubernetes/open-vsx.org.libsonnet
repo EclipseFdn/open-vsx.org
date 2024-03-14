@@ -40,11 +40,13 @@ local newEnvironment(envName) = {
   },
 };
 
-local newGrafanaAgentConfigMap() = {
+local newGrafanaAgentConfigMap(env) = {
   apiVersion: "v1",
   kind: "ConfigMap",
   metadata: {
-    name: "grafana-agent-configmap"
+    name: "grafana-agent-configmap",
+    namespace: env.namespace,
+    labels: labels(env),
   },
   data: {
     "agent.yml": |||
@@ -470,8 +472,8 @@ local newElasticSearchCluster(env) = {
 };
 
 local _newKubernetesResources(envName, image) = {
-  local configMap = newGrafanaAgentConfigMap(),
   local environment = newEnvironment(envName),
+  local configMap = newGrafanaAgentConfigMap(environment),
   local deployment = newDeployment(environment, image),
   local service = newService(environment, deployment),
 
