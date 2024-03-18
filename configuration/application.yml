@@ -75,7 +75,7 @@ management:
           - prometheus
   tracing:
     sampling:
-      probability: 1.0 # TODO lower to 0.1 for production
+      probability: 0.1
 org:
   jobrunr:
     job-scheduler:
