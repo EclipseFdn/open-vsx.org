@@ -157,6 +157,7 @@ ovsx:
     require-license: true
   elasticsearch:
     enabled: true
+    clear-on-start: true
     ssl: true
     relevance:
       rating: 0.2
