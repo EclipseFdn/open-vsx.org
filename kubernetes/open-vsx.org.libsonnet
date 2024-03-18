@@ -40,6 +40,75 @@ local newEnvironment(envName) = {
   },
 };
 
+local newGrafanaAgentConfigMap(env) = {
+  apiVersion: "v1",
+  kind: "ConfigMap",
+  metadata: {
+    name: "grafana-agent-configmap",
+    namespace: env.namespace,
+    labels: labels(env),
+  },
+  data: {
+    "agent.yml": |||
+      server:
+        log_level: debug
+      integrations:
+        prometheus_remote_write:
+        - basic_auth:
+            password: ${PROMETHEUS_PASSWORD}
+            username: ${PROMETHEUS_USERNAME}
+          url: ${PROMETHEUS_URL}
+        agent:
+          enabled: true
+          relabel_configs:
+          - action: replace
+            source_labels:
+            - agent_hostname
+            target_label: instance
+          - action: replace
+            target_label: job
+            replacement: "integrations/agent-check"
+          metric_relabel_configs:
+          - action: keep
+            regex: (prometheus_target_sync_length_seconds_sum|prometheus_target_scrapes_.*|prometheus_target_interval.*|prometheus_sd_discovered_targets|agent_build.*|agent_wal_samples_appended_total|process_start_time_seconds)
+            source_labels:
+            - __name__
+      metrics:
+        configs:
+        - name: integrations
+          remote_write:
+          - basic_auth:
+              password: ${PROMETHEUS_PASSWORD}
+              username: ${PROMETHEUS_USERNAME}
+            url: ${PROMETHEUS_URL}
+          scrape_configs:
+          - job_name: integrations/spring-boot
+            static_configs:
+              - targets: ['localhost:8081']
+            metrics_path: /actuator/prometheus
+            metric_relabel_configs:
+            - source_labels: [exported_instance]
+              target_label: instance
+            - regex: "^(exported_instance|deployment_environment|service_instance_id|service_name)$"
+              action: labeldrop
+        global:
+          scrape_interval: 60s
+      traces:
+        configs:
+        - name: default
+          remote_write:
+          - endpoint: ${TEMPO_URL}
+            basic_auth:
+              username: ${TEMPO_USERNAME}
+              password: ${TEMPO_PASSWORD}
+          receivers:
+            zipkin:
+              endpoint: localhost:9411
+              parse_string_tags: false
+    |||
+  }
+};
+
 local newDeployment(env, dockerImage) = {
 
   local elasticsearchCertsVolumeName = "elastic-internal-http-certificates",
@@ -86,6 +155,34 @@ local newDeployment(env, dockerImage) = {
         ],
         containers: utils.namedObjectList(self._containers),
         _containers:: {
+          "grafana-agent": {
+            name: "grafana-agent",
+            image: "docker.io/grafana/agent:v0.39.1",
+            command: ["/bin/grafana-agent"],
+            args: [
+              "--config.file=$(CONFIG_FILE_PATH)",
+              "--metrics.wal-directory=$(DATA_FILE_PATH)",
+              "--config.expand-env=true"
+            ],
+            env: utils.pairList(self._env),
+            _env:: {
+              CONFIG_FILE_PATH: "/etc/grafana-agent/agent.yml",
+              DATA_FILE_PATH: "/etc/grafana-agent/data",
+              ENVNAME: env.envName
+            },
+            envFrom: [
+              {
+                secretRef: {
+                  name: "grafana-cloud-secret-%s" % env.envName
+                }
+              }
+            ],
+            volumeMounts: utils.pairList(self._volumeMounts, vfield="mountPath"),
+            _volumeMounts:: {
+              "grafana-agent-config-volume": "/etc/grafana-agent",
+              "grafana-agent-data-volume": "/etc/grafana-agent/data"
+            }
+          },
           [env.appName]: {
             local thisContainer = self,
             name: env.appName,
@@ -95,7 +192,15 @@ local newDeployment(env, dockerImage) = {
             _env:: {
               JVM_ARGS: (if (env.envName == "staging") then "-Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M" else "-Xms4G -Xmx6G") + jvmPerfOptions,
               DEPLOYMENT_CONFIG: "%s/%s" % [ env.deploymentConfig.path, env.deploymentConfig.filename, ],
+              ENVNAME: env.envName
             },
+            envFrom: [
+              {
+                secretRef: {
+                  name: "grafana-cloud-secret-%s" % env.envName
+                }
+              }
+            ],
             ports: utils.pairList(self._ports, vfield="containerPort"),
             _ports:: {
               http: 8080,
@@ -153,6 +258,22 @@ local newDeployment(env, dockerImage) = {
         },
         volumes: utils.namedObjectList(self._volumes),
         _volumes:: {
+          "grafana-agent-config-volume": {
+            configMap: {
+              name: "grafana-agent-configmap",
+              items: [
+                {
+                  key: "agent.yml",
+                  path: "agent.yml"
+                }
+              ]
+            }
+          },
+          "grafana-agent-data-volume": {
+            emptyDir: {
+              medium: "Memory"
+            }
+          },
           [deploymentConfigurationVolumeName]: {
             local thisVolume = self,
             secret: {
@@ -264,6 +385,22 @@ local newElasticSearchCluster(env) = {
     nodeSets: [
       {
         name: "default",
+        volumeClaimTemplates: [
+          {
+            metadata: {
+              name: "elasticsearch-data"
+            },
+            spec: {
+              accessModes: [ "ReadWriteMany" ],
+              resources: {
+                requests: {
+                  storage: "1Gi"
+                }
+              },
+              storageClassName: "cephfs-2repl"
+            }
+          }
+        ],
         config: {
           "node.roles": [ "master", "data" ],
           "node.store.allow_mmap": false
@@ -336,10 +473,12 @@ local newElasticSearchCluster(env) = {
 
 local _newKubernetesResources(envName, image) = {
   local environment = newEnvironment(envName),
+  local configMap = newGrafanaAgentConfigMap(environment),
   local deployment = newDeployment(environment, image),
   local service = newService(environment, deployment),
 
   arr: [
+    configMap,
     deployment,
     service,
     newRoute(environment, service),

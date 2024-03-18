@@ -4,12 +4,8 @@
 # Additional properties are loaded from the file provided with the
 # DEPLOYMENT_CONFIG environment variable.
 logging:
-  level:
-    org:
-      eclipse:
-        openvsx:
-          adapter: DEBUG
-
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
 server:
   address: 0.0.0.0
   port: 8080
@@ -19,6 +15,8 @@ server:
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
     min-response-size: 1024
 spring:
+  application:
+    name: openvsx-server
   config:
     import: file:${DEPLOYMENT_CONFIG}
   cache:
@@ -64,6 +62,20 @@ management:
   health:
     probes:
       enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${ENVNAME}
+      instance: ${HOSTNAME}
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+  tracing:
+    sampling:
+      probability: 0.1
 org:
   jobrunr:
     job-scheduler:
@@ -145,6 +157,7 @@ ovsx:
     require-license: true
   elasticsearch:
     enabled: true
+    clear-on-start: true
     ssl: true
     relevance:
       rating: 0.2
@@ -155,6 +168,3 @@ ovsx:
       seconds: 300
   integrity:
     key-pair: create
-  vscode:
-    upstream:
-      update-on-start: true

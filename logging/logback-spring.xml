@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <verbose>true</verbose>
+        <batchMaxBytes>65536</batchMaxBytes>
+        <http>
+            <url>${LOKI_URL}</url>
+            <auth>
+                <username>${LOKI_USERNAME}</username>
+                <password>${LOKI_PASSWORD}</password>
+            </auth>
+            <requestTimeoutMs>15000</requestTimeoutMs>
+        </http>
+        <format>
+            <label>
+                <pattern>job=loki4j,environment=${ENVNAME},instance=${HOSTNAME},application=${appName},traceID=%X{traceId:-NONE},level=%level</pattern>
+            </label>
+            <message>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+            </message>
+            <sortByTime>true</sortByTime>
+        </format>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="LOKI"/>
+    </root>
+</configuration>
