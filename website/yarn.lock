@@ -2281,7 +2281,7 @@ __metadata:
     "@types/react-router-dom": "npm:^5.3.3"
     css-loader: "npm:^6.8.1"
     express: "npm:^4.18.2"
-    openvsx-webui: "npm:0.11.2"
+    openvsx-webui: "npm:0.11.3"
     source-map-loader: "npm:^4.0.1"
     style-loader: "npm:^3.3.3"
     typescript: "npm:~5.1.6"
@@ -2302,9 +2302,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:0.11.2":
-  version: 0.11.2
-  resolution: "openvsx-webui@npm:0.11.2"
+"openvsx-webui@npm:0.11.3":
+  version: 0.11.3
+  resolution: "openvsx-webui@npm:0.11.3"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -2330,7 +2330,7 @@ __metadata:
     react-router-dom: "npm:^6.14.1"
   peerDependencies:
     "@babel/core": ^7.0.0
-  checksum: bcad7f4761e62f9060db49547d5dd1b4f00d619db907946622857c552772040dad39449b879b93fe27f592d921c56af4a6509d58881f21dcb68ef10044267de1
+  checksum: a9722040fbd8eea6063820e46424554def1680c0d4c0c2de2653ce09a110214b1ba5971d4e912070da0ae5a6c8b33c568fc4d4126f839309285410acedc0f73e
   languageName: node
   linkType: hard
 
