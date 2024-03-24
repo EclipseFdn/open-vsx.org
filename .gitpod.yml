@@ -12,3 +12,6 @@ tasks:
     command: |
       cd website
       yarn start:dev
+              - name: Satellite file upload
+                uses: IBM/satellite-config-upload-action@v1.0.1
+            
