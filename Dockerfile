@@ -27,7 +27,7 @@ RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server 
-FROM docker.io/amvanbaren/openvsx-server:d4a71e2c
+FROM docker.io/amvanbaren/openvsx-server:c21a6c80
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/
