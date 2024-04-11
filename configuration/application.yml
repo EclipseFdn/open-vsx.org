@@ -146,9 +146,6 @@ bucket4j:
 ovsx:
   storage:
     primary-service: azure-blob
-    versions-limiter:
-      limit: 3
-      run-on-start: true
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters"
   eclipse:
