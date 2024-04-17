@@ -19,7 +19,7 @@ RUN corepack enable
 RUN corepack prepare yarn@stable --activate
 
 # bump to update website
-ENV WEBSITE_VERSION 0.11.5-next.5c0e2e08
+ENV WEBSITE_VERSION 0.11.6
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
@@ -27,7 +27,7 @@ RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server 
-FROM docker.io/amvanbaren/openvsx-server:c21a6c80
+FROM ghcr.io/eclipse/openvsx-server:dbbaff4
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/

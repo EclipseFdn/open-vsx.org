@@ -167,3 +167,5 @@ ovsx:
       seconds: 300
   integrity:
     key-pair: create
+  registry:
+    version: ${SERVER_VERSION}

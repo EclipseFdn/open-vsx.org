@@ -11,7 +11,7 @@
 import {
     ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
     UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
-    NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole
+    NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole, RegistryVersion
 } from "openvsx-webui";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Avatar_cupcake.png';
@@ -145,6 +145,10 @@ export class MockRegistryService extends ExtensionRegistryService {
 
     async signPublisherAgreement(abortController: AbortController): Promise<Readonly<UserData | ErrorResult>> {
         return Promise.resolve({} as UserData);
+    }
+
+    async getRegistryVersion(abortController: AbortController): Promise<Readonly<RegistryVersion>> {
+        return Promise.resolve({version: 'v0.15.0'})
     }
 }
 

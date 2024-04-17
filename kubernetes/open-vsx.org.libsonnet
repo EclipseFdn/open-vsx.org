@@ -1,5 +1,10 @@
 local utils = import "utils.libsonnet";
 
+local serverVersion(dockerImage) =
+  local pieces = std.split(dockerImage, ":");
+  local lastIndex = std.length(pieces) - 1;
+  pieces[lastIndex];
+
 local labels(env) = {
   app: env.appName,
   environment: env.envName,
@@ -192,6 +197,7 @@ local newDeployment(env, dockerImage) = {
             _env:: {
               JVM_ARGS: (if (env.envName == "staging") then "-Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M" else "-Xms4G -Xmx6G") + jvmPerfOptions,
               DEPLOYMENT_CONFIG: "%s/%s" % [ env.deploymentConfig.path, env.deploymentConfig.filename, ],
+              SERVER_VERSION: serverVersion(dockerImage),
               ENVNAME: env.envName
             },
             envFrom: [

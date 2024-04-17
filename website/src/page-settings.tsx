@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, ReactNode } from 'react';
+import React, { FunctionComponent, ReactNode, Suspense, lazy } from 'react';
 import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
@@ -23,12 +23,23 @@ import About from './about';
 import Adopters from './adopters';
 import Members from './members';
 
-export default function createPageSettings(theme: Theme, prefersDarkMode: boolean): PageSettings {
+export default function createPageSettings(theme: Theme, prefersDarkMode: boolean, serverVersionPromise: Promise<string>): PageSettings {
+    //---------- SERVER VERSION
+    const ServerVersion = lazy(async () => {
+        const version = await serverVersionPromise;
+        return { default: () => <Typography variant='body2' sx={{ alignSelf: 'flex-start', fontSize: '0.8rem' }}>{version}</Typography> };
+    });
+
     //---------- MAIN LOGO / TOOLBAR
     const toolbarContent: FunctionComponent = () =>
-        <RouteLink to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
-            <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
-        </RouteLink>;
+        <>
+            <RouteLink to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
+                <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
+            </RouteLink>
+            <Suspense>
+                <ServerVersion/>
+            </Suspense>
+        </>;
 
     //---------- ANNOUNCEMENT BANNER
     const bannerContent: FunctionComponent = () =>
