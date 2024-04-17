@@ -168,4 +168,4 @@ ovsx:
   integrity:
     key-pair: create
   registry:
-    version: ${SERVER_VERSION}
+    version: <SERVER_VERSION>
