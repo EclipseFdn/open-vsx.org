@@ -23,7 +23,18 @@ const App: FunctionComponent = () => {
     const themeType = prefersDarkScheme ? 'dark' : 'light';
     const theme = useMemo(() => createDefaultTheme(themeType), [themeType]);
     const service = new ExtensionRegistryService();
-    const pageSettings = createPageSettings(theme, prefersDarkScheme);
+    const getServerVersion = async (): Promise<string> => {
+        const abortController = new AbortController();
+        try {
+         const result = await service.getRegistryVersion(abortController);
+         return result.version;
+        } catch (error) {
+         console.error('Could not determine server version');
+         return 'unknown';
+        }
+     }
+
+    const pageSettings = createPageSettings(theme, prefersDarkScheme, getServerVersion());
 
     return (
         <HelmetProvider>
