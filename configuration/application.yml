@@ -75,7 +75,7 @@ management:
           - prometheus
   tracing:
     sampling:
-      probability: 0.1
+      probability: 0
 org:
   jobrunr:
     job-scheduler:
