@@ -1,0 +1,374 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_GRAFANACLOUD-OPENVSX-TRACES",
+      "label": "grafanacloud-openvsx-traces",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "tempo",
+      "pluginName": "Tempo"
+    },
+    {
+      "name": "DS_GRAFANACLOUD-OPENVSX-LOGS",
+      "label": "grafanacloud-openvsx-logs",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
+    },
+    {
+      "name": "DS_GRAFANACLOUD-OPENVSX-PROM",
+      "label": "grafanacloud-openvsx-prom",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.1.0-69950"
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "tempo",
+      "name": "Tempo",
+      "version": "11.1.0-pre"
+    },
+    {
+      "type": "panel",
+      "id": "traces",
+      "name": "Traces",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Trace overview",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "tempo",
+        "uid": "${DS_GRAFANACLOUD-OPENVSX-TRACES}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [
+            {
+              "title": "Trace Link",
+              "url": "/d/edc2eznq882rkb/tracing?orgId=1&var-environment=${environment}&var-application=${application}&var-instance=${instance}&var-traceId=${__data.fields[\"traceID\"]}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.0-69950",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "${DS_GRAFANACLOUD-OPENVSX-TRACES}"
+          },
+          "filters": [
+            {
+              "id": "cef8ff62",
+              "operator": "=",
+              "scope": "span"
+            },
+            {
+              "id": "service-name",
+              "operator": "=",
+              "scope": "resource",
+              "tag": "service.name",
+              "value": [
+                "openvsx-server"
+              ],
+              "valueType": "string"
+            },
+            {
+              "id": "span-name",
+              "operator": "=",
+              "scope": "span",
+              "tag": "name",
+              "value": [],
+              "valueType": "string"
+            },
+            {
+              "id": "min-duration",
+              "operator": ">",
+              "tag": "duration",
+              "value": "1s",
+              "valueType": "duration"
+            }
+          ],
+          "limit": 20,
+          "query": "{resource.deployment.environment=\"${environment}\" && resource.service.instance.id=\"${instance}\" && resource.service.name=\"${application}\" && duration>1s}",
+          "queryType": "traceql",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ],
+      "title": "Slow Requests (> 1s)",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "tempo",
+        "uid": "${DS_GRAFANACLOUD-OPENVSX-TRACES}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 1,
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "${DS_GRAFANACLOUD-OPENVSX-TRACES}"
+          },
+          "limit": 20,
+          "query": "${traceId}",
+          "queryType": "traceql",
+          "refId": "A",
+          "tableType": "traces"
+        }
+      ],
+      "title": "Trace Overview",
+      "type": "traces"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_GRAFANACLOUD-OPENVSX-LOGS}"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 3,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_GRAFANACLOUD-OPENVSX-LOGS}"
+          },
+          "editorMode": "builder",
+          "expr": "{traceID=\"$traceId\"} |= ``",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Trace Logs",
+      "type": "logs"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_GRAFANACLOUD-OPENVSX-PROM}"
+        },
+        "definition": "label_values(jvm_classes_loaded_classes,environment)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Environment",
+        "multi": false,
+        "name": "environment",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(jvm_classes_loaded_classes,environment)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_GRAFANACLOUD-OPENVSX-PROM}"
+        },
+        "definition": "label_values(jvm_classes_loaded_classes{environment=~\"$environment\"},application)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Application",
+        "multi": false,
+        "name": "application",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(jvm_classes_loaded_classes{environment=~\"$environment\"},application)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_GRAFANACLOUD-OPENVSX-PROM}"
+        },
+        "definition": "label_values(jvm_classes_loaded_classes{environment=~\"$environment\", application=~\"$application\"},instance)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(jvm_classes_loaded_classes{environment=~\"$environment\", application=~\"$application\"},instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Trace ID",
+        "multi": false,
+        "name": "traceId",
+        "options": [],
+        "query": "",
+        "queryValue": "7229f808289756fceaf70bde0220d471",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timeRangeUpdatedDuringEditOrView": false,
+  "timepicker": {},
+  "timezone": "",
+  "title": "Tracing",
+  "uid": "edc2eznq882rkb",
+  "version": 1,
+  "weekStart": ""
+}
