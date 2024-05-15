@@ -56,6 +56,7 @@ spring:
             user-info-uri: https://accounts.eclipse.org/oauth2/UserInfo
             user-name-attribute: name
             user-info-authentication-method: header
+
 management:
   server:
     port: 8081
@@ -75,7 +76,7 @@ management:
           - prometheus
   tracing:
     sampling:
-      probability: 0
+      probability: 0.1
 org:
   jobrunr:
     job-scheduler:
@@ -152,7 +153,6 @@ ovsx:
     base-url: https://api.eclipse.org/
     publisher-agreement:
       version: 1
-      timezone: US/Eastern
   publishing:
     require-license: true
   elasticsearch:
