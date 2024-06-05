@@ -18,9 +18,9 @@ export const Document: FunctionComponent<DocumentProps> = props => {
     const [content, setContent] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
     const context = useContext(MainContext);
-    const abortController = new AbortController();
 
     useEffect(() => {
+        const abortController = new AbortController();
         context.service.getStaticContent(abortController, props.url)
             .then(content => setContent(content))
             .catch(err => context.handleError(err))
