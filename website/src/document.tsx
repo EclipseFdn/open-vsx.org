@@ -27,7 +27,7 @@ export const Document: FunctionComponent<DocumentProps> = props => {
             .finally(() => setLoading(false));
 
         return () => abortController.abort();
-    }, []);
+    }, [props.url]);
 
     return <Box p={5} display='flex' width='100%' justifyContent='center'>
         <DelayedLoadIndicator loading={loading} />
