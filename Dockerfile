@@ -21,7 +21,7 @@ RUN corepack enable
 RUN corepack prepare yarn@stable --activate
 
 # bump to update website
-ENV WEBSITE_VERSION 0.11.8-next.87e13f85
+ENV WEBSITE_VERSION 0.11.8-next.f881bbad
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
