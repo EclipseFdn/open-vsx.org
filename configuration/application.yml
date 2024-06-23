@@ -166,6 +166,6 @@ ovsx:
     delay:
       seconds: 300
   integrity:
-    key-pair: create
+    key-pair: delete
   registry:
     version: <SERVER_VERSION>
