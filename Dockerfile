@@ -37,4 +37,4 @@ COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ config/
 COPY --from=builder --chown=openvsx:openvsx /workdir/logging/logback-spring.xml BOOT-INF/classes/
 
 # Replace version placeholder with arg value
-RUN sed -i "s/<SERVER_VERSION>/$SERVER_VERSION/g" config/application.yml
+RUN sed -i "s/<SERVER_VERSION>/$SERVER_VERSIONc/g" config/application.yml
