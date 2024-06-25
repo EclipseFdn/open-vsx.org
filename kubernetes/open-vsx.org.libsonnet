@@ -8,7 +8,9 @@ local labels(env) = {
 local namespacedResourceMetadata(env) = {
   name: "%s-%s" % [ env.appName, env.envName, ],
   namespace: env.namespace,
-  labels: labels(env),
+  labels: labels(env) {
+    component: "open-vsx-server",
+  },
 };
 
 local newEnvironment(envName) = {
@@ -122,11 +124,15 @@ local newDeployment(env, dockerImage) = {
     replicas: if (env.envName == "staging") then 1 else 2,
     progressDeadlineSeconds: 3600,
     selector: {
-      matchLabels: labels(env),
+      matchLabels: labels(env) {
+        component: 'open-vsx-server',
+      },
     },
     template: {
       metadata: {
-        labels: labels(env),
+        labels: labels(env) {
+          component: 'open-vsx-server',
+        },
       },
       spec: {
         local thisPod = self,
@@ -319,7 +325,9 @@ local newDeployment(env, dockerImage) = {
             topologyKey: "kubernetes.io/hostname",
             whenUnsatisfiable: "DoNotSchedule",
             labelSelector: {
-              matchLabels: labels(env),
+              matchLabels: labels(env) {
+                component: 'open-vsx-server',
+              },
             },
           },
         ],
@@ -333,7 +341,9 @@ local newService(env, deployment) = {
   kind: "Service",
   metadata: namespacedResourceMetadata(env),
   spec: {
-    selector: labels(env),
+    selector: labels(env) {
+      component: 'open-vsx-server',
+    },
     ports: utils.namedObjectList(self._ports),
     _ports:: {
       http: {
@@ -378,7 +388,9 @@ local newElasticSearchCluster(env) = {
   metadata: {
     name: env.elasticsearch.name,
     namespace: env.namespace,
-    labels: labels(env),
+    labels: labels(env) {
+      component: 'elasticsearch',
+    },
   },
   spec: {
     version: "8.7.1",
@@ -407,7 +419,9 @@ local newElasticSearchCluster(env) = {
         },
         podTemplate: {
           metadata: {
-            labels: labels(env),
+            labels: labels(env) {
+              component: 'elasticsearch',
+            },
           },
           spec: {
             containers: [
