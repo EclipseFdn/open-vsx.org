@@ -168,6 +168,6 @@ ovsx:
   extension-control:
     update-on-start: true
   integrity:
-    key-pair: renew
+    key-pair: create
   registry:
     version: <SERVER_VERSION>
