@@ -165,8 +165,6 @@ ovsx:
   migrations:
     delay:
       seconds: 300
-  extension-control:
-    update-on-start: true
   integrity:
     key-pair: create
   registry:
