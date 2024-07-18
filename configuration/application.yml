@@ -14,6 +14,10 @@ server:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
     min-response-size: 1024
+  jetty:
+    threads:
+      max-queue-capacity: 1
+    max-http-post-size: 536870912
 spring:
   application:
     name: openvsx-server
