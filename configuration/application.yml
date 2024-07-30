@@ -16,7 +16,7 @@ server:
     min-response-size: 1024
   jetty:
     threads:
-      max-queue-capacity: 100
+      max-queue-capacity: 200
 spring:
   application:
     name: openvsx-server
