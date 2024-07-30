@@ -14,6 +14,9 @@ server:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
     min-response-size: 1024
+  jetty:
+    threads:
+      max-queue-capacity: 100
 spring:
   application:
     name: openvsx-server
@@ -166,6 +169,6 @@ ovsx:
     delay:
       seconds: 300
   integrity:
-    key-pair: renew
+    key-pair: create
   registry:
     version: <SERVER_VERSION>
