@@ -17,6 +17,7 @@ server:
   jetty:
     threads:
       max-queue-capacity: 200
+    connection-idle-timeout: 10000
 spring:
   application:
     name: openvsx-server
