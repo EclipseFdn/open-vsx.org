@@ -35,5 +35,5 @@
         "watch:dev": "webpack --config dev/webpack.config.js --mode=development --watch",
         "start:dev": "node dev/server"
     },
-    "packageManager": "yarn@4.0.0"
+    "packageManager": "yarn@4.3.1"
 }
