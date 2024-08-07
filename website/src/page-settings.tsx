@@ -48,8 +48,8 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-            We've established a working group devoted entirely to the operation, maintenance, and promotion of the Open VSX Registry. Read more in our recent&nbsp;
-                <Link color='secondary' underline='hover' href="https://www.globenewswire.com/news-release/2023/06/27/2695137/0/en/The-Open-VSX-Registry-a-Vendor-Neutral-Community-Supported-Alternative-to-the-Visual-Studio-Marketplace-Gets-its-Own-Working-Group-at-the-Eclipse-Foundation.html">press release</Link>. 
+             We're planning a brief outage for database maintenance, currently scheduled for August 14. For scheduling details, see our
+                <Link color='secondary' underline='hover' href="https://status.open-vsx.org/maintenance">maintenance page</Link>. 
             </Typography>
         </Box>;
 
@@ -207,7 +207,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                     color: 'info'
                 },
                 cookie: {
-                    key: 'open-vsx-press-release',
+                    key: 'open-vsx-maintenance-2024-08-14',
                     value: 'closed',
                     path: '/'
                 }
