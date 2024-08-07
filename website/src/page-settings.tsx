@@ -48,7 +48,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-             We're planning a brief outage for database maintenance, currently scheduled for August 14. For scheduling details, see our
+             We're planning a brief outage for database maintenance, currently scheduled for August 14. For scheduling details, see our&nbsp;
                 <Link color='secondary' underline='hover' href="https://status.open-vsx.org/maintenance">maintenance page</Link>. 
             </Typography>
         </Box>;
