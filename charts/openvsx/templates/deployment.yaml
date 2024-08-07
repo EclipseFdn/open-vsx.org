@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+spec:
+  progressDeadlineSeconds: 3600
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+      environment: {{ .Values.environment }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        environment: {{ .Values.environment }}
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: speed
+                operator: NotIn
+                values:
+                - fast
+            weight: 1
+      containers:
+      - name: {{ .Values.name }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: http-management
+          containerPort: 8081
+          protocol: TCP
+        env:
+        - name: DEPLOYMENT_CONFIG
+          value: /run/secrets/open-vsx.org/deployment/configuration.yml
+        - name: ENVNAME
+          value: {{ .Values.environment }}
+        - name: JVM_ARGS
+          value: -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
+        volumeMounts:
+        - name: deployment-configuration
+          mountPath: /run/secrets/open-vsx.org/deployment
+        - name: truststore-with-elasticsearch-certs
+          mountPath: /run/secrets/open-vsx.org/truststore
+        envFrom:
+        - secretRef:
+            name: grafana-cloud-secret-staging
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health/liveness
+            port: http-management
+          periodSeconds: 10
+        readinessProbe:
+          failureThreshold: 2
+          httpGet:
+            path: /actuator/health/readiness
+            port: http-management
+          periodSeconds: 10
+        startupProbe:
+          failureThreshold: 360
+          httpGet:
+            path: /actuator/health/readiness
+            port: http-management
+          periodSeconds: 10
+      - name: grafana-agent
+        image: docker.io/grafana/agent:v0.39.1
+        command:
+          - /bin/grafana-agent
+        args:
+          - --config.file=$(CONFIG_FILE_PATH)
+          - --metrics.wal-directory=$(DATA_FILE_PATH)
+          - --config.expand-env=true
+        env:
+        - name: CONFIG_FILE_PATH
+          value: /etc/grafana-agent/agent.yml
+        - name: DATA_FILE_PATH
+          value: /etc/grafana-agent/data
+        - name: ENVNAME
+          value: staging
+        envFrom:
+        - secretRef:
+            name: grafana-cloud-secret-staging
+        volumeMounts:
+        - name: grafana-agent-config-volume
+          mountPath: /etc/grafana-agent
+        - name: grafana-agent-data-volume
+          mountPath: /etc/grafana-agent/data
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - keytool -import -noprompt -alias es-http-certs-internal -file /run/secrets/elasticsearch/http-certs/ca.crt -storetype jks -storepass 'changeit' -keystore /run/secrets/open-vsx.org/truststore/elasticsearch-http-certs.keystore
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+        name: init-keystore
+        volumeMounts:
+        - mountPath: /run/secrets/elasticsearch/http-certs
+          name: elastic-internal-http-certificates
+        - mountPath: /run/secrets/open-vsx.org/truststore
+          name: truststore-with-elasticsearch-certs
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: open-vsx-org
+            environment: staging
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+      volumes:
+      - name: deployment-configuration
+        secret:
+          defaultMode: 420
+          optional: false
+          secretName: deployment-configuration-staging
+      - name: elastic-internal-http-certificates
+        secret:
+          defaultMode: 420
+          optional: false
+          secretName: elasticsearch-staging-es-http-certs-internal
+      - name: grafana-agent-config-volume
+        configMap:
+          name: grafana-agent-configmap
+          items:
+          - key: agent.yml
+            path: agent.yml
+      - name: grafana-agent-data-volume
+        emptyDir:
+          medium: Memory
+      - name: truststore-with-elasticsearch-certs
+        emptyDir:
+          medium: Memory
