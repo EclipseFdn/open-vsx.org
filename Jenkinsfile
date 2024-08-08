@@ -87,7 +87,7 @@ pipeline {
         container('kubectl') {
           withKubeConfig([credentialsId: 'ci-bot-okd-c1-token', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
             sh '''
-              ./kubernetes/gen-deployment.sh staging "${IMAGE_NAME}:${IMAGE_TAG}" | kubectl apply -f -
+              ./kubernetes/helm-deploy.sh staging "${IMAGE_TAG}"
             '''
           }
         }
