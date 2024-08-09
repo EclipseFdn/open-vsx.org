@@ -16,3 +16,4 @@ spec:
   selector:
     app: {{ .Values.name }}
     environment: {{ .Values.environment }}
+    type: website
