@@ -122,11 +122,15 @@ local newDeployment(env, dockerImage) = {
     replicas: if (env.envName == "staging") then 1 else 2,
     progressDeadlineSeconds: 3600,
     selector: {
-      matchLabels: labels(env),
+      matchLabels: labels(env) + {
+        type: "website"
+      },
     },
     template: {
       metadata: {
-        labels: labels(env),
+        labels: labels(env) + {
+          type: "website"
+        }
       },
       spec: {
         local thisPod = self,
@@ -333,7 +337,9 @@ local newService(env, deployment) = {
   kind: "Service",
   metadata: namespacedResourceMetadata(env),
   spec: {
-    selector: labels(env),
+    selector: labels(env) + {
+      type: "website"
+    },
     ports: utils.namedObjectList(self._ports),
     _ports:: {
       http: {
