@@ -14,6 +14,12 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: 97e1417-99
 
+website:
+  jvmArgs: -Xms4G -Xmx6G -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
+
+route:
+  timeout: 10m
+
 service:
   type: ClusterIP
   port: 80
@@ -21,8 +27,19 @@ service:
 
 resources:
   limits:
-    cpu: 1000m
-    memory: 2Gi
+    cpu: 5000m
+    memory: 8Gi
   requests:
-    cpu: 250m
-    memory: 2Gi
+    cpu: 3000m
+    memory: 8Gi
+
+# elastic search
+es:
+  java_opts: -Xms4g -Xmx4g -Dlog4j2.formatMsgNoLookups=true
+  resources:
+    limits:
+      cpu: 4
+      memory: 8Gi
+    requests:
+      cpu: 1
+      memory: 8Gi

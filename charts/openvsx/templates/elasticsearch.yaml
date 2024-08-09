@@ -52,13 +52,8 @@ spec:
         containers:
         - env:
           - name: ES_JAVA_OPTS
-            value: -Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true
+            value: {{ .Values.es.java_opts }}
           name: elasticsearch
           resources:
-            limits:
-              cpu: 1
-              memory: 2Gi
-            requests:
-              cpu: 1
-              memory: 2Gi
+          {{- toYaml .Values.es.resources | nindent 12 }}
   version: 8.7.1

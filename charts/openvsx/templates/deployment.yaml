@@ -48,7 +48,7 @@ spec:
         - name: ENVNAME
           value: {{ .Values.environment }}
         - name: JVM_ARGS
-          value: -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
+          value: {{ .Values.website.jvmArgs }}
         volumeMounts:
         - name: deployment-configuration
           mountPath: /run/secrets/open-vsx.org/deployment
@@ -56,7 +56,7 @@ spec:
           mountPath: /run/secrets/open-vsx.org/truststore
         envFrom:
         - secretRef:
-            name: grafana-cloud-secret-staging
+            name: grafana-cloud-secret-{{ .Values.environment }}
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -89,10 +89,10 @@ spec:
         - name: DATA_FILE_PATH
           value: /etc/grafana-agent/data
         - name: ENVNAME
-          value: staging
+          value: {{ .Values.environment }}
         envFrom:
         - secretRef:
-            name: grafana-cloud-secret-staging
+            name: grafana-cloud-secret-{{ .Values.environment }}
         volumeMounts:
         - name: grafana-agent-config-volume
           mountPath: /etc/grafana-agent
@@ -114,7 +114,7 @@ spec:
       - labelSelector:
           matchLabels:
             app: open-vsx-org
-            environment: staging
+            environment: {{ .Values.environment }}
         maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule
@@ -123,12 +123,12 @@ spec:
         secret:
           defaultMode: 420
           optional: false
-          secretName: deployment-configuration-staging
+          secretName: deployment-configuration-{{ .Values.environment }}
       - name: elastic-internal-http-certificates
         secret:
           defaultMode: 420
           optional: false
-          secretName: elasticsearch-staging-es-http-certs-internal
+          secretName: elasticsearch-{{ .Values.environment }}-es-http-certs-internal
       - name: grafana-agent-config-volume
         configMap:
           name: grafana-agent-configmap
