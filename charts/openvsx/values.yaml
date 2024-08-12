@@ -1,0 +1,45 @@
+# Default values for openvsx.
+
+name: open-vsx-org
+environment: production
+namespace: open-vsx-org
+host: open-vsx.org
+
+replicaCount: 2
+esReplicaCount: 3
+
+image:
+  repository: ghcr.io/eclipsefdn/openvsx-website
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 97e1417-99
+
+website:
+  jvmArgs: -Xms4G -Xmx6G -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
+
+route:
+  timeout: 10m
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+resources:
+  limits:
+    cpu: 5000m
+    memory: 8Gi
+  requests:
+    cpu: 3000m
+    memory: 8Gi
+
+# elastic search
+es:
+  java_opts: -Xms4g -Xmx4g -Dlog4j2.formatMsgNoLookups=true
+  resources:
+    limits:
+      cpu: 4
+      memory: 8Gi
+    requests:
+      cpu: 1
+      memory: 8Gi

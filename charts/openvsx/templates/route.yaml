@@ -1,0 +1,49 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    haproxy.router.openshift.io/disable_cookies: 'true'
+    haproxy.router.openshift.io/timeout: {{ .Values.route.timeout }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+spec:
+  host: {{ .Values.host }}
+  path: /
+  port:
+    targetPort: {{ .Values.service.targetPort }}
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ .Values.name }}-{{ .Values.environment }}
+    weight: 100
+{{- if eq .Values.environment "production" }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    haproxy.router.openshift.io/disable_cookies: 'true'
+    haproxy.router.openshift.io/timeout: {{ .Values.route.timeout }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: www-{{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+spec:
+  host: www.{{ .Values.host }}
+  path: /
+  port:
+    targetPort: {{ .Values.service.targetPort }}
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ .Values.name }}-{{ .Values.environment }}
+    weight: 100
+{{- end }}

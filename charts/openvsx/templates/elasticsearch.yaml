@@ -1,0 +1,59 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: elasticsearch-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+spec:
+  nodeSets:
+  - name: default
+    count: {{ .Values.esReplicaCount }}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: cephfs-2repl
+    config:
+      node.roles:
+      - master
+      - data
+      node.store.allow_mmap: false
+    podTemplate:
+      metadata:
+        labels:
+          app: {{ .Values.name }}
+          environment: {{ .Values.environment }}
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: speed
+                  operator: NotIn
+                  values:
+                  - fast
+              weight: 1
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch-{{ .Values.environment }}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - env:
+          - name: ES_JAVA_OPTS
+            value: {{ .Values.es.java_opts }}
+          name: elasticsearch
+          resources:
+          {{- toYaml .Values.es.resources | nindent 12 }}
+  version: 8.7.1

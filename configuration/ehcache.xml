@@ -35,7 +35,7 @@
             <ttl unit="seconds">10800</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">4096</heap>
+            <heap unit="entries">8192</heap>
             <offheap unit="MB">256</offheap>
             <disk unit="MB">1024</disk>
         </resources>
