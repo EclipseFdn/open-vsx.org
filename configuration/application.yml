@@ -114,7 +114,7 @@ bucket4j:
         Access-Control-Allow-Origin: '*'
         Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
       rate-limits:
-        - cache-key: getRemoteAddr()
+        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
           bandwidths:
             - capacity: 75
               time: 1
@@ -125,7 +125,7 @@ bucket4j:
         Access-Control-Allow-Origin: '*'
         Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
       rate-limits:
-        - cache-key: getRemoteAddr()
+        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
           bandwidths:
             - capacity: 15
               time: 1
@@ -143,7 +143,7 @@ bucket4j:
               time: 1
               unit: seconds
         - execute-condition: getParameter("token") == null
-          cache-key: getRemoteAddr()
+          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
           bandwidths:
             - capacity: 15
               time: 1
