@@ -15,7 +15,7 @@ import { Link as RouteLink, Route, useParams } from 'react-router-dom';
 import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
-import InfoIcon from '@mui/icons-material/Info';
+// import InfoIcon from '@mui/icons-material/Info';
 import OpenVSXLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import { Document } from './document';
@@ -42,16 +42,16 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         </>;
 
     //---------- ANNOUNCEMENT BANNER
-    const bannerContent: FunctionComponent = () =>
-        <Box display='flex' alignItems='center' pt={1} pb={1}>
-            <Box mr={2}>
-                <InfoIcon fontSize='large' />
-            </Box>
-            <Typography variant='body1'>
-             We're planning a brief outage for database maintenance, currently scheduled for August 14. For scheduling details, see our&nbsp;
-                <Link color='secondary' underline='hover' href="https://status.open-vsx.org/maintenance">maintenance page</Link>. 
-            </Typography>
-        </Box>;
+    // const bannerContent: FunctionComponent = () =>
+    //     <Box display='flex' alignItems='center' pt={1} pb={1}>
+    //         <Box mr={2}>
+    //             <InfoIcon fontSize='large' />
+    //         </Box>
+    //         <Typography variant='body1'>
+    //          We're planning a brief outage for database maintenance, currently scheduled for August 14. For scheduling details, see our&nbsp;
+    //             <Link color='secondary' underline='hover' href="https://status.open-vsx.org/maintenance">maintenance page</Link>. 
+    //         </Typography>
+    //     </Box>;
 
     //---------- SEARCH HEADER
     const searchHeader: FunctionComponent = () =>
@@ -197,21 +197,6 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
             toolbarContent,
-            banner: {
-                content: bannerContent,
-                props: {
-                    dismissButton: {
-                        show: true,
-                        label: 'Got It'
-                    },
-                    color: 'info'
-                },
-                cookie: {
-                    key: 'open-vsx-maintenance-2024-08-14',
-                    value: 'closed',
-                    path: '/'
-                }
-            },
             footer: {
                 content: footerContent,
                 props: {
