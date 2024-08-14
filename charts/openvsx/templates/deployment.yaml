@@ -133,7 +133,7 @@ spec:
           secretName: elasticsearch-{{ .Values.environment }}-es-http-certs-internal
       - name: grafana-agent-config-volume
         configMap:
-          name: grafana-agent-configmap
+          name: grafana-agent-configmap-{{ .Values.environment }}
           items:
           - key: agent.yml
             path: agent.yml
