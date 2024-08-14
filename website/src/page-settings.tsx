@@ -197,21 +197,21 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
             toolbarContent,
-            banner: {
-                content: bannerContent,
-                props: {
-                    dismissButton: {
-                        show: true,
-                        label: 'Got It'
-                    },
-                    color: 'info'
-                },
-                cookie: {
-                    key: 'open-vsx-maintenance-2024-08-14',
-                    value: 'closed',
-                    path: '/'
-                }
-            },
+//          banner: {
+//                content: bannerContent,
+//                props: {
+//                    dismissButton: {
+//                        show: true,
+//                        label: 'Got It'
+//                    },
+//                  color: 'info'
+//                },
+//                cookie: {
+//                    key: 'open-vsx-maintenance-2024-08-14',
+//                    value: 'closed',
+//                    path: '/'
+//                }
+//            },
             footer: {
                 content: footerContent,
                 props: {
