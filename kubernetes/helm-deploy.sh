@@ -17,9 +17,13 @@ IFS=$'\n\t'
 SCRIPT_FOLDER="$(dirname "$(readlink -f "${0}")")"
 ROOT_DIR="${SCRIPT_FOLDER}/.."
 
+release_name_staging="staging"
+release_name_production="production"
+chart_name="openvsx"
+namespace="open-vsx-org"
+
 environment="${1:-}"
 image_tag="${2:-}"
-namespace="open-vsx-org"
 
 # check that environment is not empty
 if [[ -z "${environment}" ]]; then
@@ -34,20 +38,23 @@ if [[ -z "${image_tag}" ]]; then
 fi
 
 if [[ "${environment}" == "staging" ]]; then
-  values_file="${ROOT_DIR}/charts/openvsx/values-staging.yaml"
-  release_name="staging"
+  values_file="${ROOT_DIR}/charts/${chart_name}/values-staging.yaml"
+  release_name="${release_name_staging}"
 elif [[ "${environment}" == "production" ]]; then
-  values_file="${ROOT_DIR}/charts/openvsx/values.yaml"
-  release_name="production"
+  values_file="${ROOT_DIR}/charts/${chart_name}/values.yaml"
+  release_name="${release_name_production}"
 else
   printf "ERROR: Unknown environment. Only 'staging' or 'production' are supported.\n"
   exit 1
 fi
 
-if helm list -n open-vsx-org | grep "${release_name}" > /dev/null; then
+if helm list -n "${namespace}" | grep "${release_name}" > /dev/null; then
   echo "Found installed Helm chart for release name '${release_name}'. Upgrading..."
-  helm upgrade "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
+  action="upgrade"
 else
   echo "Found no installed Helm chart for release name '${release_name}'. Installing..."
-  helm install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
+  action="install"
 fi
+
+helm "${action}" "${release_name}" "${ROOT_DIR}/charts/${chart_name}" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
+  
