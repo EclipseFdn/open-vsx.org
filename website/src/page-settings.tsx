@@ -42,16 +42,17 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         </>;
 
     //---------- ANNOUNCEMENT BANNER
-    // const bannerContent: FunctionComponent = () =>
-    //     <Box display='flex' alignItems='center' pt={1} pb={1}>
-    //         <Box mr={2}>
-    //             <InfoIcon fontSize='large' />
-    //         </Box>
-    //         <Typography variant='body1'>
-    //          We're planning a brief outage for database maintenance, currently scheduled for August 14. For scheduling details, see our&nbsp;
-    //             <Link color='secondary' underline='hover' href="https://status.open-vsx.org/maintenance">maintenance page</Link>. 
-    //         </Typography>
-    //     </Box>;
+    const bannerContent: FunctionComponent = () =>
+        <Box display='flex' alignItems='center' pt={1} pb={1}>
+            <Box mr={2}>
+                <InfoIcon fontSize='large' />
+            </Box>
+            <Typography variant='body1'>
+                Eclipse OCX and EclipseCon 2024 are right around the corner October 22-24. Whether you're IDEs are desktop cloud-based or a mix, we have a 
+                great <Link color='secondary' underline='hover' href="https://www.ocxconf.org/event/778b82cc-6834-48a4-a58e-f883c5a7b8c9/websitePage:637aabfe-dbad-4826-87c3-355bee0f7c89">agenda</Link> of talks. 
+                <Link color='secondary' underline='hover' href="https://status.open-vsx.org/maintenance">Register</Link> now!
+            </Typography>
+        </Box>;
 
     //---------- SEARCH HEADER
     const searchHeader: FunctionComponent = () =>
@@ -197,6 +198,21 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
             toolbarContent,
+            banner: {
+                content: bannerContent,
+                props: {
+                    dismissButton: {
+                        show: true,
+                        label: 'Got It'
+                    },
+                    color: 'info'
+                },
+                cookie: {
+                    key: 'ocx-2024',
+                    value: 'closed',
+                    path: '/'
+                }
+            },
             footer: {
                 content: footerContent,
                 props: {
