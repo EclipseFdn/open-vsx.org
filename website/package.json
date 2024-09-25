@@ -6,7 +6,7 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "0.11.11"
+        "openvsx-webui": "0.12.0"
     },
     "peerDependencies": {
         "@babel/core": "^7.0.0"
@@ -17,11 +17,11 @@
         "@types/react-dom": "^18.2.6",
         "@types/react-router-dom": "^5.3.3",
         "css-loader": "^6.8.1",
-        "express": "^4.19.2",
+        "express": "^4.21.0",
         "source-map-loader": "^4.0.1",
         "style-loader": "^3.3.3",
         "typescript": "~5.1.6",
-        "webpack": "^5.88.1",
+        "webpack": "^5.94.0",
         "webpack-bundle-analyzer": "^4.9.0",
         "webpack-cli": "^5.1.4"
     },
