@@ -50,7 +50,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             <Typography variant='body1'>
                 Eclipse OCX and EclipseCon 2024 are right around the corner October 22-24. Whether your IDEs are desktop cloud-based or a mix, we have a 
                 great <Link color='secondary' underline='hover' href="https://www.ocxconf.org/event/778b82cc-6834-48a4-a58e-f883c5a7b8c9/websitePage:637aabfe-dbad-4826-87c3-355bee0f7c89">agenda</Link> of talks. 
-                &nbsp;<Link color='secondary' underline='hover' href="https://www.ocxconf.org/event/778b82cc-6834-48a4-a58e-f883c5a7b8c9/websitePage:6650e052-a407-44ce-a754-b31ffba18333">Register</Link> now!
+                <Link color='secondary' underline='hover' href="https://www.ocxconf.org/event/778b82cc-6834-48a4-a58e-f883c5a7b8c9/websitePage:6650e052-a407-44ce-a754-b31ffba18333">Register</Link> now!
             </Typography>
         </Box>;
 
