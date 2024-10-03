@@ -4,6 +4,11 @@ This repository contains the source of [open-vsx.org](https://open-vsx.org), the
 
 The main artifact is the Docker image available at [ghcr.io/eclipsefdn/openvsx-website](https://github.com/orgs/EclipseFdn/packages/container/package/openvsx-website). It contains the server application with customized frontend and base configuration.
 
+## Publishing and Managing Extensions
+
+For information on publishing and managing extensions at [open-vsx.org](https://open-vsx.org), please see 
+the [open-vsx.org wiki](https://github.com/EclipseFdn/open-vsx.org/wiki).
+
 ## Claiming Namespace Ownership
 
 [Open VSX namespaces](https://github.com/eclipse/openvsx/wiki/Namespace-Access) are public by default. [Create an issue here](https://github.com/EclipseFdn/open-vsx.org/issues/new/choose) to claim ownership of a namespace.
