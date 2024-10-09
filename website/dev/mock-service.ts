@@ -19,9 +19,7 @@ const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Avatar_cu
 export class MockRegistryService extends ExtensionRegistryService {
 
     constructor() {
-        // FIXME cannot reference `this` in super constructor call
-        super('', new MockAdminService(undefined!));
-        (this.admin.registry as any) = this;
+        super('', MockAdminService);
     }
 
     search(abortController: AbortController, filter?: ExtensionFilter): Promise<Readonly<SearchResult | ErrorResult>> {
@@ -152,7 +150,9 @@ export class MockRegistryService extends ExtensionRegistryService {
     }
 }
 
-export class MockAdminService extends AdminService {
+export class MockAdminService implements AdminService {
+
+    constructor(readonly registry: ExtensionRegistryService) {}
 
     getExtension(abortController: AbortController, namespace: string, extension: string): Promise<Readonly<Extension>> {
         return this.registry.getExtensionDetail(abortController, '') as Promise<Extension>;
@@ -185,6 +185,10 @@ export class MockAdminService extends AdminService {
     }
 
     async revokePublisherContributions(abortController: AbortController, provider: string, login: string): Promise<Readonly<SuccessResult | ErrorResult>> {
+        return Promise.resolve({ success: 'ok' });
+    }
+
+    changeNamespace(abortController: AbortController, req: {oldNamespace: string, newNamespace: string, removeOldNamespace: boolean, mergeIfNewNamespaceAlreadyExists: boolean}): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
 }

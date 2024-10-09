@@ -176,10 +176,10 @@ const SubMenuLink = styled(Link)(subMenuLink);
 
 
 export const DefaultMenuContent: FunctionComponent = () => {
-    const [workingGroupMenuOpen, setWorkingGroupOpen] = useState(false);
+    const [workingGroupMenuOpen, setWorkingGroupMenuOpen] = useState(false);
     const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
-    const toggleWorkingGroupMenu = () => setWorkingGroupOpen(!workingGroupMenuOpen);
-    const closeWorkingGroupMenu = () => setWorkingGroupOpen(false);
+    const toggleWorkingGroupMenu = () => setWorkingGroupMenuOpen(!workingGroupMenuOpen);
+    const closeWorkingGroupMenu = () => setWorkingGroupMenuOpen(false);
 
     return <>
         <MenuLink href='https://github.com/eclipse/openvsx/wiki'>
