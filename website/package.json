@@ -6,7 +6,7 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "0.12.0-next.ce956f8a"
+        "openvsx-webui": "0.12.0-next.7821b01b"
     },
     "peerDependencies": {
         "@babel/core": "^7.0.0"
