@@ -32,13 +32,20 @@ const Members = () => {
                 VSX Registry at open-vsx.org.
             </Typography>
 
-            <Box my={4} textAlign='center'>
+            <Box display="flex" gap={1} my={4} justifyContent="center" textAlign="center" >
               <Button 
                   variant='contained' 
                   color='secondary' 
-                  href='https://membership.eclipse.org/application'
+                  href='https://www.eclipse.org/membership/join-us/'
               >
-                Become a Member
+                Contact Us About Membership
+              </Button>
+              <Button 
+                  variant='contained' 
+                  color='secondary' 
+                  href='https://membership.eclipse.org/application/ready-to-join'
+              >
+                My Organisation Is Ready to Join Now
               </Button>
             </Box>
 
