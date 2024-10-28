@@ -43,55 +43,58 @@ const LegalLink = styled(RouteLink)(({ theme }: { theme: Theme }) => ({
     fontWeight: theme.typography.fontWeightLight
 }));
 
+interface MainFooterProps {
+    isSmallDisplay: boolean
+    isLargeDisplay: boolean
+}
 
+const MainFooter = ({isSmallDisplay, isLargeDisplay}: MainFooterProps) => {
+    const itemSpacing = 2.5;
+    return <Box display='flex' justifyContent='space-between' alignItems='center'>
+        {isSmallDisplay ? null : repositoryLink()}
+        {
+            isLargeDisplay ?
+            <Box display='flex'>
+                <Box>
+                    {privacyPolicy()}
+                </Box>
+                <Box ml={itemSpacing}>
+                    {termsOfUse()}
+                </Box>
+                <Box ml={itemSpacing}>
+                    {publisherAgreement()}
+                </Box>
+                <Box ml={itemSpacing}>
+                    {copyrightAgent()}
+                </Box>
+                <Box ml={itemSpacing}>
+                    {legalResources()}
+                </Box>
+                <Box ml={itemSpacing}>
+                    {manageCookies()}
+                </Box>
+                <Box ml={itemSpacing}>
+                    {copyrightText()}
+                </Box>
+                <Box ml={itemSpacing}>
+                    {rightsReservedText()}
+                </Box>
+            </Box>
+            :
+            <>
+                {copyrightText()}
+                <Box display='flex' alignItems='center'>
+                    <ExpandLessIcon /> Legal
+                </Box>
+            </>
+        }
+    </Box>;
+}
 
 const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) => {
     const theme = useTheme();
     const isSmallDisplay = useMediaQuery(theme.breakpoints.down('sm'));
     const isLargeDisplay = useMediaQuery(theme.breakpoints.up('xl'));
-
-    const MainFooter = () => {
-        const itemSpacing = 2.5;
-        return <Box display='flex' justifyContent='space-between' alignItems='center'>
-            {isSmallDisplay ? null : repositoryLink()}
-            {
-                isLargeDisplay ?
-                <Box display='flex'>
-                    <Box>
-                        {privacyPolicy()}
-                    </Box>
-                    <Box ml={itemSpacing}>
-                        {termsOfUse()}
-                    </Box>
-                    <Box ml={itemSpacing}>
-                        {publisherAgreement()}
-                    </Box>
-                    <Box ml={itemSpacing}>
-                        {copyrightAgent()}
-                    </Box>
-                    <Box ml={itemSpacing}>
-                        {legalResources()}
-                    </Box>
-                    <Box ml={itemSpacing}>
-                        {manageCookies()}
-                    </Box>
-                    <Box ml={itemSpacing}>
-                        {copyrightText()}
-                    </Box>
-                    <Box ml={itemSpacing}>
-                        {rightsReservedText()}
-                    </Box>
-                </Box>
-                :
-                <>
-                    {copyrightText()}
-                    <Box display='flex' alignItems='center'>
-                        <ExpandLessIcon /> Legal
-                    </Box>
-                </>
-            }
-        </Box>;
-    }
 
     if (expanded && !isLargeDisplay) {
         const itemSpacing = 1;
@@ -116,10 +119,10 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
                     {manageCookies()}
                 </Box>
             </Box>
-            <MainFooter />
+            <MainFooter isSmallDisplay={isSmallDisplay} isLargeDisplay={isLargeDisplay}/>
         </Box>;
     } else {
-        return <MainFooter />;
+        return <MainFooter isSmallDisplay={isSmallDisplay} isLargeDisplay={isLargeDisplay}/>;
     }
 };
 

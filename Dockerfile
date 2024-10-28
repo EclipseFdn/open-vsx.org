@@ -1,27 +1,25 @@
-ARG SERVER_VERSION=v0.17.0
+ARG SERVER_VERSION=v0.18.0
 
 # Builder image to compile the website
-FROM ubuntu as builder
+FROM ubuntu AS builder
 
 WORKDIR /workdir
 
+# See https://github.com/nodesource/distributions for Node.js package
 RUN apt-get update \
   && apt-get install --no-install-recommends -y \
     bash \
     ca-certificates \
     curl \
+  && rm -rf /var/lib/apt/lists/* \
+  && curl -sSL https://deb.nodesource.com/setup_20.x | bash - \
+  && apt-get install -y nodejs \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
-
-# See https://github.com/nodesource/distributions/blob/main/README.md#debinstall
-RUN curl -sSL https://deb.nodesource.com/setup_20.x | bash - \
-  && apt-get install -y nodejs
-
-RUN corepack enable
-RUN corepack prepare yarn@stable --activate
+  && corepack enable \
+  && corepack prepare yarn@stable --activate
 
 # bump to update website
-ENV WEBSITE_VERSION 0.12.0
+ENV WEBSITE_VERSION 0.13.0
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \

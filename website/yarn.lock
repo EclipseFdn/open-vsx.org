@@ -1515,9 +1515,9 @@ __metadata:
   linkType: hard
 
 "dompurify@npm:^3.0.4":
-  version: 3.0.5
-  resolution: "dompurify@npm:3.0.5"
-  checksum: 10/24ed3a26486806ec77dd4e3ab248d9c617e851237e3989609d5188312bbb5461028ea08a851f688cde8773cf45eacfeb0bff66c166ef9699fc3ed6a60a565169
+  version: 3.1.6
+  resolution: "dompurify@npm:3.1.6"
+  checksum: 10/036844bc9b717b172ba27f5863b56f950289a05d8eebfb702d6953bbf80bd021e480ce4217bd084567186f2d0ada13358ce5556963492cfe402d774e8667f120
   languageName: node
   linkType: hard
 
@@ -2399,7 +2399,7 @@ __metadata:
     "@types/react-router-dom": "npm:^5.3.3"
     css-loader: "npm:^6.8.1"
     express: "npm:^4.21.0"
-    openvsx-webui: "npm:0.12.0"
+    openvsx-webui: "npm:0.13.0"
     source-map-loader: "npm:^4.0.1"
     style-loader: "npm:^3.3.3"
     typescript: "npm:~5.1.6"
@@ -2420,9 +2420,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:0.12.0":
-  version: 0.12.0
-  resolution: "openvsx-webui@npm:0.12.0"
+"openvsx-webui@npm:0.13.0":
+  version: 0.13.0
+  resolution: "openvsx-webui@npm:0.13.0"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -2448,7 +2448,7 @@ __metadata:
     react-router-dom: "npm:^6.14.1"
   peerDependencies:
     "@babel/core": ^7.0.0
-  checksum: 10/dc1881ec826aa878519d8f3ffba906c9e26840991ea0c84a088b6277cecaa9fe80721cef166e0277eb9c56756e2778fc6dcb6eac4dda9de4441ba68aea634527
+  checksum: 10/b0245fd107f2b88d86cf7fea5a9ded80ad9084a13fdff16904614f5bdeb9f750b916feb976748eee9da0e230065b0d9fc06f789f74153f21005d16eef57c1f07
   languageName: node
   linkType: hard
 
