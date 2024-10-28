@@ -152,8 +152,6 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  upstream:
-    url: https://open-vsx.org
   storage:
     primary-service: azure-blob
   webui:
