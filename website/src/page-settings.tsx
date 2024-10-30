@@ -15,7 +15,7 @@ import { Link as RouteLink, Route, useParams } from 'react-router-dom';
 import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
-// import InfoIcon from '@mui/icons-material/Info';
+import InfoIcon from '@mui/icons-material/Info';
 import OpenVSXLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import { Document } from './document';
@@ -127,18 +127,16 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             </Suspense>
         </>;
 
-    // //---------- ANNOUNCEMENT BANNER
-    // const bannerContent: FunctionComponent = () =>
-    //     <Box display='flex' alignItems='center' pt={1} pb={1}>
-    //         <Box mr={2}>
-    //             <InfoIcon fontSize='large' />
-    //         </Box>
-    //         <Typography variant='body1'>
-    //             Eclipse OCX and EclipseCon 2024 are right around the corner October 22-24. Whether your IDEs are desktop cloud-based or a mix, we have a 
-    //             great <Link color='secondary' underline='hover' href="https://www.ocxconf.org/event/778b82cc-6834-48a4-a58e-f883c5a7b8c9/websitePage:637aabfe-dbad-4826-87c3-355bee0f7c89">agenda</Link> of 
-    //             talks. <Link color='secondary' underline='hover' href="https://www.ocxconf.org/event/778b82cc-6834-48a4-a58e-f883c5a7b8c9/websitePage:6650e052-a407-44ce-a754-b31ffba18333">Register</Link> now!
-    //         </Typography>
-    //     </Box>;
+    //---------- ANNOUNCEMENT BANNER
+    const bannerContent: FunctionComponent = () =>
+        <Box display='flex' alignItems='center' pt={1} pb={1}>
+            <Box mr={2}>
+                <InfoIcon fontSize='large' />
+            </Box>
+            <Typography variant='body1'>
+                Open VSX now supports deprecating extensions - see our <Link color='secondary' underline='hover' href="https://blogs.eclipse.org/post/john-kellerman/new-feature-open-vsx-deprecating-extensions">announcement</Link>.
+            </Typography>
+        </Box>;
 
     //---------- SEARCH HEADER
     const searchHeader: FunctionComponent = () =>
@@ -192,21 +190,21 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
             toolbarContent,
-            // banner: {
-            //     content: bannerContent,
-            //     props: {
-            //         dismissButton: {
-            //             show: true,
-            //             label: 'Got It'
-            //         },
-            //         color: 'info'
-            //     },
-            //     cookie: {
-            //         key: 'ocx-2024',
-            //         value: 'closed',
-            //         path: '/'
-            //     }
-            // },
+            banner: {
+                content: bannerContent,
+                props: {
+                    dismissButton: {
+                        show: true,
+                        label: 'Got It'
+                    },
+                    color: 'info'
+                },
+                cookie: {
+                    key: 'Extension-Deprecation',
+                    value: 'closed',
+                    path: '/'
+                }
+            },
             footer: {
                 content: footerContent,
                 props: {
