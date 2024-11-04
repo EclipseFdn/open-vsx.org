@@ -84,6 +84,14 @@ management:
   tracing:
     sampling:
       probability: 0.1
+springdoc:
+  model-and-view-allowed: true
+  swagger-ui:
+    path: /swagger-ui
+    docExpansion: list
+    operationsSorter: alpha
+    supportedSubmitMethods:
+      - get
 org:
   jobrunr:
     job-scheduler:
