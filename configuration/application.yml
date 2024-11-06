@@ -12,6 +12,8 @@ server:
   shutdown: graceful
   error:
     path: /error
+    whitelabel:
+      enabled: false
   compression:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
