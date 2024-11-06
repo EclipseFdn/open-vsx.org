@@ -10,6 +10,8 @@ server:
   address: 0.0.0.0
   port: 8080
   shutdown: graceful
+  error:
+    path: /error
   compression:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
@@ -160,7 +162,7 @@ ovsx:
   storage:
     primary-service: azure-blob
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters"
+    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
     base-url: https://api.eclipse.org/
     publisher-agreement:
