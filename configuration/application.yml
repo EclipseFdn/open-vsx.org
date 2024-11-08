@@ -25,6 +25,9 @@ server:
 spring:
   application:
     name: openvsx-server
+  autoconfigure:
+    # don't send traces to Zipkin
+    exclude: org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
   config:
     import: file:${DEPLOYMENT_CONFIG}
   cache:
@@ -81,7 +84,7 @@ management:
       exposure:
         include:
           - health
-          - prometheus
+          # - prometheus
   tracing:
     sampling:
       probability: 0.1
