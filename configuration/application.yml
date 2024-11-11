@@ -10,6 +10,10 @@ server:
   address: 0.0.0.0
   port: 8080
   shutdown: graceful
+  error:
+    path: /server-error
+    whitelabel:
+      enabled: false
   compression:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
@@ -84,6 +88,14 @@ management:
   tracing:
     sampling:
       probability: 0.1
+springdoc:
+  model-and-view-allowed: true
+  swagger-ui:
+    path: /swagger-ui
+    docExpansion: list
+    operationsSorter: alpha
+    supportedSubmitMethods:
+      - get
 org:
   jobrunr:
     job-scheduler:
@@ -155,7 +167,7 @@ ovsx:
   storage:
     primary-service: azure-blob
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters"
+    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
     base-url: https://api.eclipse.org/
     publisher-agreement:
