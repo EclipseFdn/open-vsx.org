@@ -1407,13 +1407,13 @@ __metadata:
   linkType: hard
 
 "cross-spawn@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "cross-spawn@npm:7.0.3"
+  version: 7.0.6
+  resolution: "cross-spawn@npm:7.0.6"
   dependencies:
     path-key: "npm:^3.1.0"
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
-  checksum: 10/e1a13869d2f57d974de0d9ef7acbf69dc6937db20b918525a01dacb5032129bd552d290d886d981e99f1b624cb03657084cc87bd40f115c07ecf376821c729ce
+  checksum: 10/0d52657d7ae36eb130999dffff1168ec348687b48dd38e2ff59992ed916c88d328cf1d07ff4a4a10bc78de5e1c23f04b306d569e42f7a2293915c081e4dfee86
   languageName: node
   linkType: hard
 
@@ -2399,7 +2399,7 @@ __metadata:
     "@types/react-router-dom": "npm:^5.3.3"
     css-loader: "npm:^6.8.1"
     express: "npm:^4.21.1"
-    openvsx-webui: "npm:0.13.0"
+    openvsx-webui: "npm:0.13.0-next.465f6bcd"
     source-map-loader: "npm:^4.0.1"
     style-loader: "npm:^3.3.3"
     typescript: "npm:~5.1.6"
@@ -2420,9 +2420,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:0.13.0":
-  version: 0.13.0
-  resolution: "openvsx-webui@npm:0.13.0"
+"openvsx-webui@npm:0.13.0-next.465f6bcd":
+  version: 0.13.0-next.465f6bcd
+  resolution: "openvsx-webui@npm:0.13.0-next.465f6bcd"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -2448,7 +2448,7 @@ __metadata:
     react-router-dom: "npm:^6.14.1"
   peerDependencies:
     "@babel/core": ^7.0.0
-  checksum: 10/b0245fd107f2b88d86cf7fea5a9ded80ad9084a13fdff16904614f5bdeb9f750b916feb976748eee9da0e230065b0d9fc06f789f74153f21005d16eef57c1f07
+  checksum: 10/2ea2590d9a8080ab8b9f505743743d3904671c289c53ea4d31667ab2116f2a7e4766d0e8b28d12502b25bffd55248b256099f558ad2dad209208d2c401565085
   languageName: node
   linkType: hard
 
