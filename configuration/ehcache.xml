@@ -82,7 +82,7 @@
     </cache>
     <cache alias="files.webresource">
         <expiry>
-            <tti unit="minutes">5</tti>
+            <tti unit="hours">1</tti>
         </expiry>
         <listeners>
             <listener>
@@ -100,7 +100,7 @@
     </cache>
     <cache alias="files.extension">
         <expiry>
-            <tti unit="minutes">5</tti>
+            <tti unit="hours">1</tti>
         </expiry>
         <listeners>
             <listener>
