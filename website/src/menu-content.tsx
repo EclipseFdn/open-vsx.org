@@ -182,7 +182,7 @@ export const DefaultMenuContent: FunctionComponent = () => {
     const closeWorkingGroupMenu = () => setWorkingGroupMenuOpen(false);
 
     return <>
-        <MenuLink href='https://github.com/eclipse/openvsx/wiki'>
+        <MenuLink href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
             Documentation
         </MenuLink>
         <MenuLink href='https://status.open-vsx.org/'>
