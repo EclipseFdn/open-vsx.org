@@ -8,8 +8,8 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, PropsWithChildren, useState, useRef } from 'react';
-import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import React, { FunctionComponent, PropsWithChildren, useState, useRef, useContext } from 'react';
+import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -22,7 +22,11 @@ import PublishIcon from '@mui/icons-material/Publish';
 import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HubIcon from '@mui/icons-material/Hub';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { UserSettingsRoutes } from 'openvsx-webui';
+import { MainContext } from 'openvsx-webui/lib/context';
+import { MobileUserAvatar } from 'openvsx-webui/lib/default/menu-content'
+import { UserAvatar } from 'openvsx-webui/lib/pages/user/avatar';
 
 //-------------------- Mobile View --------------------//
 
@@ -48,7 +52,32 @@ const MobileMenuItemText: FunctionComponent<PropsWithChildren> = ({ children }) 
 };
 
 export const MobileMenuContent: FunctionComponent = () => {
+    const {service, user} = useContext(MainContext)
     return <>
+        <MobileMenuItem>
+            {
+                user
+                    ? <MobileUserAvatar/>
+                    : <RouteLink to={service.getLoginUrl()}>
+                        <MobileMenuItemText>
+                            <AccountBoxIcon sx={itemIcon} />
+                            Log In
+                        </MobileMenuItemText>
+                    </RouteLink>
+            }
+        </MobileMenuItem>
+        {
+            !location.pathname.startsWith(UserSettingsRoutes.ROOT)
+            ? <MobileMenuItem>
+                <RouteLink to='/user-settings/extensions'>
+                    <MobileMenuItemText>
+                        <PublishIcon sx={itemIcon} />
+                        Publish Extension
+                    </MobileMenuItemText>
+                </RouteLink>
+            </MobileMenuItem>
+            : null
+        }
         <MobileMenuItem>
             <Link target='_blank' href='https://github.com/eclipse/openvsx'>
                 <MobileMenuItemText>
@@ -119,18 +148,6 @@ export const MobileMenuContent: FunctionComponent = () => {
                 </MobileMenuItemText>
             </RouteLink>
         </MobileMenuItem>
-        {
-            !location.pathname.startsWith(UserSettingsRoutes.ROOT)
-            ? <MobileMenuItem>
-                <RouteLink to='/user-settings/extensions'>
-                    <MobileMenuItemText>
-                        <PublishIcon sx={itemIcon} />
-                        Publish Extension
-                    </MobileMenuItemText>
-                </RouteLink>
-            </MobileMenuItem>
-            : null
-        }
     </>;
 }
 
@@ -176,6 +193,7 @@ const SubMenuLink = styled(Link)(subMenuLink);
 
 
 export const DefaultMenuContent: FunctionComponent = () => {
+    const {service, user} = useContext(MainContext)
     const [workingGroupMenuOpen, setWorkingGroupMenuOpen] = useState(false);
     const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
     const toggleWorkingGroupMenu = () => setWorkingGroupMenuOpen(!workingGroupMenuOpen);
@@ -210,5 +228,16 @@ export const DefaultMenuContent: FunctionComponent = () => {
         <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
             Publish
         </Button>
+        {
+            user ?
+                <UserAvatar />
+                :
+                <IconButton
+                    href={service.getLoginUrl()}
+                    title='Log In'
+                    aria-label='Log In' >
+                    <AccountBoxIcon />
+                </IconButton>
+        }
     </>;
 }
