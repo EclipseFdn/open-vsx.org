@@ -45,7 +45,7 @@ const itemIcon = {
 
 const MobileMenuItemText: FunctionComponent<PropsWithChildren> = ({ children }) => {
     return (
-        <Typography variant='body2' sx={{ color: 'text.primary', display: 'flex', alignItems: 'center' }}>
+        <Typography variant='body2' sx={{ color: 'text.primary', display: 'flex', alignItems: 'center', textTransform: 'none' }}>
             {children}
         </Typography>
     );
@@ -54,18 +54,18 @@ const MobileMenuItemText: FunctionComponent<PropsWithChildren> = ({ children }) 
 export const MobileMenuContent: FunctionComponent = () => {
     const {service, user} = useContext(MainContext)
     return <>
-        <MobileMenuItem>
-            {
-                user
-                    ? <MobileUserAvatar/>
-                    : <RouteLink to={service.getLoginUrl()}>
+        {
+            user
+                ? <MobileUserAvatar/>
+                : <MobileMenuItem>
+                    <Link href={service.getLoginUrl()}>
                         <MobileMenuItemText>
                             <AccountBoxIcon sx={itemIcon} />
                             Log In
                         </MobileMenuItemText>
-                    </RouteLink>
-            }
-        </MobileMenuItem>
+                    </Link>
+                </MobileMenuItem>
+        }
         {
             !location.pathname.startsWith(UserSettingsRoutes.ROOT)
             ? <MobileMenuItem>
