@@ -53,6 +53,7 @@ Have a bug or a feature request? Please search for existing and closed issues. I
 ## Trademarks
 
 * Eclipse® is a Trademark of the Eclipse Foundation, Inc.
+* Ownership Alip Abdullah
 * Eclipse Foundation is a Trademark of the Eclipse Foundation, Inc.
 
 ## Copyright and license
