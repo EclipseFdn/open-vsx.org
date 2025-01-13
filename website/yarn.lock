@@ -2399,7 +2399,7 @@ __metadata:
     "@types/react-router-dom": "npm:^5.3.3"
     css-loader: "npm:^6.8.1"
     express: "npm:^4.21.1"
-    openvsx-webui: "npm:0.13.1-next.f0cc5cdd"
+    openvsx-webui: "npm:0.13.1-next.4864a03d"
     source-map-loader: "npm:^4.0.1"
     style-loader: "npm:^3.3.3"
     typescript: "npm:~5.1.6"
@@ -2420,9 +2420,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:0.13.1-next.f0cc5cdd":
-  version: 0.13.1-next.f0cc5cdd
-  resolution: "openvsx-webui@npm:0.13.1-next.f0cc5cdd"
+"openvsx-webui@npm:0.13.1-next.4864a03d":
+  version: 0.13.1-next.4864a03d
+  resolution: "openvsx-webui@npm:0.13.1-next.4864a03d"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -2448,7 +2448,7 @@ __metadata:
     react-router-dom: "npm:^6.14.1"
   peerDependencies:
     "@babel/core": ^7.0.0
-  checksum: 10/e35b54a7fb99ef7e1ac66b981ae37b81f3d3298d3a5ca015806a20476e3ad6c9cf81210216de33c2087c90280d2cd38198d4cd78a75ca14fa4e13508a2f00ea7
+  checksum: 10/4cd4cf9bcc0ddaea08bef8c56c087d5a954e23899f9fb5804c003c720873277a598a3ef4f9278349b20bb1f812ac7b479a1fa73cce5668a703f42e9acd4b7f46
   languageName: node
   linkType: hard
 
