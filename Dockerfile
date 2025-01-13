@@ -19,7 +19,7 @@ RUN apt-get update \
   && corepack prepare yarn@stable --activate
 
 # bump to update website
-ENV WEBSITE_VERSION 0.13.1-next.f0cc5cdd
+ENV WEBSITE_VERSION 0.13.1-next.4864a03d
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
