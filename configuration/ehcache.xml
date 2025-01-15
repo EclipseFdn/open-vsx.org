@@ -80,40 +80,4 @@
             <disk unit="MB">8</disk>
         </resources>
     </cache>
-    <cache alias="files.webresource">
-        <expiry>
-            <tti unit="hours">1</tti>
-        </expiry>
-        <listeners>
-            <listener>
-                <class>org.eclipse.openvsx.cache.ExpiredFileListener</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
-        <resources>
-            <heap>150</heap>
-        </resources>
-    </cache>
-    <cache alias="files.extension">
-        <expiry>
-            <tti unit="hours">1</tti>
-        </expiry>
-        <listeners>
-            <listener>
-                <class>org.eclipse.openvsx.cache.ExpiredFileListener</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
-        <resources>
-            <heap>20</heap>
-        </resources>
-    </cache>
 </config>
