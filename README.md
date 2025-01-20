@@ -20,6 +20,7 @@ If you want to refute a previously granted ownership, please comment on the corr
 Install dependencies, build assets and start a dev server:
 
 ```bash
+cd website
 yarn --cwd website
 yarn --cwd website build
 yarn --cwd website start:dev

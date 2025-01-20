@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import * as React from 'react';
-import { Link, Typography, Container, List, ListItem, ListItemText } from '@mui/material';
+import { Link, Typography, Container } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
 const Heading = styled(Typography)(({ theme }: { theme: Theme }) => ({
@@ -18,13 +18,6 @@ const Heading = styled(Typography)(({ theme }: { theme: Theme }) => ({
 
 const Paragraph = styled(Typography)(({ theme }: { theme: Theme }) => ({
     marginTop: theme.spacing(2)
-}));
-
-const RepositoryList = styled('ul')(({ theme }: { theme: Theme }) => ({
-    fontSize: theme.typography.body1.fontSize,
-    fontFamily: theme.typography.body1.fontFamily,
-    fontWeight: theme.typography.body1.fontWeight,
-    lineHeight: theme.typography.body1.lineHeight
 }));
 
 const About = () => {
@@ -37,7 +30,7 @@ const About = () => {
             more information.
         </Paragraph>
         <Paragraph variant='body1'>
-            This service is operated by the <Link color='secondary' href='https://www.eclipse.org/'>Eclipse Foundation</Link> 
+            This service is operated by the <Link color='secondary' href='https://www.eclipse.org/'>Eclipse Foundation </Link> 
             under the responsibility of the Open VSX Working Group. The Open VSX Working Group ensures the continued sustainability, 
             integrity, evolution and adoption of the Open VSX Registry. It provides governance, guidance, and funding for the 
             communities that support its implementation, deployment and maintenance. If you're interested in joining the working group, 
