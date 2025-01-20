@@ -37,45 +37,23 @@ const About = () => {
             more information.
         </Paragraph>
         <Paragraph variant='body1'>
-            This service is operated by the <Link color='secondary' href='https://www.eclipse.org/'>Eclipse Foundation</Link>.
+            This service is operated by the <Link color='secondary' href='https://www.eclipse.org/'>Eclipse Foundation</Link> 
+            under the responsibility of the Open VSX Working Group. The Open VSX Working Group ensures the continued sustainability, 
+            integrity, evolution and adoption of the Open VSX Registry. It provides governance, guidance, and funding for the 
+            communities that support its implementation, deployment and maintenance. If you're interested in joining the working group, 
+            please <Link color='secondary' underline='hover' href='https://www.eclipse.org/membership/join-us/'>let us know</Link>.
         </Paragraph>
         <Paragraph variant='body1'>
-            The source code of Open VSX is managed by
-            the <Link color='secondary' underline='hover' href='https://projects.eclipse.org/projects/ecd.openvsx'>Eclipse Open VSX</Link> project
-            and is licensed under
-            the <Link color='secondary' underline='hover' href='https://www.eclipse.org/legal/epl-2.0/'>Eclipse Public License v2.0</Link>.
-            The code is split in two repositories:
+            For information on using the registry, publishing extensions, its API, implementation 
+            and deployment details, see our <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki'>wiki</Link>.
         </Paragraph>
-        <RepositoryList>
-            <li>
-                <Link color='secondary' underline='hover' href='https://github.com/eclipse/openvsx'>eclipse/openvsx</Link> &ndash;
-                main code with server, web UI and CLI. These components can be reused to deploy other registry instances
-                (both public and private).
-            </li>
-            <li>
-                <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org'>EclipseFdn/open-vsx.org</Link> &ndash;
-                additional code for this website.
-            </li>
-        </RepositoryList>
 
-        <Heading variant='h5'>Resources</Heading>
-        <List>
-            <ListItem>
-                <ListItemText>
-                    The publishing process is described in the <Link color='secondary' underline='hover' href='https://github.com/eclipse/openvsx/wiki/Publishing-Extensions#how-to-publish-an-extension'>openvsx Wiki</Link>.
-                </ListItemText>
-            </ListItem>
-            <ListItem>
-                <ListItemText>
-                    The <Link color='secondary' underline='hover' href='https://www.eclipse.org/legal/open-vsx-registry-faq/'>FAQ</Link> section explains what you can and cannot do as a user of our service.
-                </ListItemText>
-            </ListItem>
-            <ListItem>
-                <ListItemText>
-                    Get involved in the <Link color='secondary' underline='hover' href='https://gitter.im/eclipse/openvsx'>community</Link>.
-                </ListItemText>
-            </ListItem>
-        </List>
+        <Heading variant='h5'>Communication</Heading>
+        <Paragraph variant='body1'>
+        We use Slack for instant messaging and general communication, 
+        use this <Link color='secondary' underline='hover' href='https://join.slack.com/t/openvsxworkinggroup/shared_invite/zt-2y07y1ggy-ct3IfJljjGI6xWUQ9llv6A'>link</Link> to join our Slack workspace.
+        </Paragraph>
+
     </Container>;
 }
 
