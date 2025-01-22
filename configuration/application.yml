@@ -179,9 +179,9 @@ ovsx:
     ssl: true
   search:
     relevance:
-      rating: 0.2
-      downloads: 1.0
-      timestamp: 3.0
+      rating: 0.5
+      downloads: 2.0
+      timestamp: 1.2
   migrations:
     delay:
       seconds: 300

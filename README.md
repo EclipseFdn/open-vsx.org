@@ -17,11 +17,15 @@ If you want to refute a previously granted ownership, please comment on the corr
 
 ## Getting started
 
-Install dependencies, build assets and start a dev server:
+Enable Yarn, install dependencies, build assets and start a dev server:
 
 ```bash
+corepack enable
+corepack prepare yarn@stable --activate
 yarn --cwd website
+yarn --cwd website compile
 yarn --cwd website build
+yarn --cwd website build:dev
 yarn --cwd website start:dev
 ```
 
