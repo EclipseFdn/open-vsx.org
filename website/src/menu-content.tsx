@@ -8,8 +8,8 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, PropsWithChildren, useState, useRef } from 'react';
-import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import React, { FunctionComponent, useState, useRef, useContext } from 'react';
+import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -22,33 +22,41 @@ import PublishIcon from '@mui/icons-material/Publish';
 import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HubIcon from '@mui/icons-material/Hub';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { UserSettingsRoutes } from 'openvsx-webui';
+import { MainContext } from 'openvsx-webui/lib/context';
+import { MobileMenuItem, itemIcon, MobileMenuItemText, MobileUserAvatar, headerItem, MenuLink, MenuRouteLink } from 'openvsx-webui/lib/default/menu-content'
+import { UserAvatar } from 'openvsx-webui/lib/pages/user/avatar';
 
 //-------------------- Mobile View --------------------//
 
-const MobileMenuItem = styled(MenuItem)({
-    cursor: 'auto',
-    '&>a': {
-        textDecoration: 'none'
-    }
-});
-
-const itemIcon = {
-    mr: 1,
-    width: '16px',
-    height: '16px',
-};
-
-const MobileMenuItemText: FunctionComponent<PropsWithChildren> = ({ children }) => {
-    return (
-        <Typography variant='body2' sx={{ color: 'text.primary', display: 'flex', alignItems: 'center' }}>
-            {children}
-        </Typography>
-    );
-};
-
 export const MobileMenuContent: FunctionComponent = () => {
+    const {service, user} = useContext(MainContext)
     return <>
+        {
+            user
+                ? <MobileUserAvatar/>
+                : <MobileMenuItem>
+                    <Link href={service.getLoginUrl()}>
+                        <MobileMenuItemText>
+                            <AccountBoxIcon sx={itemIcon} />
+                            Log In
+                        </MobileMenuItemText>
+                    </Link>
+                </MobileMenuItem>
+        }
+        {
+            !location.pathname.startsWith(UserSettingsRoutes.ROOT)
+            ? <MobileMenuItem>
+                <RouteLink to='/user-settings/extensions'>
+                    <MobileMenuItemText>
+                        <PublishIcon sx={itemIcon} />
+                        Publish Extension
+                    </MobileMenuItemText>
+                </RouteLink>
+            </MobileMenuItem>
+            : null
+        }
         <MobileMenuItem>
             <Link target='_blank' href='https://github.com/eclipse/openvsx'>
                 <MobileMenuItemText>
@@ -119,45 +127,17 @@ export const MobileMenuContent: FunctionComponent = () => {
                 </MobileMenuItemText>
             </RouteLink>
         </MobileMenuItem>
-        {
-            !location.pathname.startsWith(UserSettingsRoutes.ROOT)
-            ? <MobileMenuItem>
-                <RouteLink to='/user-settings/extensions'>
-                    <MobileMenuItemText>
-                        <PublishIcon sx={itemIcon} />
-                        Publish Extension
-                    </MobileMenuItemText>
-                </RouteLink>
-            </MobileMenuItem>
-            : null
-        }
     </>;
 }
 
 
 //-------------------- Default View --------------------//
 
-const headerItem = ({ theme }: { theme: Theme }) => ({
-    margin: theme.spacing(2.5),
-    color: theme.palette.text.primary,
-    textDecoration: 'none',
-    fontSize: '1.1rem',
-    fontFamily: theme.typography.fontFamily,
-    fontWeight: theme.typography.fontWeightLight,
-    letterSpacing: 1,
-    '&:hover': {
-        color: theme.palette.secondary.main,
-        textDecoration: 'none'
-    }
-});
-
 const headerTypography = ({ theme }: { theme: Theme }) => ({
     ...headerItem({theme}),
     cursor: 'pointer'
 });
 
-const MenuLink = styled(Link)(headerItem);
-const MenuRouteLink = styled(RouteLink)(headerItem);
 const MenuTypography = styled(Typography)(headerTypography);
 
 const subMenuItem = ({ theme }: { theme: Theme }) => ({
@@ -176,6 +156,7 @@ const SubMenuLink = styled(Link)(subMenuLink);
 
 
 export const DefaultMenuContent: FunctionComponent = () => {
+    const {service, user} = useContext(MainContext)
     const [workingGroupMenuOpen, setWorkingGroupMenuOpen] = useState(false);
     const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
     const toggleWorkingGroupMenu = () => setWorkingGroupMenuOpen(!workingGroupMenuOpen);
@@ -210,5 +191,16 @@ export const DefaultMenuContent: FunctionComponent = () => {
         <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
             Publish
         </Button>
+        {
+            user ?
+                <UserAvatar />
+                :
+                <IconButton
+                    href={service.getLoginUrl()}
+                    title='Log In'
+                    aria-label='Log In' >
+                    <AccountBoxIcon />
+                </IconButton>
+        }
     </>;
 }
