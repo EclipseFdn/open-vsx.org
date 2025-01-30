@@ -14,7 +14,8 @@ Neither the Eclipse Foundation nor its agents, affiliates, and members (collecti
 
 All logos and trademarks contained on this Website are and remain the property of their respective owners. Unless otherwise provided by a Third Party Publisher, no licenses or other rights in or to such logos and/or trademarks are granted to you.
 
-If you wish to provide any feedback regarding this Website or its Content, please send an email to license@eclipse.org. If you believe that Content residing or accessible on or through this Website infringes a copyright, please send a notice of copyright infringement to our designated agent pursuant to the procedures set forth here: https://www.eclipse.org/legal/copyright.php.  
+If you wish to provide any feedback regarding this Website or its Content, please use the
+contact information at https://open-vsx.org/about or create an issue at https://github.com/EclipseFdn/open-vsx.org/issues. If you believe that Content residing or accessible on or through this Website infringes a copyright, please send a notice of copyright infringement to our designated agent pursuant to the procedures set forth here: https://www.eclipse.org/legal/copyright.php.  
 
 ## For Third Party Publishers 
 
