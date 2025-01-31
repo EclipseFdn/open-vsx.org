@@ -61,11 +61,11 @@ const MainFooter = ({isSmallDisplay, isLargeDisplay}: MainFooterProps) => {
                 <Box ml={itemSpacing}>
                     {termsOfUse()}
                 </Box>
-                <Box ml={itemSpacing}>
+                {/* <Box ml={itemSpacing}>
                     {publisherAgreement()}
-                </Box>
+                </Box> */}
                 <Box ml={itemSpacing}>
-                    {copyrightAgent()}
+                    {compliance()}
                 </Box>
                 <Box ml={itemSpacing}>
                     {legalResources()}
@@ -106,11 +106,11 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
                 <Box mb={itemSpacing}>
                     {termsOfUse()}
                 </Box>
-                <Box mb={itemSpacing}>
+                {/* <Box mb={itemSpacing}>
                     {publisherAgreement()}
-                </Box>
+                </Box> */}
                 <Box mb={itemSpacing}>
-                    {copyrightAgent()}
+                    {compliance()}
                 </Box>
                 <Box mb={itemSpacing}>
                     {legalResources()}
@@ -136,7 +136,7 @@ const repositoryLink = () =>
 
 const privacyPolicy = () =>
     <Link
-        href='https://www.eclipse.org/legal/privacy.php'
+        href='https://www.eclipse.org/legal/privacy/'
         sx={[styles.link, styles.legalText]}>
         Privacy Policy
     </Link>;
@@ -146,21 +146,21 @@ const termsOfUse = () =>
         Terms of Use
     </LegalLink>;
 
-const publisherAgreement = () =>
-    <LegalLink to='/publisher-agreement-v1.0'>
-        Publisher Agreement
-    </LegalLink>;
+// const publisherAgreement = () =>
+//     <LegalLink to='/publisher-agreement-v1.0'>
+//         Publisher Agreement
+//     </LegalLink>;
 
-const copyrightAgent = () =>
+const compliance = () =>
     <Link
-        href='https://www.eclipse.org/legal/copyright.php'
+        href='https://www.eclipse.org/legal/compliance/'
         sx={[styles.link, styles.legalText]}>
-        Copyright Agent
+        Compliance
     </Link>;
 
 const legalResources = () =>
     <Link
-        href='http://www.eclipse.org/legal'
+        href='http://www.eclipse.org/legal/'
         sx={[styles.link, styles.legalText]}>
         Legal Resources
     </Link>;
@@ -170,7 +170,7 @@ const copyrightText = () =>
         Copyright &copy; <Link
             href='https://www.eclipse.org'
             sx={styles.link}>
-            Eclipse Foundation, Inc.
+            Eclipse Foundation, AISBL.
         </Link>
     </Box>;
 

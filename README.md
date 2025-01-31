@@ -20,6 +20,7 @@ If you want to refute a previously granted ownership, please comment on the corr
 Enable Yarn, install dependencies, build assets and start a dev server:
 
 ```bash
+cd website
 corepack enable
 corepack prepare yarn@stable --activate
 yarn --cwd website
