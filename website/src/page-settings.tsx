@@ -176,11 +176,14 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     };
 
     //---------- CLAIM NAMESPACE LINK
-    const claimNamespace: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ sx, extension }) => <Link
-        href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?labels=namespace&template=claim-namespace-ownership.md&title=${encodeURIComponent(`Claiming namespace \`${extension.namespace}\``)}`}
-        target='_blank' variant='body2' color='secondary' underline='hover' sx={sx} >
-        Claim Ownership
-    </Link>;
+    const claimNamespace: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ sx, extension }) => {
+        const body = 'Briefly explain what makes you a legitimate owner of the namespace mentioned in the issue title.\nPlease ensure that you have logged in to https://open-vsx.org at least once, otherwise we cannot process your request.'
+        return <Link
+            href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?labels=namespace&title=${encodeURIComponent(`Claiming namespace \`${extension.namespace}\``)}&body=${encodeURIComponent(body)}`}
+            target='_blank' variant='body2' color='secondary' underline='hover' sx={sx} >
+            Claim Ownership
+        </Link>
+    };
 
 
     return {
