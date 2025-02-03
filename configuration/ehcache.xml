@@ -95,7 +95,7 @@
             </listener>
         </listeners>
         <resources>
-            <heap>250</heap>
+            <heap>400</heap>
         </resources>
     </cache>
     <cache alias="files.extension">
@@ -113,7 +113,7 @@
             </listener>
         </listeners>
         <resources>
-            <heap>50</heap>
+            <heap>100</heap>
         </resources>
     </cache>
 </config>
