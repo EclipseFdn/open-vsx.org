@@ -61,9 +61,6 @@ const MainFooter = ({isSmallDisplay, isLargeDisplay}: MainFooterProps) => {
                 <Box ml={itemSpacing}>
                     {termsOfUse()}
                 </Box>
-                {/* <Box ml={itemSpacing}>
-                    {publisherAgreement()}
-                </Box> */}
                 <Box ml={itemSpacing}>
                     {compliance()}
                 </Box>
@@ -106,9 +103,6 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
                 <Box mb={itemSpacing}>
                     {termsOfUse()}
                 </Box>
-                {/* <Box mb={itemSpacing}>
-                    {publisherAgreement()}
-                </Box> */}
                 <Box mb={itemSpacing}>
                     {compliance()}
                 </Box>
@@ -145,11 +139,6 @@ const termsOfUse = () =>
     <LegalLink to='/terms-of-use'>
         Terms of Use
     </LegalLink>;
-
-// const publisherAgreement = () =>
-//     <LegalLink to='/publisher-agreement-v1.0'>
-//         Publisher Agreement
-//     </LegalLink>;
 
 const compliance = () =>
     <Link
