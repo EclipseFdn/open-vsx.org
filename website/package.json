@@ -6,7 +6,7 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "0.14.0"
+        "openvsx-webui": "0.15.0-next.ec87ad32"
     },
     "peerDependencies": {
         "@babel/core": "^7.0.0"
@@ -35,5 +35,5 @@
         "watch:dev": "webpack --config dev/webpack.config.js --mode=development --watch",
         "start:dev": "node dev/server"
     },
-    "packageManager": "yarn@4.3.1"
+    "packageManager": "yarn@4.6.0"
 }
