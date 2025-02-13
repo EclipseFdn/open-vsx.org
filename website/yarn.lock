@@ -2399,7 +2399,7 @@ __metadata:
     "@types/react-router-dom": "npm:^5.3.3"
     css-loader: "npm:^6.8.1"
     express: "npm:^4.21.2"
-    openvsx-webui: "npm:0.14.0"
+    openvsx-webui: "npm:0.15.0"
     source-map-loader: "npm:^4.0.1"
     style-loader: "npm:^3.3.3"
     typescript: "npm:~5.1.6"
@@ -2420,9 +2420,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:0.14.0":
-  version: 0.14.0
-  resolution: "openvsx-webui@npm:0.14.0"
+"openvsx-webui@npm:0.15.0":
+  version: 0.15.0
+  resolution: "openvsx-webui@npm:0.15.0"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -2448,7 +2448,7 @@ __metadata:
     react-router-dom: "npm:^6.14.1"
   peerDependencies:
     "@babel/core": ^7.0.0
-  checksum: 10/e2128612aebd8d42d2bb9399d4adce64c3efb812b60f53c57cefc625ce52e60c36bd7fdd9c1cb186f13f774bb6e0e6f7c0530cc428e9a364ad8e1c533e930abe
+  checksum: 10/c3cff9e5cf7043e889d82b6e3421237b9e9ea65773e0559eb5167713d67d47da5196eb9d726105a851171a9a811d91f5070b75cd25142ad07f7aea38c5e23996
   languageName: node
   linkType: hard
 
@@ -3047,11 +3047,11 @@ __metadata:
   linkType: hard
 
 "serialize-javascript@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "serialize-javascript@npm:6.0.1"
+  version: 6.0.2
+  resolution: "serialize-javascript@npm:6.0.2"
   dependencies:
     randombytes: "npm:^2.1.0"
-  checksum: 10/f756b1ff34b655b2183c64dd6683d28d4d9b9a80284b264cac9fd421c73890491eafd6c5c2bbe93f1f21bf78b572037c5a18d24b044c317ee1c9dc44d22db94c
+  checksum: 10/445a420a6fa2eaee4b70cbd884d538e259ab278200a2ededd73253ada17d5d48e91fb1f4cd224a236ab62ea7ba0a70c6af29fc93b4f3d3078bf7da1c031fde58
   languageName: node
   linkType: hard
 
