@@ -84,7 +84,7 @@ management:
           - prometheus
   tracing:
     sampling:
-      probability: 0.1
+      probability: 0.05
 springdoc:
   model-and-view-allowed: true
   swagger-ui:
