@@ -92,10 +92,11 @@
                 <events-to-fire-on>EXPIRED</events-to-fire-on>
                 <events-to-fire-on>EVICTED</events-to-fire-on>
                 <events-to-fire-on>REMOVED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
             </listener>
         </listeners>
         <resources>
-            <heap>400</heap>
+            <heap>500</heap>
         </resources>
     </cache>
     <cache alias="files.extension">
@@ -110,10 +111,11 @@
                 <events-to-fire-on>EXPIRED</events-to-fire-on>
                 <events-to-fire-on>EVICTED</events-to-fire-on>
                 <events-to-fire-on>REMOVED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
             </listener>
         </listeners>
         <resources>
-            <heap>100</heap>
+            <heap>200</heap>
         </resources>
     </cache>
 </config>
