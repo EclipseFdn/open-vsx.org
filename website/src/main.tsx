@@ -42,6 +42,7 @@ const App: FunctionComponent = () => {
                 <Main
                     service={service}
                     pageSettings={pageSettings}
+                    canLogin
                 />
             </ThemeProvider>
         </HelmetProvider>
