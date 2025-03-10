@@ -16,6 +16,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
+import {createAbsoluteURL} from 'openvsx-webui/lib/utils';
 import createPageSettings from './page-settings';
 
 const App: FunctionComponent = () => {
@@ -42,7 +43,7 @@ const App: FunctionComponent = () => {
                 <Main
                     service={service}
                     pageSettings={pageSettings}
-                    canLogin
+                    loginProviders={{github: createAbsoluteURL(['oauth2', 'authorization', 'github'])}}
                 />
             </ThemeProvider>
         </HelmetProvider>
