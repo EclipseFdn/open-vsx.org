@@ -43,7 +43,7 @@ const App: FunctionComponent = () => {
                 <Main
                     service={service}
                     pageSettings={pageSettings}
-                    loginProviders={{github: createAbsoluteURL(['oauth2', 'authorization', 'github'])}}
+                    loginProviders={{github: createAbsoluteURL(['', 'oauth2', 'authorization', 'github'])}}
                 />
             </ThemeProvider>
         </HelmetProvider>
