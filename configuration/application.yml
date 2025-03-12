@@ -84,7 +84,7 @@ management:
           - prometheus
   tracing:
     sampling:
-      probability: 0.05
+      probability: 0.03
 springdoc:
   model-and-view-allowed: true
   swagger-ui:
@@ -166,7 +166,7 @@ ovsx:
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
-    base-url: https://api.eclipse.org/
+    base-url: https://api-staging.eclipse.org/
     publisher-agreement:
       version: 1
   publishing:

@@ -101,7 +101,7 @@
     </cache>
     <cache alias="files.extension">
         <expiry>
-            <tti unit="hours">1</tti>
+            <tti unit="hours">2</tti>
         </expiry>
         <listeners>
             <listener>
