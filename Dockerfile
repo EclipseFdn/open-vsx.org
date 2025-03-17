@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=revert-1.52-mig
+ARG SERVER_VERSION=66e51762
 
 # Builder image to compile the website
 FROM ubuntu AS builder
