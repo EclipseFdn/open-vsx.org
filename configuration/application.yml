@@ -181,7 +181,7 @@ ovsx:
       timestamp: 1.2
   migrations:
     delay:
-      seconds: 300
+      seconds: 10800
   extension-control:
     update-on-start: true
   integrity:
