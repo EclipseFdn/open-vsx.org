@@ -194,9 +194,6 @@ export const DefaultMenuContent: FunctionComponent = () => {
         <MenuRouteLink to='/about'>
             About
         </MenuRouteLink>
-        <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
-            Publish
-        </Button>
         {loginProviders && (
             <>
                 <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
