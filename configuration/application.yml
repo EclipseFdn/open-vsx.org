@@ -107,7 +107,7 @@ org:
     miscellaneous:
       allow-anonymous-data-usage: false
 bucket4j:
-  enabled: true
+  enabled: false
   filters:
     - cache-name: buckets
       url: '/api/-/(namespace/create|publish)'
