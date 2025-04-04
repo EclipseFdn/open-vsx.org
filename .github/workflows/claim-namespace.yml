@@ -1,7 +1,7 @@
 name: Claim Namespace
 on:
   issues:
-    types: [opened]
+    types: [opened, edited, labeled]
 jobs:
   namespace:
     name: Namespace Claim Checks
