@@ -6,7 +6,7 @@ jobs:
   namespace:
     name: Namespace Claim Checks
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'namespace') && startsWith(github.event.issue.title, 'Claiming namespace')
+    if: ${{ contains(github.event.issue.labels.*.name, 'namespace') && !contains(github.event.issue.labels.*.name, 'granted') && !contains(github.event.issue.labels.*.name, 'denied') && startsWith(github.event.issue.title, 'Claiming namespace') }}
     steps:
       - id: get_namespace
         name: Get namespace name
