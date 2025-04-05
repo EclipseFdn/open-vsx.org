@@ -45,7 +45,6 @@ try:
         'accept': 'application/json;api-version=3.0-preview.1',
         'accept-encoding': 'gzip'
     }
-    VSX_ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
     API_ENDPOINT = os.environ['API_ENDPOINT']
     VSX_API = '%sapi' % API_ENDPOINT
     
@@ -107,12 +106,9 @@ try:
     csv_file = open(CSV_FILE_NAME, 'w')
     csv_file.write("MS Publisher (Namespace), MS Extension, MS DisplayName, MS Pricing, MS Version, MS Date, VSX Version, VSX Date, VSX Publisher, VSX License, Repo\n")
     for ext in extensions:
-        if ext['extensionName'] == '999-pse-alpine':
-            # sandy081.999-pse-alpine
-            print('here')
         print("%s.%s" % (ext['publisher']['publisherName'], ext['extensionName']))
         ms_extensionName, ms_publisherName, ms_displayname, ms_latest_version, ms_last_updated, ms_repo, ms_pricing = get_ms_info(ext)
-        vsx_extension_url = '%s/%s/%s?token=%s' % (VSX_API, ms_publisherName, ms_extensionName, VSX_ACCESS_TOKEN)
+        vsx_extension_url = '%s/%s/%s' % (VSX_API, ms_publisherName, ms_extensionName)
         response = requests.get(vsx_extension_url)
         if response.status_code == 200:
             vsx_results = response.json()

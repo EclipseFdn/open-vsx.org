@@ -1,6 +1,5 @@
 """
-Script to collect metadata on all published extensions. Requires an access token 
-from https://open-vsx.org/user-settings/tokens. Used by Jupyter notebooks.
+Script to collect metadata on all published extensions. Used by Jupyter notebooks.
 """
 import requests
 import os
@@ -10,11 +9,10 @@ from datetime import datetime
 
 API_ENDPOINT = "https://open-vsx.org/"
 
-ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 JSON_FILENAME = 'extensions.json'
 TSV_FILENAME = 'extensions.tsv'
 
-url = API_ENDPOINT + 'api/-/search?size=100&token=%s' % ACCESS_TOKEN
+url = API_ENDPOINT + 'api/-/search?size=100'
 
 def get_all_extensions():
     extensions = []
@@ -38,7 +36,7 @@ def get_all_extensions():
     all_extensions = []
     print("\n\nStarting: %s" % datetime.now())
     for extension in extensions:
-        namespace_url = API_ENDPOINT + 'api/%s/%s?token=%s' % (extension['namespace'], extension['name'], ACCESS_TOKEN)
+        namespace_url = API_ENDPOINT + 'api/%s/%s' % (extension['namespace'], extension['name'])
         retry_count = 5
         while retry_count > 0:
             try:
