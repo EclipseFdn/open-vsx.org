@@ -118,24 +118,4 @@
             <heap>200</heap>
         </resources>
     </cache>
-    <cache alias="vscode.extensionquery.ids">
-        <expiry>
-            <ttl unit="hours">1</ttl>
-        </expiry>
-        <resources>
-            <heap>1024</heap>
-            <offheap unit="MB">32</offheap>
-            <disk unit="MB">128</disk>
-        </resources>
-    </cache>
-    <cache alias="vscode.extensionquery.results">
-        <expiry>
-            <ttl unit="hours">1</ttl>
-        </expiry>
-        <resources>
-            <heap>1024</heap>
-            <offheap unit="MB">128</offheap>
-            <disk unit="MB">512</disk>
-        </resources>
-    </cache>
 </config>

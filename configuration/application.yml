@@ -107,7 +107,7 @@ org:
     miscellaneous:
       allow-anonymous-data-usage: false
 bucket4j:
-  enabled: false
+  enabled: true
   filters:
     - cache-name: buckets
       url: '/api/-/(namespace/create|publish)'
@@ -166,7 +166,7 @@ ovsx:
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
-    base-url: https://api-staging.eclipse.org/
+    base-url: https://api.eclipse.org/
     publisher-agreement:
       version: 1
   publishing:
