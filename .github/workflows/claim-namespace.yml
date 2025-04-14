@@ -1,0 +1,40 @@
+name: Claim Namespace
+on:
+  issues:
+    types: [opened, edited, labeled]
+jobs:
+  namespace:
+    name: Namespace Claim Checks
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.issue.labels.*.name, 'namespace') && !contains(github.event.issue.labels.*.name, 'granted') && !contains(github.event.issue.labels.*.name, 'denied') && startsWith(github.event.issue.title, 'Claiming namespace') }}
+    steps:
+      - id: get_namespace
+        name: Get namespace name
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let namespace = context.payload.issue.title.substring('Claiming namespace'.length).trim();
+            if((namespace.startsWith('[') && namespace.endsWith(']')) || (namespace.startsWith('`') && namespace.endsWith('`'))) {
+              namespace = namespace.substring(1, namespace.length - 1);
+            }
+
+            if(!namespace) {
+              core.setFailed('Could not get namespace name');
+            } else {
+              core.setOutput('namespace', namespace);
+            }
+      - id: log_namespace
+        name: Log namespace name
+        run: echo "${{steps.get_namespace.outputs.namespace}}"
+      - id: get_namespace_data
+        name: Namespace API request
+        uses: JamesIves/fetch-api-data-action@v2
+        with:
+          endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
+          configuration: '{ "method": "GET" }'
+      - id: is_claimed
+        name: Is claimed namespace
+        if: fromJSON(steps.get_namespace_data.outputs.fetchApiData).verified == true
+        run: |
+          echo -e "Namespace ${{steps.get_namespace.outputs.namespace}} is already claimed.\nMore manual checks needed."
+          exit 1
