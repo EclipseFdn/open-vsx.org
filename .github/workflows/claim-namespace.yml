@@ -6,6 +6,8 @@ jobs:
   namespace:
     name: Namespace Claim Checks
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     if: ${{ contains(github.event.issue.labels.*.name, 'namespace') && !contains(github.event.issue.labels.*.name, 'granted') && !contains(github.event.issue.labels.*.name, 'denied') && startsWith(github.event.issue.title, 'Claiming namespace') }}
     steps:
       - id: get_namespace
@@ -32,9 +34,21 @@ jobs:
         with:
           endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
           configuration: '{ "method": "GET" }'
-      - id: is_claimed
-        name: Is claimed namespace
-        if: fromJSON(steps.get_namespace_data.outputs.fetchApiData).verified == true
-        run: |
-          echo -e "Namespace ${{steps.get_namespace.outputs.namespace}} is already claimed.\nMore manual checks needed."
-          exit 1
+      - id: namespace_dispute
+        name: Namespace dispute
+        if: ${{ fromJSON(steps.get_namespace_data.outputs.fetchApiData).verified == true && !contains(github.event.issue.labels.*.name, 'dispute') }}
+        run: gh issue edit "$NUMBER" --add-label "$LABELS"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          LABELS: dispute
+      - id: no_namespace_dispute
+        name: Namespace not disputed
+        if: ${{ fromJSON(steps.get_namespace_data.outputs.fetchApiData).verified == false && contains(github.event.issue.labels.*.name, 'dispute') }}
+        run: gh issue edit "$NUMBER" --remove-label "$LABELS"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          LABELS: dispute
