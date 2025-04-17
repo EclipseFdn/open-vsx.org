@@ -27,6 +27,7 @@ RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server
+# Main image derived from openvsx-server
 #FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}
 FROM docker.io/amvanbaren/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
