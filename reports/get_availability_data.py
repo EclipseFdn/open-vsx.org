@@ -9,6 +9,7 @@ import numpy as np
 import os
 import calendar
 import time
+from urllib.parse import urlparse
 
 API_URL = 'https://betteruptime.com/api/v2'
 TOKEN = os.getenv('TOKEN')
@@ -43,7 +44,8 @@ def get_all_monitors():
     while not done:
         json_results = make_api_call(all_monitors_url)
         for monitor in json_results['data']:
-            if 'https://open-vsx.org' in monitor['attributes']['url']:
+            hostname = urlparse(monitor['attributes']['url']).hostname
+            if hostname == 'open-vsx.org':
                 all_openvsx_monitors.append(monitor)
         next_page = json_results['pagination'].get('next')
         if next_page is None:
