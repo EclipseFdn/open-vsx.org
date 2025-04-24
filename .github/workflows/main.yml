@@ -8,6 +8,8 @@ on:
 jobs:
   pr:
     name: Save PR Info
+    permissions:
+      contents: none
     runs-on: ubuntu-latest
     steps:
       - name: Save PR number to file
