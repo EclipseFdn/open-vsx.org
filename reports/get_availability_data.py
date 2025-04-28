@@ -54,6 +54,9 @@ def get_all_monitors():
             all_monitors_url = next_page
     return all_openvsx_monitors
 
+def get_monitor_url(id, start_date, end_date):
+    return '%s/monitors/%s/sla?from=%s&to=%s' % (API_URL, id, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+
 def get_monitor_data(monitor, time_span):
     id = monitor['id']
     name = monitor['attributes']['pronounceable_name']
@@ -66,11 +69,11 @@ def get_monitor_data(monitor, time_span):
     downtime_data = []
     print('processing %s' % name)
     while end_date <= today:
-        availability_url = '%s/monitors/%s/sla?from=%s&to=%s' % (API_URL, id, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+        availability_url = get_monitor_url(id, start_date, end_date)
         json_results = make_api_call(availability_url)
         dates.append(np.datetime64(end_date.strftime('%Y-%m-%d')))
         sla_data.append(json_results['data']['attributes']['availability'])
-        downtime_url = '%s/monitors/%s/sla?from=%s&to=%s' % (API_URL, id, start_date.strftime('%Y-%m-%d'), start_date.strftime('%Y-%m-%d'))
+        downtime_url = get_monitor_url(id, start_date, start_date)
         json_results = make_api_call(downtime_url)
         downtime_data.append(json_results['data']['attributes']['total_downtime']/60)
         start_date = start_date + timedelta(days=1)
@@ -102,12 +105,12 @@ def get_monthly_monitor_data(monitor):
     while interval_start_date < end_date:
         interval_days_in_month = calendar.monthrange(interval_start_date.year, interval_start_date.month)[1]
         interval_end_date = interval_start_date + timedelta(days=interval_days_in_month - interval_start_date.day)
-        availability_url = '%s/monitors/%s/sla?from=%s&to=%s' % (API_URL, id, interval_start_date.strftime('%Y-%m-%d'), interval_end_date.strftime('%Y-%m-%d'))
+        availability_url = get_monitor_url(id, interval_start_date, interval_end_date)
         json_results = make_api_call(availability_url)
         dt = interval_start_date.strftime('%Y-%m')
         dates.append(np.datetime64(dt))
         sla_data.append(json_results['data']['attributes']['availability'])
-        downtime_url = '%s/monitors/%s/sla?from=%s&to=%s' % (API_URL, id, interval_start_date.strftime('%Y-%m-%d'), interval_end_date.strftime('%Y-%m-%d'))
+        downtime_url = get_monitor_url(id, interval_start_date, interval_end_date)
         json_results = make_api_call(downtime_url)
         downtime_data.append(json_results['data']['attributes']['total_downtime']/60)
         interval_start_date = interval_end_date + timedelta(days=1)
