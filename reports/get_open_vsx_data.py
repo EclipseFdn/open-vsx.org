@@ -12,6 +12,7 @@ which is ignored.
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import date
+from dateutil.relativedelta import relativedelta
 import pandas as pd
 import os
 import json
@@ -40,29 +41,27 @@ def schedule_report(year, month):
 
 
 def get_publishing_data(starting_year, starting_month):
-    current_year = date.today().year
-    current_month = date.today().month
+    start_date = date(starting_year, starting_month, 1)
+    today = date.today()
     data = {}
     for header in HEADERS:
         data[header] = []
-    for year in range(starting_year, current_year + 1):
-        for month in range(1, 13):
-            if year == starting_year and month >= starting_month or \
-                starting_year < year < current_year or year == current_year and month <= current_month:
-                url = '%sadmin/report?year=%s&month=%s&token=%s' % (API_ENDPOINT, year, month, ACCESS_TOKEN)
-                response = requests.get(url)
-                if response.status_code == 200:
-                    try:
-                        json_results = response.json()
-                        for col in HEADERS:
-                            data[col].append(json_results[col])
-                        year_month = '%s-%s' % (year, month)
-                        print("processed results for %s" % year_month)
-                    except JSONDecodeError:
-                        json_results = None
-                        print("Error decoding JSON results for %s" % url)
-                else:
-                    print("%s error processing results for %s" % (response.status_code, url))
+    while start_date.year < today.year or (start_date.year == today.year and start_date.month < today.month):
+        url = '%sadmin/report?year=%s&month=%s&token=%s' % (API_ENDPOINT, start_date.year, start_date.month, ACCESS_TOKEN)
+        response = requests.get(url)
+        if response.status_code == 200:
+            try:
+                json_results = response.json()
+                for col in HEADERS:
+                    data[col].append(json_results[col])
+                print("processed results for %s-%s" % (start_date.year, start_date.month))
+            except JSONDecodeError:
+                json_results = None
+                print("Error decoding JSON results for %s" % url)
+        else:
+            print("%s error processing results for %s" % (response.status_code, url))
+        start_date = start_date + relativedelta(months=1)
+
     df = pd.DataFrame(data,columns=HEADERS)
     return df
 
