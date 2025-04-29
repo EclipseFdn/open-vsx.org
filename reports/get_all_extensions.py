@@ -40,11 +40,9 @@ def get_extension(extension):
     while retry_count > 0:
         try:
             response = requests.get(extension_url)
-            if response.status_code == 200:
-                return response.json()
-            else:
-                raise Exception('%s: HTTP %s Error retrieving %s' % (datetime.now(), response.status_code,extension['url']))
-        except Exception as e:
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
             print("%s: %s" % (datetime.now(), e))
             retry_count -= 1
             time.sleep(2)
@@ -74,11 +72,11 @@ def get_all_by_license():
     all_extensions = get_all_extensions()
     count = 1
     for extension in all_extensions:
-        license = extension.get('license', 'None')
-        if license in extensions_by_license:
-            extensions_by_license[license].append(extension)
+        license_name = extension.get('license', 'None')
+        if license_name in extensions_by_license:
+            extensions_by_license[license_name].append(extension)
         else:
-            extensions_by_license[license] = [extension]
+            extensions_by_license[license_name] = [extension]
         if int(count/100) == count/100:
             print('Processed %s of %s.' % (count, len(all_extensions)))
         count += 1
@@ -89,7 +87,6 @@ def write_json_file(extensions):
     f = open(JSON_FILENAME, 'w')
     f.write(json.dumps(extensions, indent=4))
     f.close()
-    return
 
 def write_tsv_file(extensions):
     f = open(TSV_FILENAME, 'w')

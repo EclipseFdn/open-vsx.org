@@ -65,31 +65,63 @@ def get_publishing_data(starting_year, starting_month):
     df = pd.DataFrame(data,columns=HEADERS)
     return df
 
+def process_most_active_data(most_active):
+    resulting_dfs = {}
+    for key in most_active.keys():
+        if key == 'dates':
+            dates = most_active['dates']
+        else:
+            data = {'dates': dates}
+            for entry in most_active[key]['unique']:
+                data[entry] = [None] * len(most_active['dates'])
+            for i in range(len(dates)):
+                date = dates[i]
+                for entry in most_active[key][date]:
+                    item = list(entry.values())[0]
+                    value = list(entry.values())[1]
+                    data[item][i] = value
+            df = pd.DataFrame(data, columns=most_active[key]['unique'])
+            df['date'] = dates
+            resulting_dfs[key] = df
+    return resulting_dfs
+
+def most_active_data_append_unique(most_active, json_results, top_prop, key):
+    for item in json_results[top_prop]:
+        if item[key] not in most_active[top_prop]['unique']:
+            most_active[top_prop]['unique'].append(item[key])
+
+def extract_most_active_data_from_json(most_active, json_results, year, month):
+    top_publishers = 'topMostActivePublishingUsers'
+    top_extensions = 'topNamespaceExtensions'
+    top_extension_versions = 'topNamespaceExtensionVersions'
+    top_downloads = 'topMostDownloadedExtensions'
+
+    no_data = True
+    top_props = [top_publishers, top_extensions, top_extension_versions, top_downloads]
+    for top_prop in top_props:
+        if len(json_results[top_prop]) > 0:
+            no_data = False
+            break
+
+    if no_data:
+        return
+
+    year_month = '%s/%s' % (month, str(year)[2:])
+    most_active['dates'].append(year_month)
+
+    most_active[top_publishers][year_month] = json_results[top_publishers]
+    most_active_data_append_unique(most_active, json_results, top_publishers, 'userLoginName')
+
+    most_active[top_extensions][year_month] = json_results[top_extensions]
+    most_active_data_append_unique(most_active, json_results, top_extensions, 'namespace')
+
+    most_active[top_extension_versions][year_month] = json_results[top_extension_versions]
+    most_active_data_append_unique(most_active, json_results, top_extension_versions, 'namespace')
+
+    most_active[top_downloads][year_month] = json_results[top_downloads]
+    most_active_data_append_unique(most_active, json_results, top_downloads, 'extensionIdentifier')
+
 def get_most_active_data(starting_year, starting_month):
-
-    def process_data(most_active):
-        resulting_dfs = {}
-        for key in most_active.keys():
-            if key == 'dates':
-                dates = most_active['dates']
-            else:
-                data = {'dates': dates}
-                for entry in most_active[key]['unique']:
-                    data[entry] = [None] * len(most_active['dates'])
-                for i in range(len(dates)):
-                    date = dates[i]
-                    for entry in most_active[key][date]:
-                        item = list(entry.values())[0]
-                        value = list(entry.values())[1]
-                        data[item][i] = value
-                df = pd.DataFrame(data, columns=most_active[key]['unique'])
-                df['date'] = dates
-                resulting_dfs[key] = df
-        return resulting_dfs
-
-    current_year = date.today().year
-    current_month = date.today().month
-
     most_active = {
         'dates': [],
         'topMostActivePublishingUsers': {
@@ -105,44 +137,22 @@ def get_most_active_data(starting_year, starting_month):
             'unique': []
         }
     }
-    for year in range(starting_year, current_year + 1):
-        for month in range(1, 13):
-            if year == starting_year and month >= starting_month or \
-                starting_year < year < current_year or year == current_year and month <= current_month:
-                url = '%sadmin/report?year=%s&month=%s&token=%s' % (API_ENDPOINT, year, month, ACCESS_TOKEN)
-                response = requests.get(url)
-                if response.status_code == 200:
-                    try:
-                        json_results = response.json()
-                        if len(json_results['topMostActivePublishingUsers']) > 0 or len(json_results['topNamespaceExtensions']) > 0 or \
-                            len(json_results['topNamespaceExtensionVersions']) > 0 or len(json_results['topMostDownloadedExtensions']) > 0:
-                            year_month = '%s/%s' % (month, str(year)[2:])
-                            most_active['dates'].append(year_month)
-                            most_active['topMostActivePublishingUsers'][year_month] = json_results['topMostActivePublishingUsers']
-                            for item in json_results['topMostActivePublishingUsers']:
-                                if item['userLoginName'] not in most_active['topMostActivePublishingUsers']['unique']:
-                                    most_active['topMostActivePublishingUsers']['unique'].append(item['userLoginName'])
-                            most_active['topNamespaceExtensions'][year_month] = json_results['topNamespaceExtensions']
-                            for item in json_results['topNamespaceExtensions']:
-                                if item['namespace'] not in most_active['topNamespaceExtensions']['unique']:
-                                    most_active['topNamespaceExtensions']['unique'].append(item['namespace'])
-                            most_active['topNamespaceExtensionVersions'][year_month] = json_results['topNamespaceExtensionVersions']
-                            for item in json_results['topNamespaceExtensionVersions']:
-                                if item['namespace'] not in most_active['topNamespaceExtensionVersions']['unique']:
-                                    most_active['topNamespaceExtensionVersions']['unique'].append(item['namespace'])
-                            most_active['topMostDownloadedExtensions'][year_month] = json_results['topMostDownloadedExtensions']
-                            for item in json_results['topMostDownloadedExtensions']:
-                                if item['extensionIdentifier'] not in most_active['topMostDownloadedExtensions']['unique']:
-                                    most_active['topMostDownloadedExtensions']['unique'].append(item['extensionIdentifier'])
-                    except JSONDecodeError:
-                        json_results = None
-                        print("Error decoding JSON results for %s" % url)
-                else:
-                    print("%s error processing results for %s" % (response.status_code, url))
-    
-    resulting_dfs = process_data(most_active)
 
-    return resulting_dfs
+    today = date.today()
+    start_date = date(starting_year, starting_month, 1)
+    while start_date.year < today.year or (start_date.year == today.year and start_date.month < today.month):
+        url = '%sadmin/report?year=%s&month=%s&token=%s' % (API_ENDPOINT, start_date.year, start_date.month, ACCESS_TOKEN)
+        response = requests.get(url)
+        if response.status_code == 200:
+            try:
+                extract_most_active_data_from_json(most_active, response.json(), start_date.year, start_date.month)                
+            except JSONDecodeError:
+                print("Error decoding JSON results for %s" % url)
+        else:
+            print("%s error processing results for %s" % (response.status_code, url))
+        start_date = start_date + relativedelta(months=1)
+    
+    return process_most_active_data(most_active)
 
 if __name__ == '__main__':
     reports = get_available_reports()

@@ -10,10 +10,9 @@ import traceback
 from datetime import datetime
 
 def get_ms_info(ext):
-    extensionName = ext['extensionName']
-    publisherName = ext['publisher']['publisherName']
-    displayName = ext['displayName']
-    displayName = displayName.replace(',', ' ')
+    extension_name = ext['extensionName']
+    publisher_name = ext['publisher']['publisherName']
+    display_name = ext['displayName'].replace(',', ' ')
     latest_version = ext['versions'][0]['version']
     last_updated = ext['versions'][0]['lastUpdated']
 
@@ -27,7 +26,7 @@ def get_ms_info(ext):
     except Exception:
         pricing = None
     
-    return extensionName, publisherName, displayName, latest_version, last_updated, repo, pricing
+    return extension_name, publisher_name, display_name, latest_version, last_updated, repo, pricing
 
 def convert_date_str(input_str):
     date_str = input_str[0:input_str.find('T')]
@@ -107,15 +106,15 @@ try:
     csv_file.write("MS Publisher (Namespace), MS Extension, MS DisplayName, MS Pricing, MS Version, MS Date, VSX Version, VSX Date, VSX Publisher, VSX License, Repo\n")
     for ext in extensions:
         print("%s.%s" % (ext['publisher']['publisherName'], ext['extensionName']))
-        ms_extensionName, ms_publisherName, ms_displayname, ms_latest_version, ms_last_updated, ms_repo, ms_pricing = get_ms_info(ext)
-        vsx_extension_url = '%s/%s/%s' % (VSX_API, ms_publisherName, ms_extensionName)
+        ms_extension_name, ms_publisher_name, ms_display_name, ms_latest_version, ms_last_updated, ms_repo, ms_pricing = get_ms_info(ext)
+        vsx_extension_url = '%s/%s/%s' % (VSX_API, ms_publisher_name, ms_extension_name)
         response = requests.get(vsx_extension_url)
         if response.status_code == 200:
             vsx_results = response.json()
             csv_file.write("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n" % (
-                            ms_publisherName,
-                            ms_extensionName,
-                            ms_displayname,
+                            ms_publisher_name,
+                            ms_extension_name,
+                            ms_display_name,
                             ms_pricing,
                             ms_latest_version,
                             convert_date_str(ms_last_updated), 
@@ -127,9 +126,9 @@ try:
                             ))
         elif response.status_code == 404:
             csv_file.write("%s, %s, %s, %s, %s, %s, , , , %s, %s\n" % (
-                    ms_publisherName,
-                    ms_extensionName,
-                    ms_displayname,
+                    ms_publisher_name,
+                    ms_extension_name,
+                    ms_display_name,
                     ms_pricing,
                     ms_latest_version,
                     convert_date_str(ms_last_updated),
@@ -140,7 +139,7 @@ try:
         else:
             print(response.status_code)
             print(response.content)
-            raise Exception('HTTP %s error' % response.status_code)
+            response.raise_for_status()
     
     # Output JSON File
     json_file = open(JSON_FILE_NAME, 'w')
