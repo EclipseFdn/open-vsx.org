@@ -29,7 +29,7 @@ const App: FunctionComponent = () => {
         try {
          const result = await service.getRegistryVersion(abortController);
          return result.version;
-        } catch (error) {
+        } catch {
          console.error('Could not determine server version');
          return 'unknown';
         }
