@@ -22,18 +22,15 @@ def make_api_call(url):
     while not done:
         try:
             response = requests.get(url, headers=HEADERS)
-            if response.status_code != 200:
-                raise Exception('%s HTTP error %s' % (url, response.status_code))
-            else:
-                done = True
-        except Exception as e:
-            print(" %s, retrying..." % e)
+            response.raise_for_status()
+            done = True
+        except requests.exceptions.RequestException as e:
             if retry_count > 0:
+                print(" %s, retrying..." % e)
                 time.sleep((6 - retry_count) * 5)
                 retry_count = retry_count - 1
             else:
-                done = True
-                raise Exception('Failing call to %s after multiple retries' % url)
+                raise
 
     return response.json()
 
@@ -58,7 +55,7 @@ def get_monitor_url(id, start_date, end_date):
     return '%s/monitors/%s/sla?from=%s&to=%s' % (API_URL, id, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
 
 def get_monitor_data(monitor, time_span):
-    id = monitor['id']
+    monitor_id = monitor['id']
     name = monitor['attributes']['pronounceable_name']
     date_str = monitor['attributes']['created_at']
     start_date = datetime.strptime(date_str[0:10], '%Y-%m-%d')
@@ -69,11 +66,11 @@ def get_monitor_data(monitor, time_span):
     downtime_data = []
     print('processing %s' % name)
     while end_date <= today:
-        availability_url = get_monitor_url(id, start_date, end_date)
+        availability_url = get_monitor_url(monitor_id, start_date, end_date)
         json_results = make_api_call(availability_url)
         dates.append(np.datetime64(end_date.strftime('%Y-%m-%d')))
         sla_data.append(json_results['data']['attributes']['availability'])
-        downtime_url = get_monitor_url(id, start_date, start_date)
+        downtime_url = get_monitor_url(monitor_id, start_date, start_date)
         json_results = make_api_call(downtime_url)
         downtime_data.append(json_results['data']['attributes']['total_downtime']/60)
         start_date = start_date + timedelta(days=1)
@@ -85,7 +82,7 @@ def get_continuous_data(time_span=30):
     monitors = get_all_monitors()
     results = []
     for monitor in monitors:
-        name, dates, sla_data, downtime_data = get_monitor_data(monitor, time_span=30)
+        name, dates, sla_data, downtime_data = get_monitor_data(monitor, time_span)
         results.append({'name': name,
                         'dates': dates,
                         'sla_data': sla_data,
@@ -93,7 +90,7 @@ def get_continuous_data(time_span=30):
     return results
 
 def get_monthly_monitor_data(monitor):
-    id = monitor['id']
+    monitor_id = monitor['id']
     name = monitor['attributes']['pronounceable_name']
     date_str = monitor['attributes']['created_at']
     interval_start_date = datetime.strptime(date_str[0:10], '%Y-%m-%d')
@@ -105,12 +102,12 @@ def get_monthly_monitor_data(monitor):
     while interval_start_date < end_date:
         interval_days_in_month = calendar.monthrange(interval_start_date.year, interval_start_date.month)[1]
         interval_end_date = interval_start_date + timedelta(days=interval_days_in_month - interval_start_date.day)
-        availability_url = get_monitor_url(id, interval_start_date, interval_end_date)
+        availability_url = get_monitor_url(monitor_id, interval_start_date, interval_end_date)
         json_results = make_api_call(availability_url)
         dt = interval_start_date.strftime('%Y-%m')
         dates.append(np.datetime64(dt))
         sla_data.append(json_results['data']['attributes']['availability'])
-        downtime_url = get_monitor_url(id, interval_start_date, interval_end_date)
+        downtime_url = get_monitor_url(monitor_id, interval_start_date, interval_end_date)
         json_results = make_api_call(downtime_url)
         downtime_data.append(json_results['data']['attributes']['total_downtime']/60)
         interval_start_date = interval_end_date + timedelta(days=1)
