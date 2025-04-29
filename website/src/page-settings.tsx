@@ -24,7 +24,7 @@ import Adopters from './adopters';
 import Members from './members';
 
 //---------- HEAD TAGS
-const HeadTags: FunctionComponent<{ title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string, type?: string }> = (props) => {
+const HeadTags: FunctionComponent<{ title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string }> = (props) => {
     const handleChangeClientState = (newState: any, addedTags: HelmetTags, removedTags: HelmetTags): void => {
         if (addedTags.metaTags) {
             addedTags.metaTags.forEach((value: HTMLMetaElement) => {
@@ -36,7 +36,6 @@ const HeadTags: FunctionComponent<{ title?: string, description?: string, keywor
     };
 
     const twitterCard = props.imageUrl ? 'summary_large_image' : 'summary';
-    const type = props.type || 'website';
     return <Helmet onChangeClientState={handleChangeClientState}>
         <title>{props.title}</title>
 
@@ -44,7 +43,7 @@ const HeadTags: FunctionComponent<{ title?: string, description?: string, keywor
         <meta name='description' content={props.description} />
         <meta name='keywords' content={props.keywords} />
         <meta property='og:url' content={props.url} />
-        <meta property='og:type' content={type} />
+        <meta property='og:type' content='website' />
         <meta property='og:title' content={props.title} />
         <meta property='og:description' content={props.description} />
         <meta property='og:image' content={props.imageUrl} />
@@ -79,7 +78,7 @@ const ExtensionHeadTags: FunctionComponent<{ extension?: Extension, pageSettings
     let description: string | undefined;
     let keywords: string | undefined;
     if (props.extension) {
-        title = (props.extension.displayName || props.extension.name) + title;
+        title = (props.extension.displayName ?? props.extension.name) + title;
         url += `${props.extension.namespace}/${props.extension.name}`;
         description = props.extension.description;
         // extension description can be up to 2048 characters, truncate it.
