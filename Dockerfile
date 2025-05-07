@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=0.24.0
+ARG SERVER_VERSION=v0.24.0
 
 # Builder image to compile the website
 FROM ubuntu AS builder
@@ -27,7 +27,6 @@ RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server
-# bump
 FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
 
