@@ -91,6 +91,7 @@ springdoc:
     path: /swagger-ui
     docExpansion: list
     operationsSorter: alpha
+    urlsPrimaryName: Registry API
     supportedSubmitMethods:
       - get
 org:
