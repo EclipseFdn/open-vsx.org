@@ -43,4 +43,5 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
+  storage_class: cephfs-new
 

@@ -81,7 +81,6 @@ interface MemberItemProps {
     memberId?: number;
     name: string;
     logo?: string | null;
-    url?: string;
 }
 
 const bordered = (theme: Theme) => {
@@ -120,7 +119,7 @@ const GridContainer = styled(Grid)({
     textAlign: 'center',
 });
 
-const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url, memberId }) => {
+const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, memberId }) => {
     const styles = {
         heading: {
             width: '100%',
@@ -139,9 +138,7 @@ const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, url, membe
         },
     };
 
-    // Use url prop if provided, otherwise use their eclipse.org page url.
-    const websiteUrl = url || `https://www.eclipse.org/membership/showMember.php?member_id=${memberId}`;
-
+    const websiteUrl = `https://www.eclipse.org/membership/showMember.php?member_id=${memberId}`;
     return (
         <GridContainer item xs={12} md={4}>
             <HeaderBox p={2}>

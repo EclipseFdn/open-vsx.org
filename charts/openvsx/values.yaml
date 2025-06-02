@@ -43,3 +43,4 @@ es:
     requests:
       cpu: 1
       memory: 8Gi
+  storage_class: cephfs-2repl

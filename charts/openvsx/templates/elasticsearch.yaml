@@ -19,7 +19,7 @@ spec:
         resources:
           requests:
             storage: 1Gi
-        storageClassName: cephfs-2repl
+        storageClassName: {{ .Values.es.storage_class }}
     config:
       node.roles:
       - master
