@@ -35,7 +35,13 @@ jobs:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/members?token=${{secrets.OPENVSX_TOKEN}}
           configuration: '{ "method": "GET" }'
       - id: namespace_members
-        run: echo "members=${{ toJSON(fromJSON(steps.get_namespace_data.outputs.fetchApiData).namespaceMemberships) }}" >> "$GITHUB_OUTPUT"
+        uses: actions/github-script@v7
+        env:
+          DATA: ${{ steps.get_namespace_data.outputs.fetchApiData }}
+        with:
+          script: |
+            const json = JSON.parse(process.env.DATA);
+            core.setOutput('members', JSON.stringify(json.namespaceMemberships));
       - id: make_owner
         uses: actions/github-script@v7
         env:
