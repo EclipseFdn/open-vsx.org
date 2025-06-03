@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=c2f01d4e
+ARG SERVER_VERSION=c2f01d4f
 
 # Builder image to compile the website
 FROM ubuntu AS builder
