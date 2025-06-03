@@ -61,7 +61,7 @@ jobs:
           configuration: '{ "method": "POST" }'
       - id: grant_namespace
         name: Grant namespace
-        if: ${{ fromJSON(steps.change_member.outputs.fetchApiData).success == format('Changed role of {0} in {1} to owner.', github.event.issue.user.login, steps.get_namespace.outputs.namespace) }}
+        if: ${{ steps.make_owner.outputs.makeOwner == 'true' && fromJSON(steps.change_member.outputs.fetchApiData).success == format('Changed role of {0} in {1} to owner.', github.event.issue.user.login, steps.get_namespace.outputs.namespace) }}
         run: |
           gh issue edit "$NUMBER" --add-label "$LABELS" --add-assignee "$ASSIGNEE"
           gh issue close "$NUMBER" -r "completed"
