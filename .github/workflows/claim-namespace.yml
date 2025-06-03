@@ -35,12 +35,20 @@ jobs:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/members?token=${{secrets.OPENVSX_TOKEN}}
           configuration: '{ "method": "GET" }'
       - id: namespace_members
-        run: echo "members=${{ fromJSON(steps.get_namespace_data.outputs.fetchApiData).namespaceMemberships }}" >> "$GITHUB_OUTPUT"
+        run: echo "members=${{ toJSON(fromJSON(steps.get_namespace_data.outputs.fetchApiData).namespaceMemberships) }}" >> "$GITHUB_OUTPUT"
       - id: make_owner
-        run: echo "makeOwner=${{ steps.namespace_members.outputs.members.length == 1 && steps.namespace_members.outputs.members[0].user.loginName == github.event.issue.user.login && steps.namespace_members.outputs.members[0].role == 'contributor' }}" >> "$GITHUB_OUTPUT"
+        uses: actions/github-script@v7
+        env:
+          MEMBERS: ${{ fromJSON(steps.namespace_members.outputs.members) }}
+          LOGIN_NAME: ${{ github.event.issue.user.login }}
+        with:
+          script: |
+            const members = process.env.MEMBERS;
+            const makeOwner = members.length == 1 && members[0].user.loginName == process.env.LOGIN_NAME && members[0].role == 'contributor';
+            core.setOutput('makeOwner', makeOwner);
       - id: change_member
         name: Namespace change member API request
-        if: ${{ steps.make_owner.outputs.makeOwner }}
+        if: ${{ steps.make_owner.outputs.makeOwner == 'true' }}
         uses: JamesIves/fetch-api-data-action@v2
         with:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/change-member?user=${{github.event.issue.user.login}}&provider=github&role=owner&token=${{secrets.OPENVSX_TOKEN}}
