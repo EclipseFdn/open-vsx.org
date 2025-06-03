@@ -29,26 +29,31 @@ jobs:
         name: Log namespace name
         run: echo "${{steps.get_namespace.outputs.namespace}}"
       - id: get_namespace_data
-        name: Namespace API request
+        name: Namespace members API request
         uses: JamesIves/fetch-api-data-action@v2
         with:
-          endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
+          endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/members?token=${{secrets.OPENVSX_TOKEN}}
           configuration: '{ "method": "GET" }'
-      - id: namespace_dispute
-        name: Namespace dispute
-        if: ${{ fromJSON(steps.get_namespace_data.outputs.fetchApiData).verified == true && !contains(github.event.issue.labels.*.name, 'dispute') }}
-        run: gh issue edit "$NUMBER" --add-label "$LABELS"
+      - id: namespace_members
+        run: echo "members=${{ fromJSON(steps.get_namespace_data.outputs.fetchApiData).namespaceMemberships }}" >> "$GITHUB_OUTPUT"
+      - id: make_owner
+        run: echo "makeOwner=${{ steps.namespace_members.outputs.members.length == 1 && steps.namespace_members.outputs.members[0].user.loginName == github.event.issue.user.login && steps.namespace_members.outputs.members[0].role == 'contributor' }}" >> "$GITHUB_OUTPUT"
+      - id: change_member
+        name: Namespace change member API request
+        if: ${{ steps.make_owner.outputs.makeOwner }}
+        uses: JamesIves/fetch-api-data-action@v2
+        with:
+          endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/change-member?user=${{github.event.issue.user.login}}&provider=github&role=owner&token=${{secrets.OPENVSX_TOKEN}}
+          configuration: '{ "method": "POST" }'
+      - id: grant_namespace
+        name: Grant namespace
+        if: ${{ fromJSON(steps.change_member.outputs.fetchApiData).success == format('Changed role of {0} in {1} to owner.', github.event.issue.user.login, steps.get_namespace.outputs.namespace) }}
+        run: |
+          gh issue edit "$NUMBER" --add-label "$LABELS" --add-assignee "$ASSIGNEE"
+          gh issue close "$NUMBER" -r "completed"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.issue.number }}
-          LABELS: dispute
-      - id: no_namespace_dispute
-        name: Namespace not disputed
-        if: ${{ fromJSON(steps.get_namespace_data.outputs.fetchApiData).verified == false && contains(github.event.issue.labels.*.name, 'dispute') }}
-        run: gh issue edit "$NUMBER" --remove-label "$LABELS"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.issue.number }}
-          LABELS: dispute
+          LABELS: granted
+          ASSIGNEE: amvanbaren
