@@ -45,11 +45,11 @@ jobs:
       - id: make_owner
         uses: actions/github-script@v7
         env:
-          MEMBERS: ${{ fromJSON(steps.namespace_members.outputs.members) }}
+          MEMBERS: ${{ steps.namespace_members.outputs.members }}
           LOGIN_NAME: ${{ github.event.issue.user.login }}
         with:
           script: |
-            const members = process.env.MEMBERS;
+            const members = JSON.parse(process.env.MEMBERS);
             const makeOwner = members.length == 1 && members[0].user.loginName == process.env.LOGIN_NAME && members[0].role == 'contributor';
             core.setOutput('makeOwner', makeOwner);
       - id: change_member
