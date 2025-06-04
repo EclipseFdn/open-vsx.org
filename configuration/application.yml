@@ -64,7 +64,6 @@ spring:
             user-info-uri: https://accounts.eclipse.org/oauth2/UserInfo
             user-name-attribute: name
             user-info-authentication-method: header
-
 management:
   server:
     port: 8081
@@ -162,7 +161,6 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  blocklist: '(.*\.)?windsurf\.com'
   storage:
     primary-service: azure-blob
   webui:
