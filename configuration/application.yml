@@ -162,6 +162,7 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
+  blocklist: '(.*\.)?windsurf\.com'
   storage:
     primary-service: azure-blob
   webui:
