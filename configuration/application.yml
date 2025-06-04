@@ -59,8 +59,11 @@ spring:
             scope: openvsx_publisher_agreement, profile
         provider:
           eclipse:
-            issuer-uri: https://auth-staging.eclipse.org/realms/community-staging
-            user-name-attribute: preferred_username
+            authorization-uri: https://accounts.eclipse.org/oauth2/authorize
+            token-uri: https://accounts.eclipse.org/oauth2/token
+            user-info-uri: https://accounts.eclipse.org/oauth2/UserInfo
+            user-name-attribute: name
+            user-info-authentication-method: header
 management:
   server:
     port: 8081
@@ -158,7 +161,6 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  blocklist: '(.*\.)?windsurf\.com'
   storage:
     primary-service: azure-blob
   webui:
