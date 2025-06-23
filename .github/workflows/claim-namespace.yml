@@ -32,7 +32,24 @@ jobs:
       - id: log_namespace
         name: Log namespace name
         run: echo "${{steps.get_namespace.outputs.namespace}}"
-      - id: get_namespace_data
+      - id: api_get_namespace
+        name: Namespace API request
+        uses: JamesIves/fetch-api-data-action@v2
+        with:
+          endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
+          configuration: '{ "method": "GET" }'
+      - id: namespace_not_found
+        if: ${{ failure() && steps.get_namespace.outputs.namespace != null }}
+        run: |
+          gh issue edit "$NUMBER" --add-assignee "$ASSIGNEE"
+          gh issue close "$NUMBER" -c "The namespace $NAMESPACE doesn't exist. Please publish your extension first and then open a new namespace claim issue." -r "not planned"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          NAMESPACE: ${{ steps.get_namespace.outputs.namespace }}
+          ASSIGNEE: amvanbaren
+      - id: api_get_namespace_members
         name: Namespace members API request
         uses: JamesIves/fetch-api-data-action@v2
         with:
@@ -41,7 +58,7 @@ jobs:
       - id: namespace_members
         uses: actions/github-script@v7
         env:
-          DATA: ${{ steps.get_namespace_data.outputs.fetchApiData }}
+          DATA: ${{ steps.api_get_namespace_members.outputs.fetchApiData }}
         with:
           script: |
             const json = JSON.parse(process.env.DATA);
