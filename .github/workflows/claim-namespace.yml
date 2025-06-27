@@ -15,8 +15,13 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            let namespace = context.payload.issue.title.substring('Claiming namespace'.length);
+            if(namespace.startsWith(':')) {
+              namespace = namespace.substring(1);
+            }
+
+            namespace = namespace.trim();
             const delimiters = [{start: '[', end: ']'}, {start: '`', end: '`'}, {start: '"', end: '"'}, {start: "'", end: "'"}];
-            let namespace = context.payload.issue.title.substring('Claiming namespace'.length).trim();
             for(const {start, end} of delimiters) {
               if(namespace.startsWith(start) && namespace.endsWith(end)) {
                 namespace = namespace.substring(1, namespace.length - 1);
@@ -31,7 +36,7 @@ jobs:
             }
       - id: log_namespace
         name: Log namespace name
-        run: echo "${{steps.get_namespace.outputs.namespace}}"
+        run: echo '${{steps.get_namespace.outputs.namespace}}'
       - id: api_get_namespace
         name: Namespace API request
         uses: JamesIves/fetch-api-data-action@v2
@@ -42,7 +47,7 @@ jobs:
         if: ${{ failure() && steps.get_namespace.outputs.namespace != null }}
         run: |
           gh issue edit "$NUMBER" --add-assignee "$ASSIGNEE"
-          gh issue close "$NUMBER" -c "The namespace $NAMESPACE doesn't exist. Please publish your extension first and then open a new namespace claim issue." -r "not planned"
+          gh issue close "$NUMBER" -c "The namespace '$NAMESPACE' doesn't exist. Please publish your extension first and then open a new namespace claim issue." -r "not planned"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
