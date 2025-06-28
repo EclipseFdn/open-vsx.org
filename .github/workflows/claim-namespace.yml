@@ -2,6 +2,9 @@ name: Claim Namespace
 on:
   issues:
     types: [opened, edited, labeled]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: true
 jobs:
   namespace:
     name: Namespace Claim Checks
