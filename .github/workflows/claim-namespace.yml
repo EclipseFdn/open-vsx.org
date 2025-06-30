@@ -46,8 +46,18 @@ jobs:
         with:
           endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
           configuration: '{ "method": "GET" }'
-      - id: namespace_not_found
+      - id: namespace_not_found_should_close
         if: ${{ failure() && steps.get_namespace.outputs.namespace != null }}
+        name: Check issue is still open before editing issue
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/issues/{issue_number}
+          repo: ${{ github.repository }}
+          issue_number: ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - id: namespace_not_found
+        if: ${{ failure() && fromJSON(steps.namespace_not_found_should_close.outputs.data).state == 'open' }}
         run: |
           gh issue edit "$NUMBER" --add-assignee "$ASSIGNEE"
           gh issue close "$NUMBER" -c "The namespace '$NAMESPACE' doesn't exist. Please publish your extension first and then open a new namespace claim issue." -r "not planned"
@@ -81,9 +91,19 @@ jobs:
             const members = JSON.parse(process.env.MEMBERS);
             const makeOwner = members.length == 1 && members[0].user.loginName == process.env.LOGIN_NAME && members[0].role == 'contributor';
             core.setOutput('makeOwner', makeOwner);
+      - id: should_change_member
+        if: ${{ steps.make_owner.outputs.makeOwner == 'true' }}
+        name: Check issue is still open before changing namespace membership
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/issues/{issue_number}
+          repo: ${{ github.repository }}
+          issue_number: ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - id: change_member
         name: Namespace change member API request
-        if: ${{ steps.make_owner.outputs.makeOwner == 'true' }}
+        if: ${{ steps.make_owner.outputs.makeOwner == 'true' && fromJSON(steps.should_change_member.outputs.data).state == 'open' }}
         uses: JamesIves/fetch-api-data-action@v2
         with:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/change-member?user=${{github.event.issue.user.login}}&provider=github&role=owner&token=${{secrets.OPENVSX_TOKEN}}
