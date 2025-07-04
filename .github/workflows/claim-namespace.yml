@@ -2,22 +2,34 @@ name: Claim Namespace
 on:
   issues:
     types: [opened, edited, labeled]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: true
 jobs:
   namespace:
     name: Namespace Claim Checks
     runs-on: ubuntu-latest
     permissions:
       issues: write
-    if: ${{ contains(github.event.issue.labels.*.name, 'namespace') && !contains(github.event.issue.labels.*.name, 'granted') && !contains(github.event.issue.labels.*.name, 'denied') && startsWith(github.event.issue.title, 'Claiming namespace') }}
+    if: ${{ startsWith(github.event.issue.title, 'Claiming namespace') && github.event.issue.title != 'Claiming namespace [name]' && contains(github.event.issue.labels.*.name, 'namespace') && !contains(github.event.issue.labels.*.name, 'granted') && !contains(github.event.issue.labels.*.name, 'denied') }}
     steps:
       - id: get_namespace
         name: Get namespace name
         uses: actions/github-script@v7
         with:
           script: |
-            let namespace = context.payload.issue.title.substring('Claiming namespace'.length).trim();
-            if((namespace.startsWith('[') && namespace.endsWith(']')) || (namespace.startsWith('`') && namespace.endsWith('`'))) {
-              namespace = namespace.substring(1, namespace.length - 1);
+            let namespace = context.payload.issue.title.substring('Claiming namespace'.length);
+            if(namespace.startsWith(':')) {
+              namespace = namespace.substring(1);
+            }
+
+            namespace = namespace.trim();
+            const delimiters = [{start: '[', end: ']'}, {start: '`', end: '`'}, {start: '"', end: '"'}, {start: "'", end: "'"}];
+            for(const {start, end} of delimiters) {
+              if(namespace.startsWith(start) && namespace.endsWith(end)) {
+                namespace = namespace.substring(1, namespace.length - 1);
+                break;
+              }
             }
 
             if(!namespace) {
@@ -27,8 +39,35 @@ jobs:
             }
       - id: log_namespace
         name: Log namespace name
-        run: echo "${{steps.get_namespace.outputs.namespace}}"
-      - id: get_namespace_data
+        run: echo '${{steps.get_namespace.outputs.namespace}}'
+      - id: api_get_namespace
+        name: Namespace API request
+        uses: JamesIves/fetch-api-data-action@v2
+        with:
+          endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
+          configuration: '{ "method": "GET" }'
+      - id: namespace_not_found_should_close
+        if: ${{ failure() && steps.get_namespace.outputs.namespace != null }}
+        name: Check issue is still open before editing issue
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/issues/{issue_number}
+          repo: ${{ github.repository }}
+          issue_number: ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - id: namespace_not_found
+        if: ${{ failure() && fromJSON(steps.namespace_not_found_should_close.outputs.data).state == 'open' }}
+        run: |
+          gh issue edit "$NUMBER" --add-assignee "$ASSIGNEE"
+          gh issue close "$NUMBER" -c "The namespace '$NAMESPACE' doesn't exist. Please publish your extension first and then open a new namespace claim issue." -r "not planned"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          NAMESPACE: ${{ steps.get_namespace.outputs.namespace }}
+          ASSIGNEE: amvanbaren
+      - id: api_get_namespace_members
         name: Namespace members API request
         uses: JamesIves/fetch-api-data-action@v2
         with:
@@ -37,7 +76,7 @@ jobs:
       - id: namespace_members
         uses: actions/github-script@v7
         env:
-          DATA: ${{ steps.get_namespace_data.outputs.fetchApiData }}
+          DATA: ${{ steps.api_get_namespace_members.outputs.fetchApiData }}
         with:
           script: |
             const json = JSON.parse(process.env.DATA);
@@ -52,9 +91,19 @@ jobs:
             const members = JSON.parse(process.env.MEMBERS);
             const makeOwner = members.length == 1 && members[0].user.loginName == process.env.LOGIN_NAME && members[0].role == 'contributor';
             core.setOutput('makeOwner', makeOwner);
+      - id: should_change_member
+        if: ${{ steps.make_owner.outputs.makeOwner == 'true' }}
+        name: Check issue is still open before changing namespace membership
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{repo}/issues/{issue_number}
+          repo: ${{ github.repository }}
+          issue_number: ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - id: change_member
         name: Namespace change member API request
-        if: ${{ steps.make_owner.outputs.makeOwner == 'true' }}
+        if: ${{ steps.make_owner.outputs.makeOwner == 'true' && fromJSON(steps.should_change_member.outputs.data).state == 'open' }}
         uses: JamesIves/fetch-api-data-action@v2
         with:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/change-member?user=${{github.event.issue.user.login}}&provider=github&role=owner&token=${{secrets.OPENVSX_TOKEN}}

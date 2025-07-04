@@ -59,11 +59,8 @@ spring:
             scope: openvsx_publisher_agreement, profile
         provider:
           eclipse:
-            authorization-uri: https://accounts.eclipse.org/oauth2/authorize
-            token-uri: https://accounts.eclipse.org/oauth2/token
-            user-info-uri: https://accounts.eclipse.org/oauth2/UserInfo
-            user-name-attribute: name
-            user-info-authentication-method: header
+            issuer-uri: https://auth.eclipse.org/auth/realms/community
+            user-name-attribute: preferred_username
 management:
   server:
     port: 8081
@@ -174,6 +171,7 @@ ovsx:
   elasticsearch:
     enabled: true
     ssl: true
+    clear-on-start: true
   search:
     relevance:
       rating: 0.5
