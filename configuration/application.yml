@@ -59,7 +59,7 @@ spring:
             scope: openvsx_publisher_agreement, profile
         provider:
           eclipse:
-            issuer-uri: https://auth-staging.eclipse.org/auth/realms/community-staging
+            issuer-uri: https://auth.eclipse.org/auth/realms/community
             user-name-attribute: preferred_username
 management:
   server:
