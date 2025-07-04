@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-    if: ${{ contains(github.event.issue.labels.*.name, 'namespace') && !contains(github.event.issue.labels.*.name, 'granted') && !contains(github.event.issue.labels.*.name, 'denied') && startsWith(github.event.issue.title, 'Claiming namespace') }}
+    if: ${{ startsWith(github.event.issue.title, 'Claiming namespace') && github.event.issue.title != 'Claiming namespace [name]' && contains(github.event.issue.labels.*.name, 'namespace') && !contains(github.event.issue.labels.*.name, 'granted') && !contains(github.event.issue.labels.*.name, 'denied') }}
     steps:
       - id: get_namespace
         name: Get namespace name
