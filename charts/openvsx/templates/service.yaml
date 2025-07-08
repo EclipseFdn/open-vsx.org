@@ -13,6 +13,10 @@ spec:
     port: {{ .Values.service.port }}
     protocol: TCP
     targetPort: {{ .Values.service.targetPort }}
+  - name: management
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
   selector:
     app: {{ .Values.name }}
     environment: {{ .Values.environment }}

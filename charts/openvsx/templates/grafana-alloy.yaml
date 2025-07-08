@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.alloy.alloy.configMap.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  {{ .Values.alloy.alloy.configMap.key }}: |
+    logging {
+      level = "debug"
+      format = "logfmt"
+    }
+
+    prometheus.operator.servicemonitors "spring_boot" {
+      namespaces = ["{{ .Values.namespace }}"]
+      selector {
+        match_labels = {
+          app = "{{ .Values.name }}",
+          environment = "{{ .Values.environment }}",
+        }
+      }
+
+      forward_to  = [prometheus.relabel.spring_boot_relabel.receiver]
+    }
+
+    prometheus.relabel "spring_boot_relabel" {
+      rule {
+        source_labels = ["exported_instance"]
+        target_label  = "instance"
+        action        = "replace"
+      }
+
+      rule {
+        regex   = "^(exported_instance|deployment_environment|service_instance_id|service_name)$"
+        action  = "labeldrop"
+      }
+
+      forward_to = [prometheus.remote_write.default.receiver]
+    }
+
+    prometheus.operator.servicemonitors "redis" {
+      namespaces = ["{{ index .Values "redis-cluster" "namespaceOverride" }}"]
+      selector {
+        match_labels = {
+          app = "{{ index .Values "redis-cluster" "commonLabels" "app" }}",
+          environment = "{{ index .Values "redis-cluster" "commonLabels" "environment" }}",
+        }
+      }
+
+      forward_to = [prometheus.remote_write.default.receiver]
+    }
+
+    prometheus.remote_write "default" {
+      endpoint {
+        name = "hosted-prometheus"
+        url = sys.env("PROMETHEUS_URL")
+    
+        basic_auth {
+          username = sys.env("PROMETHEUS_USERNAME")
+          password = sys.env("PROMETHEUS_PASSWORD")
+        }
+      }
+    }
+
+    otelcol.receiver.zipkin "default" {
+      endpoint = "0.0.0.0:9411"
+      output {
+        traces = [otelcol.processor.memory_limiter.default.input]
+      }
+    }
+
+    otelcol.processor.memory_limiter "default" {
+      check_interval = "1s"
+      limit = "400MiB"
+      spike_limit = "80MiB"
+      output {
+        traces = [otelcol.processor.batch.default.input]
+      }
+    }
+
+    otelcol.processor.batch "default" {
+      output {
+        traces = [otelcol.exporter.otlp.tempo.input]
+      }
+    }
+
+    otelcol.auth.basic "tempo_auth" {
+      username = sys.env("TEMPO_USERNAME")
+      password = sys.env("TEMPO_PASSWORD")
+    }
+
+    otelcol.exporter.otlp "tempo" {
+      client {
+        endpoint = sys.env("TEMPO_URL")
+        auth = otelcol.auth.basic.tempo_auth.handler
+      }
+    }
