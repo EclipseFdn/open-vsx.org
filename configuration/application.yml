@@ -80,7 +80,7 @@ management:
           - prometheus
   tracing:
     sampling:
-      probability: 0.03
+      probability: 0.01
 springdoc:
   model-and-view-allowed: true
   swagger-ui:
@@ -179,6 +179,7 @@ ovsx:
   migrations:
     delay:
       seconds: 10800
+    once-per-version: true
   extension-control:
     update-on-start: true
   integrity:
