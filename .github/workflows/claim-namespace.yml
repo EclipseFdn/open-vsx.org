@@ -66,7 +66,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.issue.number }}
           NAMESPACE: ${{ steps.get_namespace.outputs.namespace }}
-          ASSIGNEE: amvanbaren
+          ASSIGNEE: tfroment
       - id: api_get_namespace_members
         name: Namespace members API request
         uses: JamesIves/fetch-api-data-action@v2
@@ -119,4 +119,4 @@ jobs:
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.issue.number }}
           LABELS: granted
-          ASSIGNEE: amvanbaren
+          ASSIGNEE: tfroment
