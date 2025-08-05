@@ -77,29 +77,7 @@ spec:
             path: /actuator/health/readiness
             port: http-management
           periodSeconds: 10
-      - name: grafana-agent
-        image: docker.io/grafana/agent:v0.39.1
-        command:
-          - /bin/grafana-agent
-        args:
-          - --config.file=$(CONFIG_FILE_PATH)
-          - --metrics.wal-directory=$(DATA_FILE_PATH)
-          - --config.expand-env=true
-        env:
-        - name: CONFIG_FILE_PATH
-          value: /etc/grafana-agent/agent.yml
-        - name: DATA_FILE_PATH
-          value: /etc/grafana-agent/data
-        - name: ENVNAME
-          value: {{ .Values.environment }}
-        envFrom:
-        - secretRef:
-            name: grafana-cloud-secret-{{ .Values.environment }}
-        volumeMounts:
-        - name: grafana-agent-config-volume
-          mountPath: /etc/grafana-agent
-        - name: grafana-agent-data-volume
-          mountPath: /etc/grafana-agent/data
+          initialDelaySeconds: 30
       initContainers:
       - command:
         - sh
@@ -131,15 +109,6 @@ spec:
           defaultMode: 420
           optional: false
           secretName: elasticsearch-{{ .Values.environment }}-es-http-certs-internal
-      - name: grafana-agent-config-volume
-        configMap:
-          name: grafana-agent-configmap-{{ .Values.environment }}
-          items:
-          - key: agent.yml
-            path: agent.yml
-      - name: grafana-agent-data-volume
-        emptyDir:
-          medium: Memory
       - name: truststore-with-elasticsearch-certs
         emptyDir:
           medium: Memory
