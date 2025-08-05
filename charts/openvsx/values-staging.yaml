@@ -12,7 +12,7 @@ image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 06c8bea-430
+  tag: 6d777ca-570
 
 website:
   jvmArgs: -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
