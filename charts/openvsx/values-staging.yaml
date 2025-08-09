@@ -46,70 +46,25 @@ es:
   storage_class: cephfs-new
 
 # redis
-redis-cluster:
-  cluster:
-    nodes: 6
-  existingSecret: redis-secret-staging
-  existingSecretPasswordKey: REDIS_REPLICA_PASSWORD
-  persistence:
-    enabled: true
-    size: 128Mi # 1 Gi for production
-    storageClass: "cephfs-new"
-    accessModes:
-      - ReadWriteOnce
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-  redis:
-    configmap: |
-      maxmemory 64mb
-      maxmemory-policy allkeys-lru
-      appendonly yes
-      appendfsync everysec
-      save 900 1 300 10 60 10000
-      tcp-keepalive 60
-      timeout 300
-      aclfile /opt/openvsx/redis/custom.acl
-    extraVolumes:
-      - name: redis-secret-staging
-        secret:
-          secretName: redis-secret-staging
-      - name: redis-config
-        emptyDir: {}
-    extraVolumeMounts:
-      - name: redis-secret-staging
-        mountPath: /etc/redis-users
-        readOnly: true
-      - name: redis-config
-        mountPath: /opt/openvsx/redis
-    initContainers:
-      - name: generate-acl
-        image: busybox
-        imagePullPolicy: Always
-        command:
-          - sh
-          - -c
-          - |
-            echo -e "user $(cat /etc/redis-users/REDIS_REPLICA_USERNAME) on >$(cat /etc/redis-users/REDIS_REPLICA_PASSWORD) ~* +psync +replconf +ping +cluster +info\nuser $(cat /etc/redis-users/REDIS_OPENVSX_USERNAME) on >$(cat /etc/redis-users/REDIS_OPENVSX_PASSWORD) ~* +@all -@admin -@dangerous -@pubsub -@slow -function +client +cluster +keys +eval +set" > /opt/openvsx/redis/custom.acl
-        volumeMounts:
-          - name: redis-secret-staging
-            mountPath: /etc/redis-users
-          - name: redis-config
-            mountPath: /opt/openvsx/redis
-    extraEnvVarsSecret: redis-secret-staging
+redis:
+  name: redis
+  replicas: 6
+  image:
+    repository: redis
+    tag: "7.2.10"
+    pullPolicy: IfNotPresent
+  maxmemory: "256mb"
   resources:
     requests:
-      memory: "64Mi"
-      cpu: "250m"
-    limits:
       memory: "128Mi"
-      cpu: "500m"
-  fullnameOverride: redis-cluster-staging
-  namespaceOverride: *namespace
-  commonLabels:
-    app: redis-cluster
-    environment: *environment
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "100m"
+  persistence:
+    storageGi: 1
+    storageClass: standard
+  serviceAccountName: redis-cluster-operator
 
 # grafana alloy
 alloy:
@@ -121,6 +76,8 @@ alloy:
     envFrom:
       - secretRef: 
           name: grafana-cloud-secret-staging
+      - secretRef: 
+          name: redis-secret-staging
     extraPorts:
       - name: zipkin
         port: 9411

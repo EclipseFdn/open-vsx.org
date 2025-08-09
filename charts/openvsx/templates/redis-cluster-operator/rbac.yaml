@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.redis.serviceAccountName }}
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: redis-cluster-operator-role-cluster
+rules:
+  # Kopf: runtime observation of namespaces & CRDs (addition/deletion).
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [list, watch]
+  - apiGroups: ["storage.k8s.io"]
+    resources: [storageclasses]
+    verbs: [get]
+  - apiGroups: [""]
+    resources: [namespaces]
+    verbs: [list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: redis-cluster-operator-role-binding-cluster
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: redis-cluster-operator-role-cluster
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.redis.serviceAccountName }}
+    namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: redis-cluster-operator-role
+rules:
+  # Kopf: knowing which other operators are running (i.e. peering).
+  - apiGroups: [open-vsx.org]
+    resources: [kopfpeerings]
+    verbs: [list, watch, patch, get]
+  # Kopf: posting the events about the handlers progress/errors.
+  - apiGroups: [""]
+    resources: [events]
+    verbs: [create]
+  # App: watching & handling for the custom resource.
+  - apiGroups: [open-vsx.org]
+    resources: [redisclusters]
+    verbs: [list, watch, patch]
+  # App: resources it produces and manipulates.
+  - apiGroups: [""]
+    resources: [configmaps, services]
+    verbs: [create]
+  - apiGroups: ["apps"]
+    resources: [statefulsets]
+    verbs: [create, patch]
+  - apiGroups: [""]
+    resources: [secrets]
+    verbs: [get]
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [watch, delete]
+  - apiGroups: [""]
+    resources: [persistentvolumeclaims]
+    verbs: [patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: redis-cluster-operator-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: redis-cluster-operator-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.redis.serviceAccountName }}
+    namespace: {{ .Values.namespace }}
