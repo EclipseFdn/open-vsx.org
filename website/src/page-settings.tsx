@@ -168,7 +168,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         const reportAbuseText = encodeURIComponent('<Please describe the issue>');
         const extensionURL = encodeURIComponent(`${location.protocol}//${location.hostname}/extension/${extension.namespace}/${extension.name}`);
         return <Link
-            href={`mailto:security@eclipse-foundation.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
+            href={`mailto:openvsx@eclipse-foundation.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
             variant='body2' color='secondary' underline='hover' sx={sx} >
             Report Abuse
         </Link>;
