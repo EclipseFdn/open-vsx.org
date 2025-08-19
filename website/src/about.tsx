@@ -43,6 +43,12 @@ const About = () => {
 
         <Heading variant='h5'>Contact Us</Heading>
         <Paragraph variant='body1'>
+            To report malicious extensions, extensions with known vulnerabilities, or other urgent matters, connect with us via 
+            <Link color='secondary' underline='hover' href='mailto:openvsx@eclipse-foundation.org'>openvsx@eclipse-foundation.org</Link>.
+            For non-urgent questions, including managing namespaces or publishing extensions, please visit our 
+            <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki'>wiki</Link>
+        </Paragraph>
+        <Paragraph variant='body1'>
         We use Slack for instant messaging and general communication, 
         use this <Link color='secondary' underline='hover' href='https://join.slack.com/t/openvsxworkinggroup/shared_invite/zt-2y07y1ggy-ct3IfJljjGI6xWUQ9llv6A'>link</Link> to join our Slack workspace.
         </Paragraph>
