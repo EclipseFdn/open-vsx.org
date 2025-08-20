@@ -1,9 +1,6 @@
 dependencies:
-- name: redis-cluster
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.0.12
 - name: alloy
   repository: https://grafana.github.io/helm-charts
   version: 1.1.2
-digest: sha256:e9f71eed4e319e79393873684f56db74c9db3408604c934755aecbd0ff9a457e
-generated: "2025-08-04T14:57:58.074328516+03:00"
+digest: sha256:66403884b7f293e86e2a61d0d822fd0878a6b4a64e5e88f181b93022bc4f9bcd
+generated: "2025-08-20T12:51:18.346537659+03:00"

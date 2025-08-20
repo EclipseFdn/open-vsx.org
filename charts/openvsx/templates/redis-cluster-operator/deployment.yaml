@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: redis-cluster-operator-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+      environment: {{ .Values.environment }}
+      component: redis-cluster-operator
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        environment: {{ .Values.environment }}
+        component: redis-cluster-operator
+    spec:
+      serviceAccountName: {{ .Values.redis.serviceAccountName }}
+      containers:
+      - name: redis-cluster-operator
+        image: "amvanbaren/redis-cluster-operator"
+        imagePullPolicy: Always
+        env:
+        - name: NAMESPACE
+          value: {{ .Values.namespace }}
+        - name: REDIS_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret-{{ .Values.environment }}
+              key: REDIS_CLI_USERNAME
+        - name: REDISCLI_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret-{{ .Values.environment }}
+              key: REDIS_CLI_PASSWORD

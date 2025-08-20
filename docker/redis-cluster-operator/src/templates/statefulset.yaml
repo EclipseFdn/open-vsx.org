@@ -1,0 +1,147 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: "{labels[app]}"
+    environment: "{labels[environment]}"
+  name: "{name}"
+  namespace: "{namespace}"
+spec:
+  serviceName: "{service_name}"
+  replicas: {spec[replicas]}
+  selector:
+    matchLabels:
+      app: "{labels[app]}"
+      component: "{name}"
+      environment: "{labels[environment]}"
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  template:
+    metadata:
+      labels:
+        app: "{labels[app]}"
+        component: "{name}"
+        environment: "{labels[environment]}"
+    spec:
+      containers:
+        - name: "redis-{labels[environment]}"
+          image: "{spec[image]}"
+          imagePullPolicy: "{spec[imagePullPolicy]}"
+          ports:
+            - containerPort: 6379
+            - containerPort: 16379
+          env:
+            - name: MAXMEMORY
+              value: {maxmemory}
+            - name: USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_REPLICA_USERNAME
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_REPLICA_PASSWORD
+          command: ["sh", "-c"]
+          args:
+            - >
+              redis-server /etc/redis/redis.conf
+              --aclfile /etc/redis-acl/users.acl
+              --masteruser "$USERNAME"
+              --masterauth "$PASSWORD"
+              --maxmemory "$MAXMEMORY"
+              --cluster-announce-ip "$HOSTNAME.{service_name}"
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            {spec[resources]}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis/redis.conf
+              subPath: redis.conf
+            - name: redis-data
+              mountPath: /etc/redis/data
+            - name: redis-acl
+              mountPath: /etc/redis-acl
+      initContainers:
+        - name: generate-acl
+          image: busybox
+          imagePullPolicy: Always
+          env:
+            - name: REPLICA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_REPLICA_USERNAME
+            - name: REPLICA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_REPLICA_PASSWORD
+            - name: OPENVSX_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_OPENVSX_USERNAME
+            - name: OPENVSX_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_OPENVSX_PASSWORD
+            - name: CLI_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_CLI_USERNAME
+            - name: CLI_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_CLI_PASSWORD
+            - name: METRICS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_METRICS_USERNAME
+            - name: METRICS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{secret_name}"
+                  key: REDIS_METRICS_PASSWORD
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "user $REPLICA_USERNAME on >$REPLICA_PASSWORD ~* +psync +replconf +ping" > /etc/redis-acl/users.acl
+              echo "user $CLI_USERNAME on >$CLI_PASSWORD ~* +ping +cluster +info +dbsize" >> /etc/redis-acl/users.acl
+              echo "user $METRICS_USERNAME on >$METRICS_PASSWORD ~* +client +ping +info +config|get +cluster|info +cluster|slots +slowlog +latency +memory +select +get +scan +xinfo +type +pfcount +strlen +llen +scard +zcard +hlen +xlen +eval allkeys" >> /etc/redis-acl/users.acl
+              echo "user $OPENVSX_USERNAME on >$OPENVSX_PASSWORD ~* +@all -@admin -@dangerous -@pubsub -@slow -function +client +cluster +keys +eval +set +psetex" >> /etc/redis-acl/users.acl
+          volumeMounts:
+            - name: redis-acl
+              mountPath: /etc/redis-acl
+      volumes:
+        - name: config
+          configMap:
+            name: "{config_name}"
+        - name: redis-acl
+          emptyDir: {{}}
+  volumeClaimTemplates:
+    - metadata:
+        labels:
+          app: "{labels[app]}"
+          environment: "{labels[environment]}"
+        name: {pvc_name}
+      spec:
+        accessModes: 
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "{spec[persistence][storageGi]}Gi"
+        storageClassName: "{spec[persistence][storageClass]}"

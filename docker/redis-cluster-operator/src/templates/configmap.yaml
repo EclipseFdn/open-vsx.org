@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: "{labels[app]}"
+    environment: "{labels[environment]}"
+  name: "{name}"
+  namespace: "{namespace}"  
+data:
+  redis.conf: |
+    cluster-enabled yes
+    cluster-config-file nodes.conf
+    cluster-node-timeout 5000
+    maxmemory-policy allkeys-lru
+    dir /etc/redis/data
+    appendonly yes
+    appendfsync everysec
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    save 900 1 300 10 60 10000
+    tcp-keepalive 60
+    timeout 300

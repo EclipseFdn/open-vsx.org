@@ -39,19 +39,22 @@ data:
 
       forward_to = [prometheus.remote_write.default.receiver]
     }
+    {{- $name := .Values.redis.name }}
+    {{- $environment := .Values.environment }}
+    {{- range $index := until (int .Values.redis.replicas) }}
 
-    prometheus.operator.servicemonitors "redis" {
-      namespaces = ["{{ index .Values "redis-cluster" "namespaceOverride" }}"]
-      selector {
-        match_labels = {
-          app = "{{ index .Values "redis-cluster" "commonLabels" "app" }}",
-          environment = "{{ index .Values "redis-cluster" "commonLabels" "environment" }}",
-        }
-      }
+    prometheus.exporter.redis "redis_metrics_{{ $index }}" {
+      redis_addr = "{{ $name }}-{{ $environment }}-{{ $index }}.{{ $name }}-{{ $environment }}-service:6379"
+      redis_user = sys.env("REDIS_METRICS_USERNAME")
+      redis_password = sys.env("REDIS_METRICS_PASSWORD")
+    }
 
+    prometheus.scrape "redis_scrape_{{ $index }}" {
+      targets    = prometheus.exporter.redis.redis_metrics_{{ $index }}.targets
       forward_to = [prometheus.remote_write.default.receiver]
     }
 
+    {{- end }}
     prometheus.remote_write "default" {
       endpoint {
         name = "hosted-prometheus"

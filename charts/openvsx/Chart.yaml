@@ -5,9 +5,6 @@ type: application
 version: 0.2.0
 appVersion: "1.16.0"
 dependencies:
-  - name: redis-cluster
-    version: 12.0.12
-    repository: https://charts.bitnami.com/bitnami
   - name: alloy
     version: 1.1.2
     repository: https://grafana.github.io/helm-charts
