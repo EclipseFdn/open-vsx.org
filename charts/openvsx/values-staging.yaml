@@ -63,7 +63,7 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
-    storageClass: standard
+    storageClass: cephfs-new
   serviceAccountName: redis-cluster-operator
 
 # grafana alloy
