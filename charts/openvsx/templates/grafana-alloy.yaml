@@ -9,7 +9,7 @@ metadata:
 data:
   {{ .Values.alloy.alloy.configMap.key }}: |
     logging {
-      level = "debug"
+      level = "info"
       format = "logfmt"
     }
 

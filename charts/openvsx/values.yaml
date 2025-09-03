@@ -44,3 +44,51 @@ es:
       cpu: 1
       memory: 8Gi
   storage_class: cephfs-new
+
+# redis
+redis:
+  name: redis
+  replicas: 6
+  image:
+    repository: redis
+    tag: "7.2.10"
+    pullPolicy: IfNotPresent
+  maxmemory: "896mb"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1536Mi"
+      cpu: "500m"
+  persistence:
+    storageGi: 5
+    storageClass: cephfs-new
+  serviceAccountName: redis-cluster-operator
+
+# grafana alloy
+alloy:
+  alloy:
+    configMap:
+      create: false
+      name: "grafana-alloy-configmap-production"
+      key: "config.river"
+    envFrom:
+      - secretRef: 
+          name: grafana-cloud-secret-production
+      - secretRef: 
+          name: redis-secret-production
+    extraPorts:
+      - name: zipkin
+        port: 9411
+        targetPort: 9411
+    stabilityLevel: experimental
+  crds:
+    create: true
+  controller:
+    type: "daemonset"
+    podLabels:
+      app: *name
+      environment: *environment
+  fullnameOverride: grafana-alloy-production
+  namespaceOverride: *namespace
