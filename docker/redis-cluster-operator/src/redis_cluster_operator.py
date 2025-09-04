@@ -212,6 +212,7 @@ async def create_fn(spec, name, namespace, labels, logger, **kwargs):
 
     name = f"{name}-{labels['environment']}"
     config_name = f"{name}-config"
+    pvc_name = f"{name}-data"
     service_name = f"{name}-service"
     validate_host(name, service_name)
 
@@ -227,7 +228,6 @@ async def create_fn(spec, name, namespace, labels, logger, **kwargs):
     core_api.create_namespaced_service(namespace=namespace, body=srv_data)
     logger.info("Service child is created")
 
-    pvc_name = "redis-data"
     sts_data = create_statefulset_data(spec, name, namespace, labels, service_name, secret_name, config_name, pvc_name, spec['maxmemory'])
     apps_api = kubernetes.client.AppsV1Api()
     obj = apps_api.create_namespaced_stateful_set(namespace=namespace, body=sts_data)
