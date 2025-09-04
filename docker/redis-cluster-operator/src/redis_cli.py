@@ -132,7 +132,6 @@ async def wait_until_redis_cluster_healthy(pod_host, logger):
 async def redis_cluster_create(replicas, name, service_name, logger):
     hosts = ""
     for i in range(0, replicas):
-        await wait_until_redis_node_reachable(i, name, service_name, logger)
         hosts += f"{pod_host(pod_name(name, i), service_name)}:6379 "
 
     redis_cli(f"--cluster create {hosts}--cluster-replicas 1 --cluster-yes", logger)
@@ -224,6 +223,9 @@ async def find_redis_master_node_to_reshard_to(name, service_name, start, limit,
 
 async def create_redis_cluster(replicas, name, service_name, logger):
     logger.info("Creating Redis cluster...")
+    for i in range(0, replicas):
+        await wait_until_redis_node_reachable(i, name, service_name, logger)
+    
     if not is_new_redis_node(pod_host(pod_name(name, replicas - 1), service_name), logger):
         logger.info("Cluster already exists, skipping creation")
         return
