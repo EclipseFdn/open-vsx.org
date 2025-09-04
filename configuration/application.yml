@@ -30,7 +30,7 @@ spring:
   data:
     redis:
       cluster:
-        nodes: 'redis-cluster-staging-0.redis-cluster-staging-headless:6379,redis-cluster-staging-1.redis-cluster-staging-headless:6379,redis-cluster-staging-2.redis-cluster-staging-headless:6379,redis-cluster-staging-3.redis-cluster-staging-headless:6379,redis-cluster-staging-4.redis-cluster-staging-headless:6379,redis-cluster-staging-5.redis-cluster-staging-headless:6379'
+        nodes: 'redis-staging-0.redis-staging-service:6379,redis-staging-1.redis-staging-service:6379,redis-staging-2.redis-staging-service:6379,redis-staging-3.redis-staging-service:6379,redis-staging-4.redis-staging-service:6379,redis-staging-5.redis-staging-service:6379'
       username: openvsx
       password: openvsx
   datasource:
