@@ -67,9 +67,9 @@ spec:
             - name: config
               mountPath: /etc/redis/redis.conf
               subPath: redis.conf
-            - name: redis-data
+            - name: "{pvc_name}"
               mountPath: /etc/redis/data
-            - name: redis-acl
+            - name: "{acl_name}"
               mountPath: /etc/redis-acl
       initContainers:
         - name: generate-acl
@@ -124,20 +124,20 @@ spec:
               echo "user $METRICS_USERNAME on >$METRICS_PASSWORD ~* +client +ping +info +config|get +cluster|info +cluster|slots +slowlog +latency +memory +select +get +scan +xinfo +type +pfcount +strlen +llen +scard +zcard +hlen +xlen +eval allkeys" >> /etc/redis-acl/users.acl
               echo "user $OPENVSX_USERNAME on >$OPENVSX_PASSWORD ~* +@all -@admin -@dangerous -@pubsub -@slow -function +client +cluster +keys +eval +set +psetex +del +unlink" >> /etc/redis-acl/users.acl
           volumeMounts:
-            - name: redis-acl
+            - name: "{acl_name}"
               mountPath: /etc/redis-acl
       volumes:
         - name: config
           configMap:
             name: "{config_name}"
-        - name: redis-acl
+        - name: "{acl_name}"
           emptyDir: {{}}
   volumeClaimTemplates:
     - metadata:
         labels:
           app: "{labels[app]}"
           environment: "{labels[environment]}"
-        name: {pvc_name}
+        name: "{pvc_name}"
       spec:
         accessModes: 
           - "ReadWriteOnce"

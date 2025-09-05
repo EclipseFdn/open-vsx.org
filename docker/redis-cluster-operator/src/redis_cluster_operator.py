@@ -52,7 +52,7 @@ def create_service_data(name, sts_name, namespace, labels):
         kopf.adopt(data)
         return data
 
-def create_statefulset_data(spec, name, namespace, labels, service_name, secret_name, config_name, pvc_name, maxmemory):
+def create_statefulset_data(spec, name, namespace, labels, service_name, secret_name, config_name, pvc_name, acl_name, maxmemory):
     path = os.path.join(os.path.dirname(__file__), 'templates', 'statefulset.yaml')
     with open(path, "rt") as f:
         tmpl = f.read()
@@ -64,6 +64,7 @@ def create_statefulset_data(spec, name, namespace, labels, service_name, secret_
             secret_name=secret_name,
             config_name=config_name,
             pvc_name=pvc_name,
+            acl_name=acl_name,
             maxmemory=maxmemory
         )
         data = yaml.safe_load(text)
@@ -214,6 +215,7 @@ async def create_fn(spec, name, namespace, labels, logger, **kwargs):
     config_name = f"{name}-config"
     pvc_name = f"{name}-data"
     service_name = f"{name}-service"
+    acl_name = f"{name}-acl"
     validate_host(name, service_name)
 
     secret_name = f"redis-secret-{labels['environment']}"
@@ -228,7 +230,7 @@ async def create_fn(spec, name, namespace, labels, logger, **kwargs):
     core_api.create_namespaced_service(namespace=namespace, body=srv_data)
     logger.info("Service child is created")
 
-    sts_data = create_statefulset_data(spec, name, namespace, labels, service_name, secret_name, config_name, pvc_name, spec['maxmemory'])
+    sts_data = create_statefulset_data(spec, name, namespace, labels, service_name, secret_name, config_name, pvc_name, acl_name, spec['maxmemory'])
     apps_api = kubernetes.client.AppsV1Api()
     obj = apps_api.create_namespaced_stateful_set(namespace=namespace, body=sts_data)
     logger.info("StatefulSet child is created")
