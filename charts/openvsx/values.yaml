@@ -1,8 +1,8 @@
 # Default values for openvsx.
 
-name: open-vsx-org
-environment: production
-namespace: open-vsx-org
+name: &name open-vsx-org
+environment: &environment production
+namespace: &namespace open-vsx-org
 host: open-vsx.org
 
 replicaCount: 6
