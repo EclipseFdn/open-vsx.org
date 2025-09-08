@@ -1,7 +1,9 @@
 name: Claim Namespace
 on:
-  issues:
-    types: [opened, edited, labeled]
+  # alibi value to not show the workflow as broken
+  workflow_dispatch:
+#   issues:
+#     types: [opened, edited, labeled]
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.issue.number }}
   cancel-in-progress: true
@@ -44,7 +46,7 @@ jobs:
         name: Namespace API request
         uses: JamesIves/fetch-api-data-action@v2
         with:
-          endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
+          endpoint: https://open-vsx.org/api/${o{steps.get_namespace.outputs.namespace}}
           configuration: '{ "method": "GET" }'
       - id: namespace_not_found_should_close
         if: ${{ failure() && steps.get_namespace.outputs.namespace != null }}
