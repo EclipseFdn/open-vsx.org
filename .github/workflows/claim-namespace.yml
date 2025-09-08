@@ -46,7 +46,7 @@ jobs:
         name: Namespace API request
         uses: JamesIves/fetch-api-data-action@v2
         with:
-          endpoint: https://open-vsx.org/api/${o{steps.get_namespace.outputs.namespace}}
+          endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
           configuration: '{ "method": "GET" }'
       - id: namespace_not_found_should_close
         if: ${{ failure() && steps.get_namespace.outputs.namespace != null }}
