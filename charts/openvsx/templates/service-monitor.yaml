@@ -16,6 +16,6 @@ spec:
     matchNames:
       - {{ .Values.namespace }}
   endpoints:
-    - port: http
+    - port: management
       path: /actuator/prometheus
-      interval: 15s
+      interval: 60s
