@@ -51,6 +51,7 @@ data:
 
     prometheus.scrape "redis_scrape_{{ $index }}" {
       targets    = prometheus.exporter.redis.redis_metrics_{{ $index }}.targets
+      scrape_interval = "600s"
       forward_to = [prometheus.remote_write.default.receiver]
     }
 
