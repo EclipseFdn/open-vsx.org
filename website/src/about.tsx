@@ -50,7 +50,7 @@ const About = () => {
         </Paragraph>
         <Paragraph variant='body1'>
         We use Slack for instant messaging and general communication, 
-        use this <Link color='secondary' underline='hover' href='https://join.slack.com/t/openvsxworkinggroup/shared_invite/zt-2y07y1ggy-ct3IfJljjGI6xWUQ9llv6A'>link</Link> to join our Slack workspace.
+        use this <Link color='secondary' underline='hover' href='https://join.slack.com/t/openvsxworkinggroup/shared_invite/zt-3czmpiy42-2DX18Yvqw1pfQyKx53_skg'>link</Link> to join our Slack workspace.
         </Paragraph>
 
     </Container>;
