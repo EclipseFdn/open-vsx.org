@@ -56,5 +56,7 @@ else
   action="install"
 fi
 
+helm dependency update "${ROOT_DIR}/charts"
+helm dependency build  "${ROOT_DIR}/charts"
 helm "${action}" "${release_name}" "${ROOT_DIR}/charts/${chart_name}" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
   
