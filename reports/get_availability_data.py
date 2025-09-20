@@ -1,4 +1,4 @@
-"""
+""" 
 Script to collect availability data from open-vsx endpoints monitored by
 betteruptime. Used by graph_availability_trends Jupyter Notebook.Requires 
 an access token from IT team. 
