@@ -1,6 +1,5 @@
-/.project
-/generated-production/
-/generated-staging/
-/jsonnet-generated-production/
-/jsonnet-generated-staging/
-/charts/openvsx/charts
+# Object file
+*.o
+
+# Ada Library Information
+*.ali

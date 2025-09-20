@@ -1,4 +1,4 @@
-ports:
+ports: 
 - port: 3000
 
 tasks:
