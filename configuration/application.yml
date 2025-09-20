@@ -1,4 +1,4 @@
-# This is the base configuration of the server running at open-vsx.org.
+# This is the base configuration of the server running at open-vsx.org. 
 # Properties containing secrets are not included here, e.g. spring.datasource
 # for database access and ovsx.storage.azure for file storage access.
 # Additional properties are loaded from the file provided with the
