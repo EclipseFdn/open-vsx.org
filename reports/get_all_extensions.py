@@ -1,4 +1,4 @@
-"""
+""" 
 Script to collect metadata on all published extensions. Used by Jupyter notebooks.
 """
 import requests
