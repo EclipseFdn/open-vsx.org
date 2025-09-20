@@ -1,4 +1,4 @@
-{
+{ 
   "__inputs": [
     {
       "name": "DS_GRAFANACLOUD-OPENVSX-PROM",
@@ -21,7 +21,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.1.0-69950"
+      "version": "11.1.0-6"
     },
     {
       "type": "datasource",
