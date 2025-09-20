@@ -1,32 +1,56 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-#  https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+*.gem 
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Used by dotenv library to load environment variables.
+# .env
+
+# Ignore Byebug command history file.
+.byebug_history
+
+## Specific to RubyMotion:
+.dat*
+.repl_history
+build/
+*.bridgesupport
+build-iPhoneOS/
+build-iPhoneSimulator/
+
+## Specific to RubyMotion (use of CocoaPods):
 #
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+#
+# vendor/Pods/
 
-# Test binary, built with `go test -c`
-*.test
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
 
-# Code coverage profiles and other test artifacts
-*.out
-coverage.*
-*.coverprofile
-profile.cov
+## Environment normalization:
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+# for a library or gem, you might want to ignore these files since the code is
+# intended to run in multiple environments; otherwise, check them in:
+# Gemfile.lock
+# .ruby-version
+# .ruby-gemset
 
-# Go workspace file
-go.work
-go.work.sum
+# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
+.rvmrc
 
-# env file
-.env
-
-# Editor/IDE
-# .idea/
-# .vscode/
+# Used by RuboCop. Remote config files pulled in from inherit_from directive.
+# .rubocop-https?--*
