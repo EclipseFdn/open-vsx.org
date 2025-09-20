@@ -1,4 +1,4 @@
-**Eclipse Foundation, Inc.**
+**Eclipse Foundation, Inc.** 
 
 # Open VSX Publisher Agreement
 
