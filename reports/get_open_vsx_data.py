@@ -1,4 +1,4 @@
-"""
+""" 
 Script to collect activity stats, used by Jupyter Notebooks. Requires an access token 
 from https://open-vsx.org/user-settings/tokens with admin access.  The following use 
 web auth, not the API token:
