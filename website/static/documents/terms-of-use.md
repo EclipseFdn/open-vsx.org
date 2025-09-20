@@ -1,4 +1,4 @@
-# Open-VSX Registry Website Terms of Use
+# Open-VSX Registry Website Terms of Use 
 
 February 11, 2021
 
