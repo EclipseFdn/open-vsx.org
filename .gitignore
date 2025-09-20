@@ -1,7 +1,3 @@
-*.ss~
-*.ss#*
-.#*.ss
-
-*.scm~
-*.scm#*
-.#*.scm
+.zig-cache/
+zig-out/
+*.o
