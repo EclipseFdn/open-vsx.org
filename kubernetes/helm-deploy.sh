@@ -48,13 +48,6 @@ else
   exit 1
 fi
 
-if helm list -n "${namespace}" | grep "${release_name}" > /dev/null; then
-  echo "Found installed Helm chart for release name '${release_name}'. Upgrading..."
-  action="upgrade"
-else
-  echo "Found no installed Helm chart for release name '${release_name}'. Installing..."
-  action="install"
-fi
+chmod 600 "${KUBECONFIG}"
 
-helm "${action}" "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
-  
+helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
