@@ -56,7 +56,5 @@ else
   action="install"
 fi
 
-helm dependency update "${ROOT_DIR}/charts/openvsx"
-helm dependency build  "${ROOT_DIR}/charts/openvsx"
-helm "${action}" "${release_name}" "${ROOT_DIR}/charts/${chart_name}" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
+helm "${action}" "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
   
