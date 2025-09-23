@@ -50,4 +50,5 @@ fi
 
 chmod 600 "${KUBECONFIG}"
 
+helm dependency build  "${ROOT_DIR}/charts/openvsx"
 helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
