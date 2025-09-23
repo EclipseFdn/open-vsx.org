@@ -50,6 +50,6 @@ fi
 
 chmod 600 "${KUBECONFIG}"
 
-helm repo add https://grafana.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
 helm dependency build  "${ROOT_DIR}/charts/openvsx"
 helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
