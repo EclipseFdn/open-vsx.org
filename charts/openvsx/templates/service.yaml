@@ -4,6 +4,7 @@ metadata:
   labels:
     app: {{ .Values.name }}
     environment: {{ .Values.environment }}
+    type: website
   name: {{ .Values.name }}-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
 spec:
