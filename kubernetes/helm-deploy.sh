@@ -50,6 +50,14 @@ fi
 
 chmod 600 "${KUBECONFIG}"
 
+HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
+HELM_CONFIG_HOME="${ROOT_DIR}/.helm/config"
+HELM_DATA_HOME="${ROOT_DIR}/.helm/data"
+
+mkdir -p "${HELM_CACHE_HOME}"
+mkdir -p "${HELM_CONFIG_HOME}"
+mkdir -p "${HELM_DATA_HOME}"
+
 helm repo add grafana https://grafana.github.io/helm-charts
 helm dependency build  "${ROOT_DIR}/charts/openvsx"
 helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
