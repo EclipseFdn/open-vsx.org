@@ -50,15 +50,13 @@ fi
 
 chmod 600 "${KUBECONFIG}"
 
-HELM_HOME="${ROOT_DIR}/.helm"
-HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
-HELM_CONFIG_HOME="${ROOT_DIR}/.helm/config"
-HELM_DATA_HOME="${ROOT_DIR}/.helm/data"
+export HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
+export HELM_CONFIG_HOME="${ROOT_DIR}/.helm/config"
+export HELM_DATA_HOME="${ROOT_DIR}/.helm/data"
 
-mkdir "${HELM_HOME}"
-mkdir "${HELM_CACHE_HOME}"
-mkdir "${HELM_CONFIG_HOME}"
-mkdir "${HELM_DATA_HOME}"
+mkdir -p "${HELM_CACHE_HOME}"
+mkdir -p "${HELM_CONFIG_HOME}"
+mkdir -p "${HELM_DATA_HOME}"
 
 helm version
 helm repo add grafana https://grafana.github.io/helm-charts
