@@ -1,4 +1,4 @@
-# Open VSX Reports 
+# Open VSX Reports  
 Reports and supporting scripts for graphing availability and activity at open-vsx.org. Most require some sort of access token.
 
 ### graph_availability_trends.ipynb
