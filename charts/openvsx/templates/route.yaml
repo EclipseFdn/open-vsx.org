@@ -1,5 +1,5 @@
 apiVersion: route.openshift.io/v1
-kind: Route
+kind: Route 
 metadata:
   annotations:
     haproxy.router.openshift.io/disable_cookies: 'true'
