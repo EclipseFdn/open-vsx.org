@@ -1,5 +1,5 @@
 ## How to deploy staging instance for a given image?
-
+ 
 ```bash
 ./helm-deploy.sh staging <docker_image_tag>
 ```
