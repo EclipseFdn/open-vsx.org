@@ -13,7 +13,7 @@ import {
     UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
     NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole, RegistryVersion
 } from "openvsx-webui";
-
+ 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Avatar_cupcake.png';
 
 export class MockRegistryService extends ExtensionRegistryService {
