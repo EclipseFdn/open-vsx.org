@@ -1,5 +1,5 @@
 # Default values for openvsx.
-
+ 
 name: &name open-vsx-org
 environment: &environment production
 namespace: &namespace open-vsx-org
