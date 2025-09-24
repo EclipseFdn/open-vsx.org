@@ -1,4 +1,4 @@
-# Default values for openvsx staging.
+# Default values for openvsx staging. 
 
 name: &name open-vsx-org
 environment: &environment staging
