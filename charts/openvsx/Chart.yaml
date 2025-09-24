@@ -1,4 +1,4 @@
-apiVersion: v2
+apiVersion: v2 
 name: openvsx
 description: A Helm chart for Kubernetes
 type: application
