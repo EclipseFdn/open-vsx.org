@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"; 
 import { Container, Typography, Box, Button } from "@mui/material";
 import { styled, Theme } from '@mui/material/styles';
 import AdoptersList from "./components/adopters-list";
