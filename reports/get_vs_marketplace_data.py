@@ -1,4 +1,4 @@
-""" 
+"""  
 Script to collect metadata on all extensions published on VS Code Marketplace. Outputs 
 both a JSON and a CSV file. Note, this relies on interfaces that are not fully documented 
 and are subject to change. 
