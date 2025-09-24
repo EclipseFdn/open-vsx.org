@@ -1,4 +1,4 @@
-apiVersion: open-vsx.org/v1
+apiVersion: open-vsx.org/v1 
 kind: RedisCluster
 metadata:
   labels:
