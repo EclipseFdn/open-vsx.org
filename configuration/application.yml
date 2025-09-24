@@ -2,7 +2,7 @@
 # Properties containing secrets are not included here, e.g. spring.datasource
 # for database access and ovsx.storage.azure for file storage access.
 # Additional properties are loaded from the file provided with the
-# DEPLOYMENT_CONFIG environment variable.
+# DEPLOYMENT_CONFIG environment variable. 
 logging:
   pattern:
     level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
