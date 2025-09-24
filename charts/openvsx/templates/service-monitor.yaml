@@ -1,5 +1,5 @@
 apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+kind: ServiceMonitor 
 metadata:
   labels:
     app: {{ .Values.name }}
