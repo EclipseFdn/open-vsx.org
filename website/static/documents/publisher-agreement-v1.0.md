@@ -1,5 +1,5 @@
 **Eclipse Foundation, Inc.** 
-
+ 
 # Open VSX Publisher Agreement
 
 Thank you for your interest in publishing in the Eclipse Open VSX Registry (“Open VSX”). As used in this Eclipse Open VSX Publisher Agreement (“Agreement”), the term “you”, ”your” or “Publisher” refers to you as an individual, and, to the extent you are the agent or employee of another person or entity that has rights in the Offering (as defined below) (such person or entity, a “Principal”) “you” and “publisher” also includes that Principal.
