@@ -27,12 +27,6 @@ spring:
     name: openvsx-server
   config:
     import: file:${DEPLOYMENT_CONFIG}
-  data:
-    redis:
-      cluster:
-        nodes: 'redis-staging-0.redis-staging-service:6379,redis-staging-1.redis-staging-service:6379,redis-staging-2.redis-staging-service:6379,redis-staging-3.redis-staging-service:6379,redis-staging-4.redis-staging-service:6379,redis-staging-5.redis-staging-service:6379'
-      username: openvsx
-      password: openvsx
   datasource:
     hikari:
       maximum-pool-size: 10
@@ -81,9 +75,6 @@ management:
         include:
           - health
           - prometheus
-  zipkin:
-    tracing:
-      endpoint: http://grafana-alloy-staging:9411/api/v2/spans
   tracing:
     sampling:
       probability: 0.01
