@@ -195,3 +195,27 @@ ovsx:
     key-pair: create
   registry:
     version: <SERVER_VERSION>
+  caching:
+    files-extension:
+      tti: PT1H
+      max-size: 200
+    files-webresource:
+      tti: PT1H
+      max-size: 500
+    files-browse:
+      tti: PT1H
+      max-size: 100
+    average-review-rating:
+      ttl: P3D
+    namespace-details-json:
+      ttl: PT1H
+    database-search:
+      ttl:PT1H
+    extension-json:
+      ttl: PT1H
+    latest-extension-version:
+      ttl: PT1H
+    sitemap:
+      ttl: PT1H
+    malicious-extensions:
+      ttl: P3D
