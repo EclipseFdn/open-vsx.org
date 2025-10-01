@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=v0.27.0
+ARG SERVER_VERSION=v0.28.0
 
 # Builder image to compile the website
 FROM ubuntu AS builder
@@ -33,7 +33,6 @@ ARG SERVER_VERSION
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/application.yml config/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-spring.xml BOOT-INF/classes/
-COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/ehcache.xml BOOT-INF/classes/
 
 # Replace version placeholder with arg value
 RUN sed -i "s/<SERVER_VERSION>/$SERVER_VERSION/g" config/application.yml

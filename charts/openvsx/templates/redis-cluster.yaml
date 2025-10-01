@@ -1,0 +1,17 @@
+apiVersion: open-vsx.org/v1
+kind: RedisCluster
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.redis.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag}}"
+  imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+  maxmemory: {{ .Values.redis.maxmemory }}
+  replicas: {{ .Values.redis.replicas }}
+  resources:
+    {{- toYaml .Values.redis.resources | nindent 4 }}
+  persistence:
+    {{- toYaml .Values.redis.persistence | nindent 4 }}

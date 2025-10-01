@@ -48,13 +48,17 @@ else
   exit 1
 fi
 
-if helm list -n "${namespace}" | grep "${release_name}" > /dev/null; then
-  echo "Found installed Helm chart for release name '${release_name}'. Upgrading..."
-  action="upgrade"
-else
-  echo "Found no installed Helm chart for release name '${release_name}'. Installing..."
-  action="install"
-fi
+chmod 600 "${KUBECONFIG}"
 
-helm "${action}" "${release_name}" "${ROOT_DIR}/charts/${chart_name}" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
-  
+export HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
+export HELM_CONFIG_HOME="${ROOT_DIR}/.helm/config"
+export HELM_DATA_HOME="${ROOT_DIR}/.helm/data"
+
+mkdir -p "${HELM_CACHE_HOME}"
+mkdir -p "${HELM_CONFIG_HOME}"
+mkdir -p "${HELM_DATA_HOME}"
+
+helm version
+helm repo add grafana https://grafana.github.io/helm-charts
+helm dependency build  "${ROOT_DIR}/charts/openvsx"
+helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"

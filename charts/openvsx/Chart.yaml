@@ -2,5 +2,9 @@ apiVersion: v2
 name: openvsx
 description: A Helm chart for Kubernetes
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "1.16.0"
+dependencies:
+  - name: alloy
+    version: 1.1.2
+    repository: https://grafana.github.io/helm-charts

@@ -1,0 +1,61 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: redisclusters.open-vsx.org
+spec:
+  scope: Namespaced
+  group: open-vsx.org
+  names:
+    kind: RedisCluster
+    plural: redisclusters
+    singular: rediscluster
+    shortNames:
+      - rcl
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                replicas:
+                  type: integer
+                  minimum: 6
+                maxmemory:
+                  type: string
+                image:
+                  type: string
+                imagePullPolicy:
+                  type: string
+                resources:
+                  type: object
+                  properties:
+                    requests:
+                      type: object
+                      properties:
+                        memory:
+                          type: string
+                        cpu:
+                          type: string
+                    limits:
+                      type: object
+                      properties:
+                        memory:
+                          type: string
+                        cpu:
+                          type: string
+                persistence:
+                  type: object
+                  properties:
+                    storageGi:
+                      type: number
+                      format: int32
+                    storageClass:
+                      type: string
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
