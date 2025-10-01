@@ -82,7 +82,6 @@ alloy:
       - name: zipkin
         port: 9411
         targetPort: 9411
-    stabilityLevel: experimental
   crds:
     create: true
   controller:
