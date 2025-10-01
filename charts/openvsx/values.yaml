@@ -89,5 +89,7 @@ alloy:
     podLabels:
       app: *name
       environment: *environment
+    nodeSelector:
+      openvsx-production-alloy: "true"
   fullnameOverride: grafana-alloy-production
   namespaceOverride: *namespace
