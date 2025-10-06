@@ -89,5 +89,7 @@ alloy:
     podLabels:
       app: *name
       environment: *environment
+    nodeSelector:
+      openvsx-staging-alloy: "true"
   fullnameOverride: grafana-alloy-staging
   namespaceOverride: *namespace
