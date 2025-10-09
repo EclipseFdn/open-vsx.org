@@ -64,7 +64,7 @@ redis:
   persistence:
     storageGi: 1
     storageClass: cephfs-new
-  serviceAccountName: redis-cluster-operator
+  serviceAccountName: redis-cluster-operator-staging
 
 # grafana alloy
 alloy:
@@ -91,5 +91,6 @@ alloy:
       environment: *environment
     nodeSelector:
       openvsx-staging-alloy: "true"
+      openvsx-production-alloy: null
   fullnameOverride: grafana-alloy-staging
   namespaceOverride: *namespace
