@@ -1,8 +1,8 @@
 # Default values for openvsx staging.
 
-name: open-vsx-org
-environment: staging
-namespace: open-vsx-org
+name: &name open-vsx-org
+environment: &environment staging
+namespace: &namespace open-vsx-org
 host: staging.open-vsx.org
 
 replicaCount: 1
@@ -12,7 +12,7 @@ image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 06c8bea-430
+  tag: 6d777ca-570
 
 website:
   jvmArgs: -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
@@ -45,3 +45,51 @@ es:
       memory: 2Gi
   storage_class: cephfs-new
 
+# redis
+redis:
+  name: redis
+  replicas: 6
+  image:
+    repository: redis
+    tag: "7.2.10"
+    pullPolicy: IfNotPresent
+  maxmemory: "256mb"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "100m"
+  persistence:
+    storageGi: 1
+    storageClass: cephfs-new
+  serviceAccountName: redis-cluster-operator
+
+# grafana alloy
+alloy:
+  alloy:
+    configMap:
+      create: false
+      name: "grafana-alloy-configmap-staging"
+      key: "config.river"
+    envFrom:
+      - secretRef: 
+          name: grafana-cloud-secret-staging
+      - secretRef: 
+          name: redis-secret-staging
+    extraPorts:
+      - name: zipkin
+        port: 9411
+        targetPort: 9411
+  crds:
+    create: true
+  controller:
+    type: "daemonset"
+    podLabels:
+      app: *name
+      environment: *environment
+    nodeSelector:
+      openvsx-staging-alloy: "true"
+  fullnameOverride: grafana-alloy-staging
+  namespaceOverride: *namespace

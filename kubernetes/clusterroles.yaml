@@ -1,0 +1,33 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ci-bot-manage-cluster-rbac
+rules:
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["clusterroles","clusterrolebindings"]
+    verbs: ["get","list","watch"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles","rolebindings"]
+    verbs: ["get","list","watch"]
+  - apiGroups: ["open-vsx.org"]
+    resources: ["redisclusters"]
+    resourceNames: ["redis"]
+    verbs: ["get","list","watch","update","patch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["servicemonitors"]
+    resourceNames: ["spring-boot-monitor-staging", "spring-boot-monitor-production"]
+    verbs: ["get","list","watch","update","patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ci-bot-manage-cluster-rbac
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ci-bot-manage-cluster-rbac
+subjects:
+  - kind: ServiceAccount
+    name: ci-bot
+    namespace: foundation-internal-infra
+
