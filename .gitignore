@@ -4,3 +4,4 @@
 /jsonnet-generated-production/
 /jsonnet-generated-staging/
 /charts/openvsx/charts
+.DS_Store
