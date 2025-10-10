@@ -11,17 +11,17 @@ spec:
     matchLabels:
       app: {{ .Values.name }}
       environment: {{ .Values.environment }}
-      component: redis-cluster-operator
+      component: redis-cluster-operator-{{ .Values.environment }}
   template:
     metadata:
       labels:
         app: {{ .Values.name }}
         environment: {{ .Values.environment }}
-        component: redis-cluster-operator
+        component: redis-cluster-operator-{{ .Values.environment }}
     spec:
       serviceAccountName: {{ .Values.redis.serviceAccountName }}
       containers:
-      - name: redis-cluster-operator
+      - name: redis-cluster-operator-{{ .Values.environment }}
         image: "ghcr.io/eclipsefdn/redis-cluster-operator"
         imagePullPolicy: Always
         env:
