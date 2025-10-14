@@ -64,7 +64,11 @@ redis:
   persistence:
     storageGi: 5
     storageClass: cephfs-new
-  serviceAccountName: redis-cluster-operator-production
+  serviceAccountName: redis-cluster-operator
+  clusterRoleName: redis-cluster-operator-role-cluster
+  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster
+  clusterRoleName: redis-cluster-operator-role
+  clusterRoleBinding: redis-cluster-operator-role-binding
 
 # grafana alloy
 alloy:
