@@ -2,7 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment staging
-namespace: &namespace open-vsx-org
+namespace: &namespace open-vsx-org-staging
 host: staging.open-vsx.org
 
 replicaCount: 1
@@ -65,6 +65,10 @@ redis:
     storageGi: 1
     storageClass: cephfs-new
   serviceAccountName: redis-cluster-operator-staging
+  clusterRoleName: redis-cluster-operator-role-cluster-staging
+  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging
+  clusterRoleName: redis-cluster-operator-role-staging
+  clusterRoleBinding: redis-cluster-operator-role-binding-staging
 
 # grafana alloy
 alloy:

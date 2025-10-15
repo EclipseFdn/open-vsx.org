@@ -21,6 +21,7 @@ release_name_staging="staging"
 release_name_production="production"
 chart_name="openvsx"
 namespace="open-vsx-org"
+namespace_staging="open-vsx-org-staging"
 
 environment="${1:-}"
 image_tag="${2:-}"
@@ -40,6 +41,7 @@ fi
 if [[ "${environment}" == "staging" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-staging.yaml"
   release_name="${release_name_staging}"
+  namespace="${namespace_staging}"
 elif [[ "${environment}" == "production" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values.yaml"
   release_name="${release_name_production}"
