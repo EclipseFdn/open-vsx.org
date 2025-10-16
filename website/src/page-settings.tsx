@@ -158,7 +158,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     const additionalRoutes: ReactNode = <>
         <Route path='/about' element={<About />} />
         <Route path='/terms-of-use' element={<Document url='/documents/terms-of-use.md' />} />
-        <Route path='/publisher-agreement-v1.0' element={<Document url='/documents/publisher-agreement-v1.0.md' />} />
+        <Route path='/publisher-agreement-v1.1' element={<Document url='/documents/publisher-agreement-v1.1.md' />} />
         <Route path='/members' element={<Members />} />
         <Route path='/adopters' element={<Adopters />} />
     </>;
@@ -226,7 +226,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         urls: {
             extensionDefaultIcon: '/default-icon.png',
             namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access',
-            publisherAgreement: '/documents/publisher-agreement-v1.0.md'
+            publisherAgreement: '/documents/publisher-agreement-v1.1.md'
         }
     };
 }
