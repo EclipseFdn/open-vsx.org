@@ -168,6 +168,8 @@ ovsx:
       allowed-versions: "1,1.0,1.1"
   publishing:
     require-license: true
+  redis:
+    enabled: true
   elasticsearch:
     enabled: true
     ssl: true
