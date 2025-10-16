@@ -133,7 +133,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                Open VSX now supports deprecating extensions - see our <Link color='secondary' underline='hover' href="https://blogs.eclipse.org/post/john-kellerman/new-feature-open-vsx-deprecating-extensions">announcement</Link>.
+                We've updated the Open VSX Publisher Agreement. Details <Link color='secondary' underline='hover' href="https://drive.google.com/file/d/19od4oK5KmamI1e9yunZ1FG-nkkX3doOx/view?usp=sharing">here</Link>.
             </Typography>
         </Box>;
 
@@ -203,7 +203,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                     color: 'info'
                 },
                 cookie: {
-                    key: 'Extension-Deprecation',
+                    key: 'Publisher-Agreement-1.1',
                     value: 'closed',
                     path: '/'
                 }
