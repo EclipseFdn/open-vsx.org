@@ -134,7 +134,7 @@ bucket4j:
       rate-limits:
         - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
           bandwidths:
-            - capacity: 15
+            - capacity: 75
               time: 1
               unit: seconds
     - cache-name: buckets
