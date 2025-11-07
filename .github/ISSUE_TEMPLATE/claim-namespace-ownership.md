@@ -2,7 +2,7 @@
 name: Claim namespace ownership
 about: Request exclusive publishing rights to an Open VSX namespace
 title: Claiming namespace [name]
-labels: namespace
+labels: namespace,operations
 assignees: ''
 ---
 
