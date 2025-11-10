@@ -2,7 +2,6 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   annotations:
-    haproxy.router.openshift.io/set-forwarded-headers: replace
     haproxy.router.openshift.io/disable_cookies: 'true'
     haproxy.router.openshift.io/timeout: {{ .Values.route.timeout }}
   labels:
@@ -28,7 +27,6 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   annotations:
-    haproxy.router.openshift.io/set-forwarded-headers: replace
     haproxy.router.openshift.io/disable_cookies: 'true'
     haproxy.router.openshift.io/timeout: {{ .Values.route.timeout }}
   labels:
