@@ -52,8 +52,8 @@ jobs:
       run: |
         git remote add upstream ${CLONE_URL}
         git fetch upstream
-        git checkout -B $BASE_REF upstream/$BASE_REF
-        git checkout $HEAD_BRANCH
+        git checkout -B ${BASE_REF} upstream/${BASE_REF}
+        git checkout ${HEAD_BRANCH}
         git clean -ffdx && git reset --hard HEAD
     - name: SonarCloud Scan on PR
       if: github.event.workflow_run.event == 'pull_request'
