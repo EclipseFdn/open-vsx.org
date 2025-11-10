@@ -113,13 +113,13 @@ pipeline {
   post {
     failure {
       mail to: 'ci-admin@eclipse.org',
-        subject: "[open-vsx.org] Build Failure ${currentBuild.fullDisplayName}",
+        subject: "[open-vsx.org] Build Failure ${currentBuild.fullDisplayName} - ${env.BRANCH_NAME}",
         mimeType: 'text/html',
         body: "Project: ${env.JOB_NAME}<br/>Build Number: ${env.BUILD_NUMBER}<br/>Build URL: ${env.BUILD_URL}<br/>Console: ${env.BUILD_URL}/console"
     }
     fixed {
       mail to: 'ci-admin@eclipse.org',
-        subject: "[CBI] Back to normal ${currentBuild.fullDisplayName}",
+        subject: "[open-vsx.org] Back to normal ${currentBuild.fullDisplayName} - ${env.BRANCH_NAME}",
         mimeType: 'text/html',
         body: "Project: ${env.JOB_NAME}<br/>Build Number: ${env.BUILD_NUMBER}<br/>Build URL: ${env.BUILD_URL}<br/>Console: ${env.BUILD_URL}/console"
     }
