@@ -212,3 +212,6 @@ ovsx:
       ttl: PT1H
     malicious-extensions:
       ttl: P3D
+  foregroundHttpConnPool:
+    maxTotal: 50
+    defaultMaxPerRoute: 50
