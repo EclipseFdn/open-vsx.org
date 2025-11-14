@@ -48,8 +48,9 @@ jobs:
       env:
         HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         CLONE_URL: ${{ github.event.repository.clone_url }}
-        BASE_REF: ${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
       run: |
+        BASE_REF="${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}"
+
         git remote add upstream ${CLONE_URL}
         git fetch upstream
         git checkout -B ${BASE_REF} upstream/${BASE_REF}
