@@ -1,4 +1,8 @@
 name: Claim Namespace
+
+# The workflow is compromised as people can claim namespaces even though the claim is invalid.
+# Disable it for now to avoid further damage.
+
 on:
   # alibi value to not show the workflow as broken
   workflow_dispatch:
@@ -17,7 +21,7 @@ jobs:
     steps:
       - id: get_namespace
         name: Get namespace name
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           script: |
             let namespace = context.payload.issue.title.substring('Claiming namespace'.length);
@@ -41,17 +45,19 @@ jobs:
             }
       - id: log_namespace
         name: Log namespace name
-        run: echo '${{steps.get_namespace.outputs.namespace}}'
+        run: echo '${NAMESPACE}'
+        env:
+          NAMESPACE: ${{steps.get_namespace.outputs.namespace}}
       - id: api_get_namespace
         name: Namespace API request
-        uses: JamesIves/fetch-api-data-action@v2
+        uses: JamesIves/fetch-api-data-action@e9b926da66aea24f5e628e11f36dfbab75dd7b0a # v2.4.2
         with:
           endpoint: https://open-vsx.org/api/${{steps.get_namespace.outputs.namespace}}
           configuration: '{ "method": "GET" }'
       - id: namespace_not_found_should_close
         if: ${{ failure() && steps.get_namespace.outputs.namespace != null }}
         name: Check issue is still open before editing issue
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         with:
           route: GET /repos/{repo}/issues/{issue_number}
           repo: ${{ github.repository }}
@@ -71,12 +77,12 @@ jobs:
           ASSIGNEE: tfroment
       - id: api_get_namespace_members
         name: Namespace members API request
-        uses: JamesIves/fetch-api-data-action@v2
+        uses: JamesIves/fetch-api-data-action@e9b926da66aea24f5e628e11f36dfbab75dd7b0a # v2.4.2
         with:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/members?token=${{secrets.OPENVSX_TOKEN}}
           configuration: '{ "method": "GET" }'
       - id: namespace_members
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
           DATA: ${{ steps.api_get_namespace_members.outputs.fetchApiData }}
         with:
@@ -84,7 +90,7 @@ jobs:
             const json = JSON.parse(process.env.DATA);
             core.setOutput('members', JSON.stringify(json.namespaceMemberships));
       - id: make_owner
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
           MEMBERS: ${{ steps.namespace_members.outputs.members }}
           LOGIN_NAME: ${{ github.event.issue.user.login }}
@@ -96,7 +102,7 @@ jobs:
       - id: should_change_member
         if: ${{ steps.make_owner.outputs.makeOwner == 'true' }}
         name: Check issue is still open before changing namespace membership
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         with:
           route: GET /repos/{repo}/issues/{issue_number}
           repo: ${{ github.repository }}
@@ -106,7 +112,7 @@ jobs:
       - id: change_member
         name: Namespace change member API request
         if: ${{ steps.make_owner.outputs.makeOwner == 'true' && fromJSON(steps.should_change_member.outputs.data).state == 'open' }}
-        uses: JamesIves/fetch-api-data-action@v2
+        uses: JamesIves/fetch-api-data-action@e9b926da66aea24f5e628e11f36dfbab75dd7b0a # v2.4.2
         with:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/change-member?user=${{github.event.issue.user.login}}&provider=github&role=owner&token=${{secrets.OPENVSX_TOKEN}}
           configuration: '{ "method": "POST" }'
