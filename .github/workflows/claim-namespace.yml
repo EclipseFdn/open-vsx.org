@@ -21,7 +21,7 @@ jobs:
     steps:
       - id: get_namespace
         name: Get namespace name
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             let namespace = context.payload.issue.title.substring('Claiming namespace'.length);
@@ -82,7 +82,7 @@ jobs:
           endpoint: https://open-vsx.org/admin/api/namespace/${{steps.get_namespace.outputs.namespace}}/members?token=${{secrets.OPENVSX_TOKEN}}
           configuration: '{ "method": "GET" }'
       - id: namespace_members
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           DATA: ${{ steps.api_get_namespace_members.outputs.fetchApiData }}
         with:
@@ -90,7 +90,7 @@ jobs:
             const json = JSON.parse(process.env.DATA);
             core.setOutput('members', JSON.stringify(json.namespaceMemberships));
       - id: make_owner
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           MEMBERS: ${{ steps.namespace_members.outputs.members }}
           LOGIN_NAME: ${{ github.event.issue.user.login }}

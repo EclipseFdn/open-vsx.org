@@ -10,16 +10,16 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           path: open-vsx.org
           persist-credentials: false
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: eclipse/openvsx
           path: openvsx
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: 18.x
       - name: Install dependencies
@@ -50,7 +50,7 @@ jobs:
         if: steps.check_version.outputs.is_version == 'true'
         working-directory: ./openvsx/webui
         run: yarn smoke-tests
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: steps.check_version.outputs.is_version == 'true'
         with:
           name: playwright-report
@@ -58,7 +58,7 @@ jobs:
           retention-days: 30
       - name: Fail smoke test
         if: steps.check_version.outputs.is_version != 'true'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           VERSION: ${{ steps.read_version.outputs.version }}
         with:
