@@ -6,7 +6,7 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "0.16.5-next.c4f48a9a"
+        "openvsx-webui": "0.17.0-next.db9a98c5"
     },
     "devDependencies": {
         "@types/markdown-it": "^12.2.3",
