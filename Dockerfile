@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=c4f48a9a
+ARG SERVER_VERSION=0493c710
 
 # Builder image to compile the website
 FROM ubuntu AS builder
@@ -28,7 +28,7 @@ RUN /usr/bin/yarn --cwd website \
 
 # Main image derived from openvsx-server
 #FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}
-FROM docker.io/amvanbaren/openvsx-website:${SERVER_VERSION}
+FROM docker.io/amvanbaren/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
