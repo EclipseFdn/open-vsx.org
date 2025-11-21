@@ -133,7 +133,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                The Open VSX Publisher Agreement has been updated. You can find details of these changes <Link color='secondary' underline='hover' href="https://drive.google.com/file/d/19od4oK5KmamI1e9yunZ1FG-nkkX3doOx/view?usp=sharing">here</Link> and the full Open VSX Publisher Agreement Version 1.1 is <Link color='secondary' underline='hover' href="https://www.eclipse.org/legal/documents/eclipse-openvsx-publisher-agreement.pdf">here</Link>.
+                Open VSX will be migrating storage infrastructure on <Typography variant='body1' component='span' sx={{ fontWeight: 'bold' }}>Thursday, November 27, 2025 at 9:00 AM ET</Typography>. The registry will be in read-only mode during the migration – <Link color='secondary' underline='hover' href='https://www.eclipsestatus.io/maintenance' target='_blank' rel='noopener'>More details</Link>.
             </Typography>
         </Box>;
 
@@ -203,7 +203,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                     color: 'info'
                 },
                 cookie: {
-                    key: 'Publisher-Agreement-1.1',
+                    key: 'Storage-Migration-Nov-2025',
                     value: 'closed',
                     path: '/'
                 }
