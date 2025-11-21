@@ -158,6 +158,8 @@ bucket4j:
 ovsx:
   token-prefix: ovsxp_
   storage:
+    migration:
+      enabled: false
     primary-service: azure-blob
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
