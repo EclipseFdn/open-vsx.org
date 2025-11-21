@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=v0.29.1
+ARG SERVER_VERSION=v0.30.0
 
 # Builder image to compile the website
 FROM ubuntu AS builder
@@ -19,7 +19,7 @@ RUN apt-get update \
   && corepack prepare yarn@stable --activate
 
 # bump to update website
-ENV WEBSITE_VERSION 0.16.4
+ENV WEBSITE_VERSION 0.17.0
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
@@ -33,6 +33,7 @@ ARG SERVER_VERSION
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/application.yml config/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-spring.xml BOOT-INF/classes/
+COPY --from=builder --chown=openvsx:openvsx /workdir/mail-templates BOOT-INF/classes/mail-templates
 
 # Replace version placeholder with arg value
 RUN sed -i "s/<SERVER_VERSION>/$SERVER_VERSION/g" config/application.yml

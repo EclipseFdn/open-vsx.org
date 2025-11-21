@@ -158,6 +158,8 @@ bucket4j:
 ovsx:
   token-prefix: ovsxp_
   storage:
+    migration:
+      enabled: false
     primary-service: azure-blob
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
@@ -215,3 +217,8 @@ ovsx:
   foregroundHttpConnPool:
     maxTotal: 50
     defaultMaxPerRoute: 50
+  mail:
+    from: no-reply@open-vsx.org
+    revoked-access-tokens:
+      subject: 'Open VSX Access Tokens Revoked'
+      template: 'revoked-access-tokens.html'
