@@ -158,6 +158,8 @@ bucket4j:
 ovsx:
   token-prefix: ovsxp_
   storage:
+    cdn:
+      prefix-url: https://openvsx-staging.eclipsecontent.org/resources
     migration:
       enabled: false
     primary-service: azure-blob
