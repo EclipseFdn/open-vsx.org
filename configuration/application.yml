@@ -167,7 +167,7 @@ ovsx:
     url: https://open-vsx.org
   data:
     mirror:
-      enabled: true
+      enabled: false
       server-url: https://open-vsx.org
       requests-per-second: 5
       user-name: super_user
