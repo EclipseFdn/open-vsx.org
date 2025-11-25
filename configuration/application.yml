@@ -159,6 +159,7 @@ ovsx:
   token-prefix: ovsxp_
   storage:
     cdn:
+      storage-filter: "AzureBlobStorageService"
       prefix-url: https://openvsx-staging.eclipsecontent.org/resources
     download-counts: false
     migration:
