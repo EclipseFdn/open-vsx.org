@@ -30,6 +30,7 @@ RUN /usr/bin/yarn --cwd website \
 # Main image derived from openvsx-server
 FROM ghcr.io/netomi/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
+ARG SERVER_VERSION_STRING
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/application.yml config/
@@ -37,4 +38,4 @@ COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-sprin
 COPY --from=builder --chown=openvsx:openvsx /workdir/mail-templates BOOT-INF/classes/mail-templates
 
 # Replace version placeholder with arg value
-RUN sed -i "s/<SERVER_VERSION>/$SERVER_VERSION_STRING/g" config/application.yml
+RUN sed -i "s/<SERVER_VERSION>/${SERVER_VERSION_STRING}/g" config/application.yml
