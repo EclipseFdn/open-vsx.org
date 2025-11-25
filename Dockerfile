@@ -1,4 +1,5 @@
-ARG SERVER_VERSION=110261d
+ARG SERVER_VERSION=f8f1033
+ARG SERVER_VERSION_STRING=v0.29.1-migration
 
 # Builder image to compile the website
 FROM ubuntu AS builder
@@ -36,4 +37,4 @@ COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-sprin
 COPY --from=builder --chown=openvsx:openvsx /workdir/mail-templates BOOT-INF/classes/mail-templates
 
 # Replace version placeholder with arg value
-RUN sed -i "s/<SERVER_VERSION>/$SERVER_VERSION/g" config/application.yml
+RUN sed -i "s/<SERVER_VERSION>/$SERVER_VERSION_STRING/g" config/application.yml

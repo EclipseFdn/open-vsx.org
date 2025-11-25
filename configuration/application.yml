@@ -160,23 +160,10 @@ ovsx:
   storage:
     cdn:
       prefix-url: https://openvsx-staging.eclipsecontent.org/resources
+    download-counts: false
     migration:
       enabled: false
     primary-service: azure-blob
-  upstream:
-    url: https://open-vsx.org
-  data:
-    mirror:
-      enabled: false
-      server-url: https://open-vsx.org
-      requests-per-second: 5
-      user-name: super_user
-      schedule: '0/1 * * * *'
-      read-only:
-        disallowed-methods: POST, PUT, PATCH, DELETE
-        allowed-endpoints: /vscode/gallery/extensionquery, /admin/update-search-index, /api/-/query
-      exclude-extensions:
-        - vscode.*
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
