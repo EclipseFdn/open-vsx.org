@@ -163,7 +163,7 @@ ovsx:
     download-counts: false
     migration:
       enabled: false
-    primary-service: azure-blob
+    primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
