@@ -157,8 +157,15 @@ bucket4j:
               unit: seconds
 ovsx:
   token-prefix: ovsxp_
+  allow-namespace-logo-updates: false
   storage:
-    primary-service: azure-blob
+    cdn:
+      storage-filter: ".*AzureBlobStorageService.*"
+      prefix-url: https://openvsx-staging.eclipsecontent.org/resources
+    download-counts: false
+    migration:
+      enabled: false
+    primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
@@ -215,3 +222,8 @@ ovsx:
   foregroundHttpConnPool:
     maxTotal: 50
     defaultMaxPerRoute: 50
+  mail:
+    from: no-reply@open-vsx.org
+    revoked-access-tokens:
+      subject: 'Open VSX Access Tokens Revoked'
+      template: 'revoked-access-tokens.html'

@@ -191,4 +191,8 @@ export class MockAdminService implements AdminService {
     changeNamespace(abortController: AbortController, req: {oldNamespace: string, newNamespace: string, removeOldNamespace: boolean, mergeIfNewNamespaceAlreadyExists: boolean}): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
     }
+
+    revokeAccessTokens(abortController: AbortController, provider: string, login: string): Promise<Readonly<SuccessResult | ErrorResult>> {
+        return Promise.resolve({ success: 'ok' });
+    }
 }
