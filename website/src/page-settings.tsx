@@ -133,7 +133,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                Open VSX will be migrating storage infrastructure on <Typography variant='body1' component='span' sx={{ fontWeight: 'bold' }}>Thursday, November 27, 2025 at 9:00 AM ET</Typography>. The registry will be in read-only mode during the migration – <Link color='secondary' underline='hover' href='https://status.open-vsx.org/maintenance' target='_blank' rel='noopener'>More details</Link>.
+                Open VSX will be migrating storage infrastructure on <Typography variant='body1' component='span' sx={{ fontWeight: 'bold' }}>Thursday, November 27, 2025 at 9:00 AM CET</Typography>. The registry will be in read-only mode during the migration – <Link color='secondary' underline='hover' href='https://status.open-vsx.org/maintenance' target='_blank' rel='noopener'>More details</Link>.
             </Typography>
         </Box>;
 
