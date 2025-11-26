@@ -157,8 +157,9 @@ bucket4j:
               unit: seconds
 ovsx:
   token-prefix: ovsxp_
+  allow-namespace-logo-updates: false  # disable namespace logo updates during migration
   storage:
-    primary-service: azure-blob
+    primary-service: aws  # set aws as primary storage service
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
