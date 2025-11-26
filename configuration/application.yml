@@ -157,6 +157,7 @@ bucket4j:
               unit: seconds
 ovsx:
   token-prefix: ovsxp_
+  allow-namespace-logo-updates: false
   storage:
     cdn:
       storage-filter: ".*AzureBlobStorageService.*"
