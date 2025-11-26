@@ -61,7 +61,7 @@ pipeline {
       }
       steps {
         sh '''
-          docker build --pull -t ${IMAGE_NAME}:${IMAGE_TAG} .
+          docker build --pull --no-cache -t ${IMAGE_NAME}:${IMAGE_TAG} .
         '''
       }
     }
