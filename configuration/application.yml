@@ -159,6 +159,9 @@ ovsx:
   token-prefix: ovsxp_
   storage:
     primary-service: aws
+    download-counts: false  # disable inefficient download count mechanism for anything other than azure
+    migration:
+      enabled: false  # disable automatic storage migration when we switch the primary-service
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
