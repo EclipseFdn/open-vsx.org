@@ -161,7 +161,7 @@ ovsx:
   storage:
     cdn:
       storage-filter: ".*AwsStorageService.*"
-      prefix-url: http://d1vla68f02a8c4.cloudfront.net/
+      prefix-url: https://d1vla68f02a8c4.cloudfront.net/
     download-counts: false
     migration:
       enabled: false
