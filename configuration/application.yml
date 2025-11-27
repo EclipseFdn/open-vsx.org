@@ -161,7 +161,7 @@ ovsx:
   storage:
     cdn:
       storage-filter: ".*AwsStorageService.*"
-      prefix-url: https://openvsx-staging.eclipsecontent.org
+      prefix-url: https://do9dkidryzomo.cloudfront.net
     download-counts: false
     migration:
       enabled: false
