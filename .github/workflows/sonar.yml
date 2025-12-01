@@ -37,13 +37,15 @@ jobs:
         full_name: ${{ github.event.repository.full_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - name: Checkout head branch on push
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.event.repository.full_name
       with:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
           persist-credentials: false
-    - name: Checkout base branch
+    - name: Checkout head branch on pull_request
       if: github.event.workflow_run.event == 'pull_request'
       env:
         HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
