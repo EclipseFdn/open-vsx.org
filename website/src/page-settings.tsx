@@ -15,7 +15,7 @@ import { Link as RouteLink, Route, useParams } from 'react-router-dom';
 import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
-// import InfoIcon from '@mui/icons-material/Info';
+import InfoIcon from '@mui/icons-material/Info';
 import OpenVSXLogo from './openvsx-registry-logo';
 import footerContent from './footer-content';
 import { Document } from './document';
@@ -127,15 +127,15 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         </>;
 
     //---------- ANNOUNCEMENT BANNER
-    // const bannerContent: FunctionComponent = () =>
-    //     <Box display='flex' alignItems='center' pt={1} pb={1}>
-    //         <Box mr={2}>
-    //             <InfoIcon fontSize='large' />
-    //         </Box>
-    //         <Typography variant='body1'>
-    //             Open VSX will be migrating storage infrastructure on <Typography variant='body1' component='span' sx={{ fontWeight: 'bold' }}>Thursday, November 27, 2025 at 9:00 AM CET</Typography>. The registry will be in read-only mode during the migration – <Link color='secondary' underline='hover' href='https://status.open-vsx.org/maintenance' target='_blank' rel='noopener'>More details</Link>.
-    //         </Typography>
-    //     </Box>;
+    const bannerContent: FunctionComponent = () =>
+        <Box display='flex' alignItems='center' pt={1} pb={1}>
+            <Box mr={2}>
+                <InfoIcon fontSize='large' />
+            </Box>
+            <Typography variant='body1'>
+                Download counts are currently not being updated. Access logs are stored and retained and will be used to backfill download counts as soon as possible.
+            </Typography>
+        </Box>;
 
     //---------- SEARCH HEADER
     const searchHeader: FunctionComponent = () =>
@@ -193,21 +193,21 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
             toolbarContent,
-            // banner: {
-            //     content: bannerContent,
-            //     props: {
-            //         dismissButton: {
-            //             show: true,
-            //             label: 'Got It'
-            //         },
-            //         color: 'info'
-            //     },
-            //     cookie: {
-            //         key: 'Storage-Migration-Nov-2025',
-            //         value: 'closed',
-            //         path: '/'
-            //     }
-            // },
+            banner: {
+                content: bannerContent,
+                props: {
+                    dismissButton: {
+                        show: true,
+                        label: 'Got It'
+                    },
+                    color: 'info'
+                },
+                cookie: {
+                    key: 'Download-Counts-Dec-2025',
+                    value: 'closed',
+                    path: '/'
+                }
+            },
             footer: {
                 content: footerContent,
                 props: {
