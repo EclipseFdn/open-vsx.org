@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=a5d882f
+ARG SERVER_VERSION=1cddd78
 ARG SERVER_VERSION_STRING=v0.29.1-migration
 
 # Builder image to compile the website
