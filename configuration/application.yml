@@ -157,10 +157,12 @@ bucket4j:
               unit: seconds
 ovsx:
   token-prefix: ovsxp_
+  allow-namespace-logo-updates: false
   storage:
     cdn:
       storage-filter: ".*AwsStorageService.*"
       prefix-url: https://openvsx-staging.eclipsecontent.org/
+    download-counts: false
     migration:
       enabled: false
     primary-service: aws
