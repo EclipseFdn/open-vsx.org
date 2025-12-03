@@ -162,7 +162,6 @@ ovsx:
     cdn:
       storage-filter: ".*AwsStorageService.*"
       prefix-url: https://openvsx.eclipsecontent.org
-    download-counts: false  # disable inefficient download count mechanism for anything other than azure
     migration:
       enabled: false  # disable automatic storage migration when we switch the primary-service
   webui:
