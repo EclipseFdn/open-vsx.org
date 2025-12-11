@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=df940f1
-ARG SERVER_VERSION_STRING=v0.29.1-post-migration
+ARG SERVER_VERSION=6e9e253
+ARG SERVER_VERSION_STRING=v0.31.0-dev
 
 # Builder image to compile the website
 FROM ubuntu AS builder
@@ -28,7 +28,7 @@ RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server
-FROM ghcr.io/netomi/openvsx-server:${SERVER_VERSION}
+FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
 ARG SERVER_VERSION_STRING
 

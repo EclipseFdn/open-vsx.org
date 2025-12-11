@@ -159,8 +159,9 @@ ovsx:
   token-prefix: ovsxp_
   storage:
     cdn:
-      storage-filter: ".*AwsStorageService.*"
-      prefix-url: https://openvsx-staging.eclipsecontent.org/
+      enabled: true
+      services:
+        aws: https://openvsx-staging.eclipsecontent.org/
     migration:
       enabled: false
     primary-service: aws
