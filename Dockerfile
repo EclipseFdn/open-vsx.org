@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=e9908e2
-ARG SERVER_VERSION_STRING=v0.31.0-dev
+ARG SERVER_VERSION=v0.31.0-rc.1
+ARG SERVER_VERSION_STRING=v0.31.0-rc.1
 
 # Builder image to compile the website
 FROM ubuntu AS builder
@@ -20,7 +20,7 @@ RUN apt-get update \
   && corepack prepare yarn@stable --activate
 
 # bump to update website
-ENV WEBSITE_VERSION 0.17.0
+ENV WEBSITE_VERSION 0.17.1-rc.1
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
@@ -28,7 +28,8 @@ RUN /usr/bin/yarn --cwd website \
   && /usr/bin/yarn --cwd website build
 
 # Main image derived from openvsx-server
-FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}
+# FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}
+FROM docker.io/amvanbaren/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
 ARG SERVER_VERSION_STRING
 
