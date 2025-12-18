@@ -9,13 +9,13 @@ jobs:
     permissions:
       pull-requests: read
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.repository == 'EclipseFdn/open-vsx.org' && github.event.workflow_run.conclusion == 'success'
     steps:
     - name: Create artifacts directory
       run: mkdir -p ${{ runner.temp }}/artifacts
     - name: Download PR number artifact
       if: github.event.workflow_run.event == 'pull_request'
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
       with:
         workflow: Build
         run_id: ${{ github.event.workflow_run.id }}
@@ -24,12 +24,12 @@ jobs:
     - name: Read PR_NUMBER.txt
       if: github.event.workflow_run.event == 'pull_request'
       id: pr_number
-      uses: juliangruber/read-file-action@v1
+      uses: juliangruber/read-file-action@b549046febe0fe86f8cb4f93c24e284433f9ab58 # v1.1.7
       with:
         path: ${{ runner.temp }}/artifacts/PR_NUMBER.txt
     - name: Request GitHub API for PR data
       if: github.event.workflow_run.event == 'pull_request'
-      uses: octokit/request-action@v2.x
+      uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
       id: get_pr_data
       with:
         route: GET /repos/{full_name}/pulls/{number}
@@ -37,24 +37,29 @@ jobs:
         full_name: ${{ github.event.repository.full_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@v4
+    - name: Checkout head branch
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       with:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
-    - name: Checkout base branch
+          persist-credentials: false
+    - name: Checkout head branch of pull_request
       if: github.event.workflow_run.event == 'pull_request'
       env:
         HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        CLONE_URL: ${{ github.event.repository.clone_url }}
       run: |
-        git remote add upstream ${{ github.event.repository.clone_url }}
+        BASE_REF="${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}"
+
+        git remote add upstream ${CLONE_URL}
         git fetch upstream
-        git checkout -B ${{ fromJson(steps.get_pr_data.outputs.data).base.ref }} upstream/${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
-        git checkout $HEAD_BRANCH
+        git checkout -B ${BASE_REF} upstream/${BASE_REF}
+        git checkout ${HEAD_BRANCH}
         git clean -ffdx && git reset --hard HEAD
     - name: SonarCloud Scan on PR
       if: github.event.workflow_run.event == 'pull_request'
-      uses: SonarSource/sonarqube-scan-action@master
+      uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -66,7 +71,7 @@ jobs:
           -Dsonar.pullrequest.base=${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
     - name: SonarCloud Scan on push
       if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.event.repository.full_name
-      uses: SonarSource/sonarqube-scan-action@master
+      uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

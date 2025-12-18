@@ -156,14 +156,15 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  token-prefix: ovsxp_
+  token-prefix: ovsxat_
   storage:
-    primary-service: aws
     cdn:
-      storage-filter: ".*AwsStorageService.*"
-      prefix-url: https://openvsx.eclipsecontent.org
+      enabled: true
+      services:
+        aws: https://openvsx.eclipsecontent.org/
     migration:
-      enabled: false  # disable automatic storage migration when we switch the primary-service
+      enabled: false
+    primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
   eclipse:
@@ -220,3 +221,8 @@ ovsx:
   foregroundHttpConnPool:
     maxTotal: 50
     defaultMaxPerRoute: 50
+  mail:
+    from: no-reply@open-vsx.org
+    revoked-access-tokens:
+      subject: 'Open VSX Access Tokens Revoked'
+      template: 'revoked-access-tokens.html'
