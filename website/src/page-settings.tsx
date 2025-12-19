@@ -133,7 +133,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                Download counts are currently not being updated. Access logs are stored and retained and will be used to backfill download counts as soon as possible.
+                Publishers can now delete their extensions, no GitHub issue required! See <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/Managing-Extensions#deleting-an-extension">Deleting an Extension in our wiki</Link>.
             </Typography>
         </Box>;
 
