@@ -45,6 +45,9 @@ spring:
         cache-public: true
   session:
     store-type: jdbc
+  thymeleaf:
+    # disable thymeleaf view resolution, do not change lightly
+    enabled: false
   lifecycle:
     timeout-per-shutdown-phase: 10s
   security:
