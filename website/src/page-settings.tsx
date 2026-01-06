@@ -133,7 +133,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                The Open VSX Publisher Agreement has been updated. You can find details of these changes <Link color='secondary' underline='hover' href="https://drive.google.com/file/d/19od4oK5KmamI1e9yunZ1FG-nkkX3doOx/view?usp=sharing">here</Link> and the full Open VSX Publisher Agreement Version 1.1 is <Link color='secondary' underline='hover' href="https://www.eclipse.org/legal/documents/eclipse-openvsx-publisher-agreement.pdf">here</Link>.
+                Publishers can now delete their extensions, no GitHub issue required! See <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/Managing-Extensions#deleting-an-extension">Deleting an Extension in our wiki</Link>.
             </Typography>
         </Box>;
 
@@ -203,7 +203,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                     color: 'info'
                 },
                 cookie: {
-                    key: 'Publisher-Agreement-1.1',
+                    key: 'Deleting-Extensions',
                     value: 'closed',
                     path: '/'
                 }
