@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=e9908e2
+ARG SERVER_VERSION=v0.31.0
 ARG SERVER_VERSION_STRING=v0.31.0
 
 # Builder image to compile the website
@@ -20,7 +20,6 @@ RUN apt-get update \
   && corepack prepare yarn@stable --activate
 
 # bump to update website
-ENV WEBSITE_VERSION 0.17.0
 COPY . /workdir
 
 RUN /usr/bin/yarn --cwd website \
