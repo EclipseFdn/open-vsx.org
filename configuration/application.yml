@@ -231,12 +231,12 @@ ovsx:
       template: 'revoked-access-tokens.html'
 
   similarity:
-    enabled: true                  # Enable/disable the feature
-    levenshtein-threshold: 0.2      # Min 20% name difference allowed
-    skip-verified-publishers: true   # Skip checks for verified publishers
+    enabled: true                     # Enable/disable the feature
+    levenshtein-threshold: 0.2        # Min 20% name difference allowed
+    skip-verified-publishers: true    # Skip checks for verified publishers
     check-against-verified-only: true # Compare only against verified extensions
-    exclude-owner-namespaces: true # Skip checks against extensions in namespaces owned by the same publisher
-    new-extensions-only: false     # Skip checks for extension with existing versions, applies similarity checks only to new extensions
+    exclude-owner-namespaces: true    # Skip checks against extensions in namespaces owned by the same publisher
+    new-extensions-only: false        # Skip checks for extension with existing versions, applies similarity checks only to new extensions
 
   secret-scanning:
     enabled: true
