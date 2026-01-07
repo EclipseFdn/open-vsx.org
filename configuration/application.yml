@@ -232,9 +232,9 @@ ovsx:
 
   similarity:
     enabled: true                  # Enable/disable the feature
-    levenshteinThreshold: 0.2      # Min 20% name difference allowed
-    skipVerifiedPublishers: true   # Skip checks for verified publishers
-    checkAgainstVerifiedOnly: true # Compare only against verified extensions
+    levenshtein-threshold: 0.2      # Min 20% name difference allowed
+    skip-verified-publishers: true   # Skip checks for verified publishers
+    check-against-verified-only: true # Compare only against verified extensions
     exclude-owner-namespaces: true # Skip checks against extensions in namespaces owned by the same publisher
     new-extensions-only: false     # Skip checks for extension with existing versions, applies similarity checks only to new extensions
 
