@@ -11,7 +11,7 @@
 import {
     ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
     UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
-    NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole, RegistryVersion
+    NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole, RegistryVersion, FileDecisionCountsJson, FileDecisionDeleteRequest, FileDecisionDeleteResponse, FileDecisionRequest, FileDecisionResponse, FilesResponse, ScanCounts, ScanDecisionRequest, ScanDecisionResponse, ScanFilterOptions, ScanResultJson, ScanResultsResponse
 } from "openvsx-webui";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Avatar_cupcake.png';
@@ -68,11 +68,11 @@ export class MockRegistryService extends ExtensionRegistryService {
     }
 
     async postReview(abortController: AbortController, review: NewReview, postReviewUrl: UrlString): Promise<Readonly<SuccessResult | ErrorResult>> {
-        return Promise.resolve({ success: 'ok' });
+        return Promise.resolve({success: 'ok'});
     }
 
     async deleteReview(abortController: AbortController, deleteReviewUrl: string): Promise<Readonly<SuccessResult | ErrorResult>> {
-        return Promise.resolve({ success: 'ok' });
+        return Promise.resolve({success: 'ok'});
     }
 
     getUser(abortController: AbortController): Promise<Readonly<UserData | ErrorResult>> {
@@ -116,7 +116,7 @@ export class MockRegistryService extends ExtensionRegistryService {
     }
 
     async deleteAccessToken(abortController: AbortController, token: PersonalAccessToken): Promise<Readonly<SuccessResult | ErrorResult>> {
-        return Promise.resolve({ success: 'ok' });
+        return Promise.resolve({success: 'ok'});
     }
 
     async deleteAllAccessTokens(abortController: AbortController, tokens: PersonalAccessToken[]): Promise<Readonly<SuccessResult | ErrorResult>[]> {
@@ -124,7 +124,7 @@ export class MockRegistryService extends ExtensionRegistryService {
     }
 
     getCsrfToken(abortController: AbortController): Promise<Readonly<CsrfTokenJson | ErrorResult>> {
-        return Promise.resolve({ error: 'Mock service' });
+        return Promise.resolve({error: 'Mock service'});
     }
 
     getNamespaces(abortController: AbortController): Promise<Readonly<Namespace>[]> {
@@ -152,7 +152,8 @@ export class MockRegistryService extends ExtensionRegistryService {
 
 export class MockAdminService implements AdminService {
 
-    constructor(readonly registry: ExtensionRegistryService) {}
+    constructor(readonly registry: ExtensionRegistryService) {
+    }
 
     getExtension(abortController: AbortController, namespace: string, extension: string): Promise<Readonly<Extension>> {
         return this.registry.getExtensionDetail(abortController, '') as Promise<Extension>;
@@ -194,5 +195,33 @@ export class MockAdminService implements AdminService {
 
     revokeAccessTokens(abortController: AbortController, provider: string, login: string): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
+    }
+
+    getAllScans(abortController: AbortController, params?: { size?: number | undefined; offset?: number | undefined; status?: string | string[] | undefined; publisher?: string | undefined; namespace?: string | undefined; name?: string | undefined; validationType?: string[] | undefined; threatScannerName?: string[] | undefined; dateStartedFrom?: string | undefined; dateStartedTo?: string | undefined; enforcement?: "enforced" | "notEnforced" | "all" | undefined; } | undefined): Promise<Readonly<ScanResultsResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    getScan(abortController: AbortController, scanId: string): Promise<Readonly<ScanResultJson>> {
+        throw new Error("Method not implemented.");
+    }
+    getScanCounts(abortController: AbortController, params?: { dateStartedFrom?: string | undefined; dateStartedTo?: string | undefined; enforcement?: "enforced" | "notEnforced" | "all" | undefined; threatScannerName?: string[] | undefined; validationType?: string[] | undefined; } | undefined): Promise<Readonly<ScanCounts>> {
+        throw new Error("Method not implemented.");
+    }
+    getScanFilterOptions(abortController: AbortController): Promise<Readonly<ScanFilterOptions>> {
+        throw new Error("Method not implemented.");
+    }
+    getFiles(abortController: AbortController, params?: { size?: number | undefined; offset?: number | undefined; decision?: string | undefined; publisher?: string | undefined; namespace?: string | undefined; name?: string | undefined; dateDecidedFrom?: string | undefined; dateDecidedTo?: string | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; } | undefined): Promise<Readonly<FilesResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    getFileCounts(abortController: AbortController, params?: { dateDecidedFrom?: string | undefined; dateDecidedTo?: string | undefined; } | undefined): Promise<Readonly<FileDecisionCountsJson>> {
+        throw new Error("Method not implemented.");
+    }
+    makeScanDecision(abortController: AbortController, request: ScanDecisionRequest): Promise<Readonly<ScanDecisionResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    makeFileDecision(abortController: AbortController, request: FileDecisionRequest): Promise<Readonly<FileDecisionResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    deleteFileDecisions(abortController: AbortController, request: FileDecisionDeleteRequest): Promise<Readonly<FileDecisionDeleteResponse>> {
+        throw new Error("Method not implemented.");
     }
 }
