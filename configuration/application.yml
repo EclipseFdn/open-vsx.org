@@ -159,7 +159,7 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  token-prefix: ovsxp_
+  token-prefix: ovsxat_
   storage:
     cdn:
       enabled: true
