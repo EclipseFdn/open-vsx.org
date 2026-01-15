@@ -134,7 +134,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
             </Box>
             <Typography variant='body1'>
                 Open VSX is growing! To support reliable access as usage increases, we're clarifying our existing community rate limits. Most users won't be affected. Dedicated throughput is available for platforms and organisations. 
-                <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/Rate-Limiting">Learn more</Link>.
+                <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting">Learn more</Link>.
             </Typography>
         </Box>;
 
