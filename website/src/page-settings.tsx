@@ -133,7 +133,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                Publishers can now delete their extensions, no GitHub issue required! See <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/Managing-Extensions#deleting-an-extension">Deleting an Extension in our wiki</Link>.
+                Open VSX is growing! To support reliable access as usage increases, we're clarifying our existing community rate limits. Most users won't be affected. Dedicated throughput is available for platforms and organisations. <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/">Learn more</Link>.
             </Typography>
         </Box>;
 
@@ -203,7 +203,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                     color: 'info'
                 },
                 cookie: {
-                    key: 'Deleting-Extensions',
+                    key: 'Rate-Limit-Announcement',
                     value: 'closed',
                     path: '/'
                 }
