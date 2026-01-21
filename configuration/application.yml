@@ -160,13 +160,28 @@ bucket4j:
               unit: seconds
 ovsx:
   token-prefix: ovsxat_
+  data:
+    mirror:
+      enabled: true
+      server-url: https://open-vsx.org
+      requests-per-second: 5
+      user-name: mirror_user
+      schedule: '0/1 * * * *'
+      read-only:
+        disallowed-methods: POST, PUT, PATCH, DELETE
+        allowed-endpoints: /vscode/gallery/extensionquery, /admin/update-search-index, /api/-/query
+      exclude-extensions:
+        - vscode.*
+  upstream:
+    url: https://open-vsx.org
   storage:
     cdn:
       enabled: true
       services:
-        aws: https://openvsx-staging.eclipsecontent.org/
-    migration:
-      enabled: false
+        aws: https://openvsx.eclipsecontent.org/
+    aws:
+      region: dummy-value-to-enable-aws
+      bucket: dummy-value-to-enable-aws
     primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
