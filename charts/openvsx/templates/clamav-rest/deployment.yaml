@@ -46,8 +46,6 @@ spec:
             name: tmp-dir
           - mountPath: /var/log/clamav
             name: log-dir
-          - securityContext:
-              privileged: true
       volumes:
       - emptyDir: {}
         name: run-dir
