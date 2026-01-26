@@ -42,21 +42,11 @@ spec:
             name: run-dir
           - mountPath: /var/lib/clamav
             name: clamav-data
-          - mountPath: /etc/clamav/clamd.conf
-            subPath: clamd.conf
-            name: clamd-conf
-          - mountPath: /etc/clamav/freshclam.conf
-            subPath: freshclam.conf
-            name: freshclam-conf
           - mountPath: /tmp
             name: tmp-dir
           - mountPath: /var/log/clamav
             name: log-dir
       volumes:
-      - emptyDir: {}
-        name: clamd-conf
-      - emptyDir: {}
-        name: freshclam-conf
       - emptyDir: {}
         name: run-dir
       - emptyDir: {}
