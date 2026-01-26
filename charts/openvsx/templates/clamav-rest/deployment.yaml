@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.clamav.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+spec:
+  replicas: {{ .Values.clamav.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+      environment: {{ .Values.environment }}
+      component: {{ .Values.clamav.name }}-{{ .Values.environment }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        environment: {{ .Values.environment }}
+        component: {{ .Values.clamav.name }}-{{ .Values.environment }}
+    spec:
+      containers:
+        - name: {{ .Values.clamav.name }}-{{ .Values.environment }}
+          image: "ghcr.io/{{ .Values.clamav.image.repository }}::{{ .Values.clamav.image.tag}}"
+          imagePullPolicy: {{ .Values.clamav.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          env:
+            - name: "PORT"
+              value: "9000"
+            {{- range $name, $value := .Values.clamav.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /var/run/clamav
+            name: run-dir
+          - mountPath: /var/lib/clamav
+            name: clamav-data
+          - mountPath: /etc/clamav
+            name: clamav-etc
+          - mountPath: /tmp
+            name: tmp-dir
+          - mountPath: /var/log/clamav
+            name: log-dir
+      volumes:
+      - emptyDir: {}
+        name: clamav-etc
+      - emptyDir: {}
+        name: run-dir
+      - emptyDir: {}
+        name: log-dir
+      - name: clamav-data
+        size: "2Gi"
+      - name: tmp-dir
+        size: "10Gi"

@@ -98,3 +98,26 @@ alloy:
       openvsx-production-alloy: null
   fullnameOverride: grafana-alloy-staging
   namespaceOverride: *namespace
+
+clamav:
+  name: "clamav"
+  replicas: 1
+  image:
+    repository: netomi/clamav-rest
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  # following https://docs.clamav.net/manual/Installing/Docker.html guidelines
+  resources:
+    requests:
+      cpu: 500m
+      memory: 3Gi
+    limits:
+      cpu: 1
+      memory: 4Gi
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 512
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 256
+    MAX_RECURSION: 16
+    SCAN_TIMEOUT_MINUTES: 5
