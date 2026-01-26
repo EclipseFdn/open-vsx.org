@@ -8,7 +8,7 @@ pipeline {
         spec:
           containers:
           - name: kubectl
-            image: eclipsefdn/kubectl:okd-c1
+            image: eclipsefdn/aws:alpine-latest
             command:
             - cat
             tty: true
