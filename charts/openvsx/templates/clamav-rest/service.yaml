@@ -9,10 +9,9 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    matchLabels:
-      app: {{ .Values.name }}
-      environment: {{ .Values.environment }}
-      component: {{ .Values.clamav.name }}-{{ .Values.environment }}
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    component: {{ .Values.clamav.name }}-{{ .Values.environment }}
   ports:
     - name: http
       port: 9000
