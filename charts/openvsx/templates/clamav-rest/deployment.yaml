@@ -42,15 +42,15 @@ spec:
             name: run-dir
           - mountPath: /var/lib/clamav
             name: clamav-data
-          - mountPath: /etc/clamav
-            name: clamav-etc
+#          - mountPath: /etc/clamav
+#            name: clamav-etc
           - mountPath: /tmp
             name: tmp-dir
           - mountPath: /var/log/clamav
             name: log-dir
       volumes:
-      - emptyDir: {}
-        name: clamav-etc
+#      - emptyDir: {}
+#        name: clamav-etc
       - emptyDir: {}
         name: run-dir
       - emptyDir: {}
