@@ -103,7 +103,7 @@ clamav:
   name: "clamav"
   replicas: 1
   image:
-    repository: netomi/clamav-rest
+    repository: "netomi/clamav-rest"
     tag: "latest"
     pullPolicy: IfNotPresent
   # following https://docs.clamav.net/manual/Installing/Docker.html guidelines
