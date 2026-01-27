@@ -13,6 +13,8 @@ spec:
       app: {{ .Values.name }}
       environment: {{ .Values.environment }}
       component: {{ .Values.clamav.name }}-{{ .Values.environment }}
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
