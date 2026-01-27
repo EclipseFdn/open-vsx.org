@@ -123,3 +123,28 @@ clamav:
     MAX_SINGLE_FILE_MB: 256
     MAX_RECURSION: 16
     SCAN_TIMEOUT_MINUTES: 5
+
+yara:
+  name: "yara"
+  replicas: 1
+  image:
+    repository: "netomi/yara-rest"
+    tag: "latest"
+    pullPolicy: Always
+  # following https://docs.clamav.net/manual/Installing/Docker.html guidelines
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  service:
+    port: 9001
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 1024
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 256
+    MAX_RECURSION: 0
+    SCAN_TIMEOUT_MINUTES: 5
