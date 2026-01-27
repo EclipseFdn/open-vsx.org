@@ -67,6 +67,7 @@ spec:
       - name: run-dir
         emptyDir: {}
       - name: clamav-db
-        size: "2Gi"
+        persistentVolumeClaim:
+          claimName: clamav-db
       - name: tmp-scans
         emptyDir: {}
