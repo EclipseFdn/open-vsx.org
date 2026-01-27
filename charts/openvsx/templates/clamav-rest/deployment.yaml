@@ -62,7 +62,7 @@ spec:
               path: /health
               port: http
             periodSeconds: 10
-            initialDelaySeconds: 90
+            initialDelaySeconds: 10
       volumes:
       - name: run-dir
         emptyDir: {}
