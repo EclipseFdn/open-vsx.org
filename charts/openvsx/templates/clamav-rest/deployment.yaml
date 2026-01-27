@@ -67,10 +67,11 @@ spec:
       - name: run-dir
         emptyDir: {}
       - name: clamav-db
+        persistentVolumeClaim:
+          claimName: clamav-db
         size: "2Gi"
       - name: tmp-scans
         emptyDir: {}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
-        fsGroup: 0
