@@ -114,6 +114,8 @@ clamav:
     limits:
       cpu: 1
       memory: 4Gi
+  service:
+    port: 9000
   env:
     MAX_UPLOAD_SIZE_MB: 512
     MAX_EXTRACTED_SIZE_MB: 512

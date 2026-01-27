@@ -22,15 +22,15 @@ spec:
     spec:
       containers:
         - name: {{ .Values.clamav.name }}-{{ .Values.environment }}
-          image: "ghcr.io/{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag}}"
+          image: "ghcr.io/{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag }}"
           imagePullPolicy: {{ .Values.clamav.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 9000
+              containerPort: {{ .Values.clamav.service.port }}
               protocol: TCP
           env:
             - name: "PORT"
-              value: "9000"
+              value: "{{ .Values.clamav.service.port }}"
             {{- range $name, $value := .Values.clamav.env }}
             - name: {{ $name }}
               value: {{ $value | quote }}
@@ -38,20 +38,41 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-          - mountPath: /var/run/clamav
-            name: run-dir
-          - mountPath: /var/lib/clamav
-            name: clamav-data
-          - mountPath: /tmp
-            name: tmp-dir
-          - mountPath: /var/log/clamav
-            name: log-dir
+          - name: run-dir
+            mountPath: /var/run/clamav
+          - name: clamav-db
+            mountPath: /var/lib/clamav
+          - name: tmp-scans
+            mountPath: /tmp/scans
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          startupProbe:
+            failureThreshold: 360
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            initialDelaySeconds: 90
       volumes:
-      - emptyDir: {}
-        name: run-dir
-      - emptyDir: {}
-        name: log-dir
-      - name: clamav-data
+      - name: run-dir
+        emptyDir: {}
+      - name: clamav-db
+        persistentVolumeClaim:
+          claimName: clamav-db
         size: "2Gi"
-      - name: tmp-dir
-        size: "10Gi"
+      - name: tmp-scans
+        emptyDir: {}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 0
