@@ -234,36 +234,41 @@ ovsx:
   scanning:
     enabled: true
 
-  similarity:
-    enabled: true
-    enforced: true
-    levenshtein-threshold: 0.2        # Min 20% name difference allowed
-    skip-verified-publishers: true    # Skip checks for verified publishers
-    check-against-verified-only: true # Compare only against verified extensions
-    exclude-owner-namespaces: true    # Skip checks against extensions in namespaces owned by the same publisher
-    new-extensions-only: false        # Skip checks for extension with existing versions, applies similarity checks only to new extensions
+    # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
+    max-archive-size-bytes: 1073741824   # 1 GB total archive limit
+    max-single-file-bytes: 268435456     # 256 MB per-file limit
+    max-entry-count: 100000              # Max ZIP entries to process
+    blocklist-check:
+      enabled: true
+      enforced: false
 
-  secret-scanning:
-    enabled: true
-    rules-path: 'classpath:scanning/secret-scanning-custom-rules.yaml'
+    similarity:
+      enabled: true
+      enforced: false
+      similarity-threshold: 0.2            # Min 20% name difference allowed
+      skip-if-publisher-verified: false    # Do not skip checks for verified publishers
+      only-protect-verified-names: false
+      allow-similarity-to-own-names: true  # Skip checks against extensions in namespaces owned by the same publisher
+      only-check-new-extensions: true      # Skip checks for extension with existing versions, applies similarity checks only to new extensions
 
-    auto-generate-rules: true
-    force-regenerate-rules: false
-    generated-rules-path: '/tmp/secret-scanning-rules-gitleaks.yaml'
+    secret-detection:
+      enabled: true
+      enforced: false
+      rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
+      suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
+      gitleaks:
+        auto-fetch: true
+        force-refresh: true
+        output-path: '/tmp/secret-detection-rules-gitleaks.yaml'
+        scheduled-refresh: true
+        refresh-cron: '0 0 3 * * *'  # Daily at 3 AM
+        skip-rule-ids: 'generic-api-key'  # Rule IDs that produce too many false positives
+      max-findings: 200
+      minified-line-threshold: 10000
+      long-line-no-space-threshold: 1000
+      regex-context-chars: 100
+      debug-preview-chars: 10
 
-    # File & Archive Limits
-    max-file-size-bytes: 5242880              # 5 MB per file
-    max-entry-count: 50000                    # Max entries in archive
-    max-total-uncompressed-bytes: 104857600   # 100 MB total
-    max-findings: 200                         # Stop after N secrets
-
-    # Line Processing
-    inline-suppressions: 'secret-scanner:ignore,gitleaks:allow,nosecret,@suppress-secret'
-    max-line-length: 10000
-    long-line-no-space-threshold: 1000
-    keyword-context-chars: 100
-    log-allowlisted-value-preview-length: 10
-
-    # Timeout & Performance
-    timeout-seconds: 5
-    timeout-check-every-n-lines: 100
+      # Timeout & Performance
+      timeout-seconds: 10
+      timeout-check-interval: 100
