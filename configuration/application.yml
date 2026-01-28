@@ -272,3 +272,84 @@ ovsx:
       # Timeout & Performance
       timeout-seconds: 10
       timeout-check-interval: 100
+
+    configured:
+      # ClamAV REST wrapper - our custom Go service with file-level reporting
+      # Requires clamav-rest service deployment
+      clamav-rest:
+        enabled: true
+        enforced: false
+        type: "CLAMAV_REST"
+        required: true
+        async: false
+        timeout-minutes: 5
+
+        # Per-scanner HTTP client configuration
+        # ClamAV needs longer timeouts for large files
+        http:
+          max-total: 20                         # Max connections in pool
+          default-max-per-route: 10             # Max connections per host
+          connection-request-timeout-ms: 60000  # Time to get connection from pool (1 min)
+          connect-timeout-ms: 60000             # Time to establish TCP connection (1 min)
+          socket-timeout-ms: 300000             # Time to wait for response (5 min for large files)
+
+        start:
+          method: POST
+          url: "http://clamav-staging:9000/scan"
+          headers:
+            Accept: "application/json"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            # Our wrapper returns: { status, threats[], scanned_files, scan_time_ms }
+            threats-path: "$.threats[*]"
+            threat-mapping:
+              # All threats in the array are malware detections
+              condition: "true"
+              name-path: "$.name"
+              description-path: "$.name"
+              severity-path: "$.severity"
+              file-path-path: "$.file"
+              file-hash-path: "$.file_hash"
+        # ClamAV REST is synchronous - threats are delivered with the start call.
+        # No separate poll/result operations are required.
+
+      # YARA Scanner - our custom Go service with file-level reporting
+      # Requires yara-rest service deployment
+      yara:
+        enabled: true   # Enable when yara-rest service is deployed
+        type: "YARA"
+        required: true
+        enforced: false
+        async: false     # Synchronous - YARA is fast
+        timeout-minutes: 5
+
+        http:
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 300000   # 5 min for large extensions
+
+        start:
+          method: POST
+          url: "http://yara-staging:9001/scan"
+          headers:
+            Accept: "application/json"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            # Matches are returned as an array
+            threats-path: "$.matches[*]"
+            threat-mapping:
+              # All YARA matches are threats
+              condition: "true"
+              name-path: "$.rule"
+              file-path-path: "$.file"
+              file-hash-path: "$.file_hash"
+              description-path: "$.description"
+              severity-path: "$.severity"
