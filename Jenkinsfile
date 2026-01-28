@@ -8,7 +8,7 @@ pipeline {
         spec:
           containers:
           - name: kubectl
-            image: eclipsefdn/kubectl:okd-c1
+            image: eclipsefdn/aws:alpine-latest
             command:
             - cat
             tty: true
@@ -75,6 +75,22 @@ pipeline {
           sh '''
             docker push ${IMAGE_NAME}:${IMAGE_TAG}
           '''
+        }
+      }
+    }
+     stage('Deploy EKS staging') {
+      when {
+        expression { 
+          return env.BRANCH_NAME.startsWith('feature')
+        }
+      }
+      steps {
+        container('kubectl') {
+          withKubeConfig([credentialsId: 'ci-bot-eks-staging-token', serverUrl: 'https://BB1FBE6C41396050B811BB11F4342776.gr7.us-east-1.eks.amazonaws.com']) {
+            sh '''
+              ./kubernetes/helm-deploy.sh staging "${IMAGE_TAG}"
+            '''
+          }
         }
       }
     }
