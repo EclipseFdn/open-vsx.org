@@ -193,7 +193,7 @@ ovsx:
   publishing:
     require-license: true
   redis:
-    enabled: true
+    enabled: false
   elasticsearch:
     enabled: true
     ssl: true
