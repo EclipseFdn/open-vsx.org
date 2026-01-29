@@ -1,5 +1,5 @@
 ARG SERVER_VERSION=security-improvements
-ARG SERVER_VERSION_STRING=v0.32.0-security
+ARG SERVER_VERSION_STRING=v0.32.0-security.4
 
 # Builder image to compile the website
 FROM ubuntu AS builder
