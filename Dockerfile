@@ -22,9 +22,10 @@ RUN apt-get update \
 # bump to update website
 COPY . /workdir
 
-RUN /usr/bin/yarn --cwd website \
-  && /usr/bin/yarn --cwd website compile \
-  && /usr/bin/yarn --cwd website build
+RUN cd website \
+  && yarn install --immutable \
+  && yarn compile \
+  && yarn build
 
 # Main image derived from openvsx-server
 FROM ghcr.io/eclipse/openvsx-server-snapshot:${SERVER_VERSION}
