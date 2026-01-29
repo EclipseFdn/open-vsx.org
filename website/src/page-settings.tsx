@@ -190,6 +190,10 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     return {
         pageTitle: 'Open VSX Registry',
         themeType: prefersDarkMode ? 'dark' : 'light',
+        publisherAgreement: {
+            name: "Eclipse Foundation Open VSX",
+            email: "openvsx@eclipse-foundation.org"
+        },
         elements: {
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
