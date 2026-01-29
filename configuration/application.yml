@@ -104,7 +104,7 @@ org:
     miscellaneous:
       allow-anonymous-data-usage: false
 bucket4j:
-  enabled: true
+  enabled: false
   cache-to-use: redis-cluster-jedis
   filters:
     - cache-name: buckets
