@@ -2,7 +2,7 @@ ARG SERVER_VERSION=security-improvements
 ARG SERVER_VERSION_STRING=v0.32.0-security.4
 
 # Builder image to compile the website
-FROM ubuntu AS builder
+FROM ubuntu:24.04 AS builder
 
 WORKDIR /workdir
 
@@ -17,7 +17,7 @@ RUN apt-get update \
   && apt-get install -y nodejs \
   && apt-get clean \
   && corepack enable \
-  && corepack prepare yarn@stable --activate
+  && corepack prepare yarn@4.9.1 --activate
 
 # bump to update website
 COPY . /workdir
