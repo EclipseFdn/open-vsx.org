@@ -113,8 +113,8 @@ postgresql:
     # Use existing secret for credentials
     existingSecret: "deployment-configuration-test"
     secretKeys:
-      adminPasswordKey: "postgres-password"
-      userPasswordKey: "password"
+      adminPasswordKey: "postgres_password"
+      userPasswordKey: "user_password"
   primary:
     resources:
       requests:
