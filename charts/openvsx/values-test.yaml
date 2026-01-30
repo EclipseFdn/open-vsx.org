@@ -102,16 +102,29 @@ alloy:
   fullnameOverride: grafana-alloy-test
   namespaceOverride: *namespace
 
-# postgresql
+# Bitnami PostgreSQL subchart configuration
 postgresql:
-  architecture: standalone
-
+  enabled: true
+  # Override the fullname to match JDBC URL hostname (test-postgresql)
+  fullnameOverride: "test-postgresql"
   auth:
-    enablePostgresUser: true
-
-    # The database to auto-create
+    username: "openvsx-test-rw"
     database: "openvsx-test"
-
-    # Allow the user to create databases
-    createDatabase: true
+    # Use existing secret for credentials
+    existingSecret: "deployment-configuration-test"
+    secretKeys:
+      adminPasswordKey: "postgres-password"
+      userPasswordKey: "password"
+  primary:
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: cephfs-new
 
