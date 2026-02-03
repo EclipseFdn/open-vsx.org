@@ -1,3 +1,4 @@
+{{- if eq .Values.platform "okd" }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -46,4 +47,5 @@ spec:
     kind: Service
     name: {{ .Values.name }}-{{ .Values.environment }}
     weight: 100
+{{- end }}
 {{- end }}

@@ -1,0 +1,63 @@
+{{- if eq .Values.platform "eks" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.route.timeout }}"
+spec:
+ ingressClassName: nginx
+ rules:
+  - host: {{ .Values.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+           name: {{ .Values.name }}-{{ .Values.environment }}
+           port:
+            number: {{ .Values.service.port }}
+ tls:
+  - hosts:
+    - {{ .Values.host }}
+    secretName: {{ .Values.name }}-tls
+{{- if eq .Values.environment "production" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.route.timeout }}"
+spec:
+ ingressClassName: nginx
+ rules:
+  - host: www.{{ .Values.host }}
+    http:
+     paths:
+      - path: /
+        pathType: Prefix
+        backend:
+         service:
+          name: {{ .Values.name }}-{{ .Values.environment }}
+          port:
+           number: {{ .Values.service.port }}
+ tls:
+  - hosts:
+    - www.{{ .Values.host }}
+    secretName: {{ .Values.name }}-tls
+{{- end }}
+{{- end }}

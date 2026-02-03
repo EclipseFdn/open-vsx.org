@@ -8,6 +8,19 @@ pipeline {
         spec:
           containers:
           - name: kubectl
+            image: eclipsefdn/kubectl:okd-c1
+            command:
+            - cat
+            tty: true
+            resources:
+              limits:
+                cpu: 1
+                memory: 1Gi
+            volumeMounts:
+            - mountPath: "/home/default/.kube"
+              name: "dot-kube"
+              readOnly: false
+          - name: eks
             image: eclipsefdn/aws:alpine-latest
             command:
             - cat
@@ -78,17 +91,18 @@ pipeline {
         }
       }
     }
-     stage('Deploy EKS staging') {
+     stage('Deploy EKS staging') { 
       when {
-        expression { 
-          return env.BRANCH_NAME.startsWith('feature')
-        }
+        anyOf {
+        expression { return env.BRANCH_NAME.startsWith('feature') }
+        branch 'main'
+      }
       }
       steps {
-        container('kubectl') {
+        container('eks') {
           withKubeConfig([credentialsId: 'ci-bot-eks-staging-token', serverUrl: 'https://BB1FBE6C41396050B811BB11F4342776.gr7.us-east-1.eks.amazonaws.com']) {
             sh '''
-              ./kubernetes/helm-deploy.sh staging "${IMAGE_TAG}"
+              ./kubernetes/helm-deploy.sh aws-staging "${IMAGE_TAG}"
             '''
           }
         }

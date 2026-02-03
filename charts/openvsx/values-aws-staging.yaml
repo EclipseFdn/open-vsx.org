@@ -14,10 +14,10 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: 6d777ca-570
 
-platform: okd
+platform: eks
 
 website:
-  jvmArgs: -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
+  jvmArgs: -Dspring.profiles.active=mirrormode -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
 
 route:
   timeout: 30s
@@ -45,7 +45,16 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
-  storage_class: cephfs-new
+  storage_class: gp3
+
+postgresql:
+  architecture: standalone
+  auth:
+    createDatabase: true
+    database: openvsx-staging
+    enablePostgresUser: true
+    username: "openvsx-staging-rw"
+    password: "qLUUHyyKEZQyZ6cT"
 
 # redis
 redis:
@@ -65,12 +74,18 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
-    storageClass: cephfs-new
+    storageClass: gp3
   serviceAccountName: redis-cluster-operator-staging
   clusterRoleName: redis-cluster-operator-role-cluster-staging
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging
   clusterRoleName: redis-cluster-operator-role-staging
   clusterRoleBinding: redis-cluster-operator-role-binding-staging
+
+ingress-nginx:
+  controller:
+    replicaCount: 2
+    service:
+      type: LoadBalancer
 
 # grafana alloy
 alloy:
