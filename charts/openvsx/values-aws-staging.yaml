@@ -53,8 +53,6 @@ postgresql:
     createDatabase: true
     database: openvsx-staging
     enablePostgresUser: true
-    username: "openvsx-staging-rw"
-    password: "qLUUHyyKEZQyZ6cT"
 
 # redis
 redis:
