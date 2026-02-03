@@ -103,10 +103,9 @@ clamav:
   name: "clamav"
   replicas: 1
   image:
-    repository: "EclipseFdn/clamav-rest-new"
+    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
     tag: "v0.1.0"
     pullPolicy: Always
-  # following https://docs.clamav.net/manual/Installing/Docker.html guidelines
   resources:
     requests:
       cpu: 2
@@ -129,14 +128,13 @@ yara:
   name: "yara"
   replicas: 1
   image:
-    repository: "netomi/yara-rest"
-    tag: "latest"
+    repository: "ghcr.io/eclipsefdn/yara-rest"
+    tag: "v0.1.0"
     pullPolicy: Always
-  # following https://docs.clamav.net/manual/Installing/Docker.html guidelines
   resources:
     requests:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 1
+      memory: 1Gi
     limits:
       cpu: 2
       memory: 2Gi

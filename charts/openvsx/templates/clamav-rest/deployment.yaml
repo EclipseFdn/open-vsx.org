@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.clamav.name }}-{{ .Values.environment }}
-          image: "ghcr.io/{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag }}"
+          image: "{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag }}"
           imagePullPolicy: {{ .Values.clamav.image.pullPolicy }}
           ports:
             - name: http

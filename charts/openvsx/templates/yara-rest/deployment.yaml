@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.yara.name }}-{{ .Values.environment }}
-          image: "ghcr.io/{{ .Values.yara.image.repository }}:{{ .Values.yara.image.tag }}"
+          image: "{{ .Values.yara.image.repository }}:{{ .Values.yara.image.tag }}"
           imagePullPolicy: {{ .Values.yara.image.pullPolicy }}
           ports:
             - name: http
