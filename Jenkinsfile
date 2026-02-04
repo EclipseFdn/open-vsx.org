@@ -100,7 +100,7 @@ pipeline {
       }
       steps {
         container('eks') {
-          withKubeConfig([credentialsId: 'ci-bot-eks-staging-token', serverUrl: 'https://BB1FBE6C41396050B811BB11F4342776.gr7.us-east-1.eks.amazonaws.com']) {
+          withKubeConfig([credentialsId: 'ci-bot-eks-staging-token', serverUrl: 'https://5CF0970816FA7A7C340E6BEF8575A8D4.gr7.eu-central-1.eks.amazonaws.com']) {
             sh '''
               ./kubernetes/helm-deploy.sh aws-staging "${IMAGE_TAG}"
             '''

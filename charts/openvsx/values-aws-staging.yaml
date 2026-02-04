@@ -79,12 +79,6 @@ redis:
   clusterRoleName: redis-cluster-operator-role-staging
   clusterRoleBinding: redis-cluster-operator-role-binding-staging
 
-ingress-nginx:
-  controller:
-    replicaCount: 2
-    service:
-      type: LoadBalancer
-
 # grafana alloy
 alloy:
   alloy:
