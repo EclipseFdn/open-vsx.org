@@ -254,6 +254,7 @@ ovsx:
 
     secret-detection:
       enabled: true
+      required: false
       enforced: false
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
