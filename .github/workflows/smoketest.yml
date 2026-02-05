@@ -38,7 +38,7 @@ jobs:
         run: sleep 10m
       - name: Get running server version
         id: running_version
-        uses: fjogeleit/http-request-action@c0b95d02a088b47c1f2f4db04fd8af8bd19eee54 # v1.16.6
+        uses: fjogeleit/http-request-action@551353b829c3646756b2ec2b3694f819d7957495 # v2.0.0
         with:
           url: "https://open-vsx.org/api/version"
           method: GET
