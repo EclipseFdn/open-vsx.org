@@ -17,7 +17,7 @@ image:
 website:
   jvmArgs: >
     -Dspring.datasource.hikari.maximum-pool-size=5
-    -Xms512M -Xmx1536M -XX:+AlwaysPreTouch
+    -Xms512M -Xmx3500M -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
     -XX:+ParallelRefProcEnabled
