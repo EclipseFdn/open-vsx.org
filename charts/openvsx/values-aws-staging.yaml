@@ -3,7 +3,7 @@
 name: &name open-vsx-org
 environment: &environment staging
 namespace: &namespace open-vsx-org-staging
-host: staging.open-vsx.org
+host: aws-staging.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
