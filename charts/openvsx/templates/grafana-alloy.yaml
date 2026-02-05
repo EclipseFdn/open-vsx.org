@@ -60,11 +60,17 @@ data:
       endpoint {
         name = "hosted-prometheus"
         url = sys.env("PROMETHEUS_URL")
+
+        tls_config {
+          insecure_skip_verify = true
+        }
     
+        /*
         basic_auth {
           username = sys.env("PROMETHEUS_USERNAME")
           password = sys.env("PROMETHEUS_PASSWORD")
         }
+        */
       }
     }
 
@@ -90,14 +96,20 @@ data:
       }
     }
 
+    /*
     otelcol.auth.basic "tempo_auth" {
       username = sys.env("TEMPO_USERNAME")
       password = sys.env("TEMPO_PASSWORD")
     }
+    */
 
     otelcol.exporter.otlp "tempo" {
       client {
         endpoint = sys.env("TEMPO_URL")
-        auth = otelcol.auth.basic.tempo_auth.handler
+        // auth = otelcol.auth.basic.tempo_auth.handler
+        tls {
+            insecure_skip_verify = true
+            insecure = true
+        }
       }
     }

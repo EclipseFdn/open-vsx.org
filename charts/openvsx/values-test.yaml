@@ -90,6 +90,9 @@ alloy:
       create: false
       name: "grafana-alloy-configmap-test"
       key: "config.river"
+    env:
+      - name: GRPC_ENFORCE_ALPN_ENABLED
+        value: "false"
     envFrom:
       - secretRef: 
           name: grafana-cloud-secret-test
