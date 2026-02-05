@@ -223,7 +223,7 @@ ovsx:
     maxTotal: 50
     defaultMaxPerRoute: 50
   mail:
-    from: no-reply@eclipse.org
+    from: no-reply@open-vsx.org
     revoked-access-tokens:
       subject: 'Open VSX Access Tokens Revoked'
       template: 'revoked-access-tokens.html'
@@ -321,7 +321,7 @@ ovsx:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
         required: true
-        enforced: false
+        enforced: true
         async: false     # Synchronous - YARA is fast
         timeout-minutes: 5
 
