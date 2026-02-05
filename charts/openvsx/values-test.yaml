@@ -1,0 +1,163 @@
+# Default values for openvsx test.
+
+name: &name open-vsx-org
+environment: &environment test
+namespace: &namespace open-vsx-org-test
+host: test.open-vsx.org
+
+replicaCount: 1
+esReplicaCount: 1
+
+image:
+  repository: ghcr.io/eclipsefdn/openvsx-website
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 6d777ca-570
+
+website:
+  jvmArgs: >
+    -Dspring.datasource.hikari.maximum-pool-size=5
+    -Xms512M -Xmx1536M -XX:+AlwaysPreTouch
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+UseStringDeduplication
+    -XX:+ParallelRefProcEnabled
+    -XX:+DisableExplicitGC
+    -XX:+UnlockExperimentalVMOptions
+    -XX:+UnlockDiagnosticVMOptions
+    -Dlog4j2.formatMsgNoLookups=true
+    -Dlog4j.formatMsgNoLookups=true
+    -Dorg.jooq.no-logo=true
+    -Dorg.jooq.no-tips=true
+    --enable-native-access=ALL-UNNAMED
+
+route:
+  timeout: 30s
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+resources:
+  limits:
+    cpu: 4
+    memory: 4Gi
+  requests:
+    cpu: 2
+    memory: 2Gi
+
+# elastic search
+es:
+  java_opts: -Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 250m
+      memory: 2Gi
+  storage_class: cephfs-new
+
+# redis
+redis:
+  name: redis
+  replicas: 6
+  image:
+    repository: redis
+    tag: "7.2.10"
+    pullPolicy: IfNotPresent
+  maxmemory: "256mb"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "100m"
+  persistence:
+    storageGi: 1
+    storageClass: cephfs-new
+  serviceAccountName: redis-cluster-operator-test
+  clusterRoleName: redis-cluster-operator-role-cluster-test
+  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-test
+  clusterRoleName: redis-cluster-operator-role-test
+  clusterRoleBinding: redis-cluster-operator-role-binding-test
+
+# grafana alloy
+alloy:
+  alloy:
+    configMap:
+      create: false
+      name: "grafana-alloy-configmap-test"
+      key: "config.river"
+    envFrom:
+      - secretRef: 
+          name: grafana-cloud-secret-test
+      - secretRef: 
+          name: redis-secret-test
+    extraPorts:
+      - name: zipkin
+        port: 9411
+        targetPort: 9411
+  crds:
+    create: true
+  controller:
+    type: "daemonset"
+    podLabels:
+      app: *name
+      environment: *environment
+    nodeSelector:
+      openvsx-test-alloy: "true"
+      openvsx-staging-alloy: null
+      openvsx-production-alloy: null
+  fullnameOverride: grafana-alloy-test
+  namespaceOverride: *namespace
+
+clamav:
+  name: "clamav"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
+    tag: "v0.1.0"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 2
+      memory: 4Gi
+    limits:
+      cpu: 4
+      memory: 6Gi
+  service:
+    port: 9000
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 512
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 256
+    MAX_RECURSION: 16
+    MAX_THREADS: 4
+    SCAN_TIMEOUT_MINUTES: 5
+
+yara:
+  name: "yara"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/yara-rest"
+    tag: "v0.1.0"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 1
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  service:
+    port: 9001
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 1024
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 256
+    MAX_RECURSION: 0
+    SCAN_TIMEOUT_MINUTES: 5
