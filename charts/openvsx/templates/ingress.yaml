@@ -8,11 +8,11 @@ metadata:
   name: {{ .Values.name }}-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.route.timeout }}"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip 
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
 spec:
- ingressClassName: nginx
+ ingressClassName: alb
  rules:
   - host: {{ .Values.host }}
     http:
@@ -39,11 +39,11 @@ metadata:
   name: {{ .Values.name }}-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.route.timeout }}"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip 
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
 spec:
- ingressClassName: nginx
+ ingressClassName: alb
  rules:
   - host: www.{{ .Values.host }}
     http:
