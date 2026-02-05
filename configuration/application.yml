@@ -162,7 +162,7 @@ ovsx:
     cdn:
       enabled: true
       services:
-        aws: https://openvsx-staging.eclipsecontent.org/
+        aws: https://openvsx-test.eclipsecontent.org/
     migration:
       enabled: false
     primary-service: aws
