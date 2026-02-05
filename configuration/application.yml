@@ -223,7 +223,7 @@ ovsx:
     maxTotal: 50
     defaultMaxPerRoute: 50
   mail:
-    from: no-reply@open-vsx.org
+    from: no-reply@eclipse.org
     revoked-access-tokens:
       subject: 'Open VSX Access Tokens Revoked'
       template: 'revoked-access-tokens.html'
