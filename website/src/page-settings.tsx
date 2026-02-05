@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, {FunctionComponent, ReactNode, Suspense, lazy, useContext} from 'react';
+import React, { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
 import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
@@ -22,7 +22,7 @@ import { Document } from './document';
 import About from './about';
 import Adopters from './adopters';
 import Members from './members';
-import {MainContext} from "openvsx-webui/lib/context";
+import { MainContext } from "openvsx-webui/lib/context";
 
 //---------- HEAD TAGS
 const HeadTags: FunctionComponent<{ title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string }> = (props) => {
