@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, ReactNode, Suspense, lazy } from 'react';
+import React, {FunctionComponent, ReactNode, Suspense, lazy, useContext} from 'react';
 import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
@@ -22,6 +22,7 @@ import { Document } from './document';
 import About from './about';
 import Adopters from './adopters';
 import Members from './members';
+import {MainContext} from "openvsx-webui/lib/context";
 
 //---------- HEAD TAGS
 const HeadTags: FunctionComponent<{ title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string }> = (props) => {
@@ -116,15 +117,20 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     });
 
     //---------- MAIN LOGO / TOOLBAR
-    const toolbarContent: FunctionComponent = () =>
-        <>
+    const toolbarContent: FunctionComponent = () => {
+        const { user } = useContext(MainContext);
+
+        return <>
             <RouteLink to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
-                <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
+                <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode}/>
             </RouteLink>
-            <Suspense>
-                <ServerVersion />
-            </Suspense>
+            {user?.role === 'admin' &&
+                <Suspense>
+                    <ServerVersion/>
+                </Suspense>
+            }
         </>;
+    };
 
     //---------- ANNOUNCEMENT BANNER
     const bannerContent: FunctionComponent = () =>
