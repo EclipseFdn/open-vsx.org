@@ -14,6 +14,7 @@ server:
     path: /server-error
     whitelabel:
       enabled: false
+    include-stacktrace: never
   compression:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
@@ -35,9 +36,6 @@ spring:
     baseline-on-migrate: false
   jpa:
     open-in-view: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   resources:
     cache:
       cachecontrol:
@@ -45,6 +43,9 @@ spring:
         cache-public: true
   session:
     store-type: jdbc
+  thymeleaf:
+    # disable thymeleaf view resolution, do not change lightly
+    enabled: false
   lifecycle:
     timeout-per-shutdown-phase: 10s
   security:
@@ -156,11 +157,12 @@ bucket4j:
               time: 1
               unit: seconds
 ovsx:
-  token-prefix: ovsxp_
+  token-prefix: ovsxat_
   storage:
     cdn:
-      storage-filter: ".*AwsStorageService.*"
-      prefix-url: https://openvsx-staging.eclipsecontent.org/
+      enabled: true
+      services:
+        aws: https://openvsx-test.eclipsecontent.org/
     migration:
       enabled: false
     primary-service: aws
@@ -225,3 +227,128 @@ ovsx:
     revoked-access-tokens:
       subject: 'Open VSX Access Tokens Revoked'
       template: 'revoked-access-tokens.html'
+
+  # General scanning support
+  scanning:
+    enabled: true
+
+    # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
+    max-archive-size-bytes: 1073741824   # 1 GB total archive limit
+    max-single-file-bytes: 268435456     # 256 MB per-file limit
+    max-entry-count: 100000              # Max ZIP entries to process
+    blocklist-check:
+      enabled: true
+      enforced: false
+
+    similarity:
+      enabled: true
+      enforced: false
+      similarity-threshold: 0.2            # Min 20% name difference allowed
+      skip-if-publisher-verified: false    # Do not skip checks for verified publishers
+      only-protect-verified-names: false
+      allow-similarity-to-own-names: true  # Skip checks against extensions in namespaces owned by the same publisher
+      only-check-new-extensions: true      # Skip checks for extension with existing versions, applies similarity checks only to new extensions
+
+    secret-detection:
+      enabled: true
+      required: false
+      enforced: false
+      rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
+      suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
+      gitleaks:
+        auto-fetch: true
+        force-refresh: true
+        output-path: '/tmp/secret-detection-rules-gitleaks.yaml'
+        scheduled-refresh: true
+        refresh-cron: '0 0 3 * * *'  # Daily at 3 AM
+        skip-rule-ids: 'generic-api-key'  # Rule IDs that produce too many false positives
+      max-findings: 200
+      minified-line-threshold: 10000
+      long-line-no-space-threshold: 1000
+      regex-context-chars: 100
+      debug-preview-chars: 10
+
+      # Timeout & Performance
+      timeout-seconds: 10
+      timeout-check-interval: 100
+
+    configured:
+      # ClamAV REST wrapper - our custom Go service with file-level reporting
+      # Requires clamav-rest service deployment
+      clamav-rest:
+        enabled: true
+        enforced: false
+        type: "CLAMAV_REST"
+        required: true
+        async: false
+        timeout-minutes: 5
+
+        # Per-scanner HTTP client configuration
+        # ClamAV needs longer timeouts for large files
+        http:
+          max-total: 20                         # Max connections in pool
+          default-max-per-route: 10             # Max connections per host
+          connection-request-timeout-ms: 60000  # Time to get connection from pool (1 min)
+          connect-timeout-ms: 60000             # Time to establish TCP connection (1 min)
+          socket-timeout-ms: 300000             # Time to wait for response (5 min for large files)
+
+        start:
+          method: POST
+          url: "http://clamav-staging:9000/scan"
+          headers:
+            Accept: "application/json"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            # Our wrapper returns: { status, threats[], scanned_files, scan_time_ms }
+            threats-path: "$.threats[*]"
+            threat-mapping:
+              # All threats in the array are malware detections
+              condition: "true"
+              name-path: "$.name"
+              description-path: "$.name"
+              severity-path: "$.severity"
+              file-path-path: "$.file"
+              file-hash-path: "$.file_hash"
+        # ClamAV REST is synchronous - threats are delivered with the start call.
+        # No separate poll/result operations are required.
+
+      # YARA Scanner - our custom Go service with file-level reporting
+      # Requires yara-rest service deployment
+      yara:
+        enabled: true   # Enable when yara-rest service is deployed
+        type: "YARA"
+        required: true
+        enforced: true
+        async: false     # Synchronous - YARA is fast
+        timeout-minutes: 5
+
+        http:
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 300000   # 5 min for large extensions
+
+        start:
+          method: POST
+          url: "http://yara-staging:9001/scan"
+          headers:
+            Accept: "application/json"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            # Matches are returned as an array
+            threats-path: "$.matches[*]"
+            threat-mapping:
+              # All YARA matches are threats
+              condition: "true"
+              name-path: "$.rule"
+              file-path-path: "$.file"
+              file-hash-path: "$.file_hash"
+              description-path: "$.description"
+              severity-path: "$.severity"

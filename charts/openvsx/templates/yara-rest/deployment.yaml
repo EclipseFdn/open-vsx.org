@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.yara.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+spec:
+  replicas: {{ .Values.yara.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+      environment: {{ .Values.environment }}
+      component: {{ .Values.yara.name }}-{{ .Values.environment }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        environment: {{ .Values.environment }}
+        component: {{ .Values.yara.name }}-{{ .Values.environment }}
+    spec:
+      containers:
+        - name: {{ .Values.yara.name }}-{{ .Values.environment }}
+          image: "{{ .Values.yara.image.repository }}:{{ .Values.yara.image.tag }}"
+          imagePullPolicy: {{ .Values.yara.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.yara.service.port }}
+              protocol: TCP
+          env:
+            - name: "PORT"
+              value: "{{ .Values.yara.service.port }}"
+            {{- range $name, $value := .Values.yara.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: yara-rules
+            mountPath: /rules
+          - name: tmp-scans
+            mountPath: /tmp/scans
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          startupProbe:
+            failureThreshold: 360
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            initialDelaySeconds: 10
+      volumes:
+      - name: yara-rules
+        persistentVolumeClaim:
+          claimName: yara-rules
+      - name: tmp-scans
+        emptyDir: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        capabilities:
+          drop:
+            - ALL

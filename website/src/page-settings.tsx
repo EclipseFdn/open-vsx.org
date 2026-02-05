@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, ReactNode, Suspense, lazy } from 'react';
+import React, { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
 import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
@@ -22,6 +22,7 @@ import { Document } from './document';
 import About from './about';
 import Adopters from './adopters';
 import Members from './members';
+import { MainContext } from "openvsx-webui/lib/context";
 
 //---------- HEAD TAGS
 const HeadTags: FunctionComponent<{ title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string }> = (props) => {
@@ -116,15 +117,20 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     });
 
     //---------- MAIN LOGO / TOOLBAR
-    const toolbarContent: FunctionComponent = () =>
-        <>
+    const toolbarContent: FunctionComponent = () => {
+        const { user } = useContext(MainContext);
+
+        return <>
             <RouteLink to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
-                <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
+                <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode}/>
             </RouteLink>
-            <Suspense>
-                <ServerVersion />
-            </Suspense>
+            {user?.role === 'admin' &&
+                <Suspense>
+                    <ServerVersion/>
+                </Suspense>
+            }
         </>;
+    };
 
     //---------- ANNOUNCEMENT BANNER
     const bannerContent: FunctionComponent = () =>
@@ -133,7 +139,8 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                The Open VSX Publisher Agreement has been updated. You can find details of these changes <Link color='secondary' underline='hover' href="https://drive.google.com/file/d/19od4oK5KmamI1e9yunZ1FG-nkkX3doOx/view?usp=sharing">here</Link> and the full Open VSX Publisher Agreement Version 1.1 is <Link color='secondary' underline='hover' href="https://www.eclipse.org/legal/documents/eclipse-openvsx-publisher-agreement.pdf">here</Link>.
+                Open VSX is growing! To support reliable access as usage increases, we've clarified our existing usage limits for community and organization users.
+                Learn more <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting">here</Link>.
             </Typography>
         </Box>;
 
@@ -189,6 +196,10 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     return {
         pageTitle: 'Open VSX Registry',
         themeType: prefersDarkMode ? 'dark' : 'light',
+        publisherAgreement: {
+            name: "Eclipse Foundation Open VSX",
+            email: "openvsx@eclipse-foundation.org"
+        },
         elements: {
             defaultMenuContent: DefaultMenuContent,
             mobileMenuContent: MobileMenuContent,
@@ -203,7 +214,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                     color: 'info'
                 },
                 cookie: {
-                    key: 'Publisher-Agreement-1.1',
+                    key: 'Rate-Limit-Announcement',
                     value: 'closed',
                     path: '/'
                 }

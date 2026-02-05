@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.clamav.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    component: {{ .Values.clamav.name }}-{{ .Values.environment }}
+  ports:
+    - name: http
+      port: {{ .Values.clamav.service.port }}
+      targetPort: http
+      protocol: TCP

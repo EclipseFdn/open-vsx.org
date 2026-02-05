@@ -10,16 +10,16 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           path: open-vsx.org
           persist-credentials: false
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: eclipse/openvsx
           path: openvsx
           persist-credentials: false
-      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: 18.x
       - name: Install dependencies
@@ -38,7 +38,7 @@ jobs:
         run: sleep 10m
       - name: Get running server version
         id: running_version
-        uses: fjogeleit/http-request-action@1297c6fc63a79b147d1676540a3fd9d2e37817c5 # v1.16.5
+        uses: fjogeleit/http-request-action@c0b95d02a088b47c1f2f4db04fd8af8bd19eee54 # v1.16.6
         with:
           url: "https://open-vsx.org/api/version"
           method: GET
@@ -50,7 +50,7 @@ jobs:
         if: steps.check_version.outputs.is_version == 'true'
         working-directory: ./openvsx/webui
         run: yarn smoke-tests
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: steps.check_version.outputs.is_version == 'true'
         with:
           name: playwright-report

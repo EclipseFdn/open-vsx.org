@@ -102,7 +102,7 @@ b. **Effect of Termination.** Within 30 days of notice of termination by you, Ec
 
 ## SECTION 11 Miscellaneous.
 
-a. **Notices.** All notices that you provide to us under this Agreement must be sent to the following email alias: license@eclipse.org. We will send you notices to the email address set forth in your Listing Information.
+a. **Notices.** All notices that you provide to us under this Agreement must be sent to the following email alias: openvsx@eclipse-foundation.org. We will send you notices to the email address set forth in your Listing Information.
 
 b. **No Exclusivity.** Each party acknowledges and agrees that the rights granted to and obligations due to the other party in this Agreement are intended to be non-exclusive, and therefore that nothing in this Agreement will be deemed or construed to prohibit either party from engaging in or participating itself or with one or more third parties in business arrangements similar to or competitive with those described herein.
 

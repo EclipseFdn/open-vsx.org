@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.clamav.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+spec:
+  replicas: {{ .Values.clamav.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+      environment: {{ .Values.environment }}
+      component: {{ .Values.clamav.name }}-{{ .Values.environment }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        environment: {{ .Values.environment }}
+        component: {{ .Values.clamav.name }}-{{ .Values.environment }}
+    spec:
+      containers:
+        - name: {{ .Values.clamav.name }}-{{ .Values.environment }}
+          image: "{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag }}"
+          imagePullPolicy: {{ .Values.clamav.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.clamav.service.port }}
+              protocol: TCP
+          env:
+            - name: "PORT"
+              value: "{{ .Values.clamav.service.port }}"
+            {{- range $name, $value := .Values.clamav.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: run-dir
+            mountPath: /var/run/clamav
+          - name: clamav-db
+            mountPath: /var/lib/clamav
+          - name: tmp-scans
+            mountPath: /tmp/scans
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          startupProbe:
+            failureThreshold: 360
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            initialDelaySeconds: 10
+      volumes:
+      - name: run-dir
+        emptyDir: {}
+      - name: clamav-db
+        persistentVolumeClaim:
+          claimName: clamav-db
+      - name: tmp-scans
+        emptyDir: {}
