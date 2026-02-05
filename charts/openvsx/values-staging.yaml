@@ -26,6 +26,8 @@ website:
     -XX:+UnlockDiagnosticVMOptions
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
+    -Dorg.jooq.no-logo=true
+    -Dorg.jooq.no-tips=true
     --enable-native-access=ALL-UNNAMED
 
 route:
