@@ -14,7 +14,16 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: 6d777ca-570
 
-platform: eks
+eks:
+  enabled: true  # Switch to false for OKD installations
+
+aws-load-balancer-controller:
+  clusterName: eks-staging
+  region: eu-central-1
+  vpcId: vpc-0285cbfe9bfb7e4fd
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller-staging
 
 website:
   jvmArgs: -Dspring.profiles.active=mirrormode -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
