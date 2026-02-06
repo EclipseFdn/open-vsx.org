@@ -294,7 +294,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://clamav-staging:9000/scan"
+          url: "http://clamav-test:9000/scan"
           headers:
             Accept: "application/json"
           body:
@@ -334,7 +334,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://yara-staging:9001/scan"
+          url: "http://yara-test:9001/scan"
           headers:
             Accept: "application/json"
           body:
