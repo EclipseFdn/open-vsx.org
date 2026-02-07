@@ -8,6 +8,7 @@ metadata:
   name: {{ .Values.name }}-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.host }}
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip 
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
@@ -39,6 +40,7 @@ metadata:
   name: {{ .Values.name }}-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.host }}
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip 
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60

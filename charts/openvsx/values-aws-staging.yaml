@@ -25,11 +25,19 @@ aws-load-balancer-controller:
     create: false
     name: aws-load-balancer-controller-staging
 
+external-dns:
+  provider:
+    name: aws
+  serviceAccount:
+    create: false
+    name: external-dns-staging
+  txtOwnerId: eks-workshop
+  extraArgs:
+    - --aws-zone-type=private
+    - --domain-filter=aws-staging.open-vsx.org
+
 website:
   jvmArgs: -Dspring.profiles.active=mirrormode -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
-
-route:
-  timeout: 30s
 
 service:
   type: ClusterIP
