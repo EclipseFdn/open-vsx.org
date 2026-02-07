@@ -1,0 +1,65 @@
+{{- if .Values.eks.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.host }}
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip 
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
+spec:
+ ingressClassName: alb
+ rules:
+  - host: {{ .Values.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+           name: {{ .Values.name }}-{{ .Values.environment }}
+           port:
+            number: {{ .Values.service.port }}
+ tls:
+  - hosts:
+    - {{ .Values.host }}
+    secretName: {{ .Values.name }}-tls
+{{- if eq .Values.environment "production" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+  name: {{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.host }}
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip 
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
+spec:
+ ingressClassName: alb
+ rules:
+  - host: www.{{ .Values.host }}
+    http:
+     paths:
+      - path: /
+        pathType: Prefix
+        backend:
+         service:
+          name: {{ .Values.name }}-{{ .Values.environment }}
+          port:
+           number: {{ .Values.service.port }}
+ tls:
+  - hosts:
+    - www.{{ .Values.host }}
+    secretName: {{ .Values.name }}-tls
+{{- end }}
+{{- end }}
