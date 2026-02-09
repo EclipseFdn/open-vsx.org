@@ -2520,7 +2520,7 @@ __metadata:
     "@types/react-router-dom": "npm:^5.3.3"
     css-loader: "npm:^6.8.1"
     express: "npm:^4.21.2"
-    openvsx-webui: "npm:openvsx-webui-test@0.18.0-security.5"
+    openvsx-webui: "npm:openvsx-webui-test@0.18.0-dev.0"
     source-map-loader: "npm:^4.0.1"
     style-loader: "npm:^3.3.3"
     typescript: "npm:~5.1.6"
@@ -2539,9 +2539,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:openvsx-webui-test@0.18.0-security.5":
-  version: 0.18.0-security.5
-  resolution: "openvsx-webui-test@npm:0.18.0-security.5"
+"openvsx-webui@npm:openvsx-webui-test@0.18.0-dev.0":
+  version: 0.18.0-dev.0
+  resolution: "openvsx-webui-test@npm:0.18.0-dev.0"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -2566,7 +2566,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.3"
     react-router-dom: "npm:^6.30.3"
-  checksum: 10/14d17015f36b8020a06beb2a266d066093f82b2a4ea25ea45d7e76b333ee6324213c8e581ee67d4bca519eaab78f1d1b585280026b78b9ec1423cbc78fda4379
+  checksum: 10/5a992e21290d82bc62efcf25e85a21a3743b880b98df61c6533012574cfdb5e92f69849f7d719bd4a73930485fccc1348167f61b95ebbbcbbcfb1dc890e9329a
   languageName: node
   linkType: hard
 
