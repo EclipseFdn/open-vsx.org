@@ -3,7 +3,7 @@
 name: &name open-vsx-org
 environment: &environment staging
 namespace: &namespace open-vsx-org-staging
-host: aws-staging.open-vsx.org
+host: premium-staging.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
@@ -26,15 +26,18 @@ aws-load-balancer-controller:
     name: aws-load-balancer-controller-staging
 
 external-dns:
+  namespaced: true 
   provider:
     name: aws
   serviceAccount:
     create: false
     name: external-dns-staging
-  txtOwnerId: eks-workshop
+  txtOwnerId: eks-staging
   extraArgs:
-    - --aws-zone-type=private
-    - --domain-filter=aws-staging.open-vsx.org
+    - --aws-zone-type=public
+    - --domain-filter=premium-staging.open-vsx.org
+    - --registry=txt
+    - --policy=sync
 
 website:
   jvmArgs: -Dspring.profiles.active=mirrormode -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
