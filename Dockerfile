@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=security-improvements
+ARG SERVER_VERSION=support-fastly-logs
 ARG SERVER_VERSION_STRING=v0.32.0-security.5
 
 # Builder image to compile the website
