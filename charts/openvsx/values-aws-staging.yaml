@@ -3,7 +3,7 @@
 name: &name open-vsx-org
 environment: &environment staging
 namespace: &namespace open-vsx-org-staging
-host: premium-staging.open-vsx.org
+host: staging.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
@@ -26,7 +26,6 @@ aws-load-balancer-controller:
     name: aws-load-balancer-controller-staging
 
 external-dns:
-  namespaced: true 
   provider:
     name: aws
   serviceAccount:
@@ -34,10 +33,12 @@ external-dns:
     name: external-dns-staging
   txtOwnerId: eks-staging
   extraArgs:
+    - --source=ingress
     - --aws-zone-type=public
-    - --domain-filter=premium-staging.open-vsx.org
-    - --registry=txt
-    - --policy=sync
+    - --domain-filter=open-vsx.org
+
+ingress:
+  wafv2Arn: "arn:aws:wafv2:eu-central-1:365555376529:regional/webacl/ALB-Redirect-ACL/1224443f-4a6a-46ef-a2b8-3c19184567a7"
 
 website:
   jvmArgs: -Dspring.profiles.active=mirrormode -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true

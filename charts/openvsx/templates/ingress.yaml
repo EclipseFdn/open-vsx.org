@@ -12,6 +12,9 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip 
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
+    {{- if .Values.ingress.wafv2Arn }}
+    alb.ingress.kubernetes.io/wafv2-acl-arn: {{ .Values.ingress.wafv2Arn | quote }}
+    {{- end }}
 spec:
  ingressClassName: alb
  rules:
