@@ -1,4 +1,4 @@
-# Default values for openvsx staging.
+# Default values for openvsx eks staging.
 
 name: &name open-vsx-org
 environment: &environment staging
@@ -15,13 +15,33 @@ image:
   tag: 6d777ca-570
 
 eks:
-  enabled: false  # Switch to false for OKD installations
+  enabled: true  # Switch to false for OKD installations
+
+aws-load-balancer-controller:
+  clusterName: eks-staging
+  region: eu-central-1
+  vpcId: vpc-0285cbfe9bfb7e4fd
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller-staging
+
+external-dns:
+  provider:
+    name: aws
+  serviceAccount:
+    create: false
+    name: external-dns-staging
+  txtOwnerId: eks-staging
+  extraArgs:
+    - --source=ingress
+    - --aws-zone-type=public
+    - --domain-filter=open-vsx.org
+
+ingress:
+  wafv2Arn: "arn:aws:wafv2:eu-central-1:365555376529:regional/webacl/ALB-Redirect-ACL/1224443f-4a6a-46ef-a2b8-3c19184567a7"
 
 website:
-  jvmArgs: -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
-
-route:
-  timeout: 30s
+  jvmArgs: -Dspring.profiles.active=mirrormode -Dspring.datasource.hikari.maximum-pool-size=5 -Xms512M -Xmx1536M -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
 
 service:
   type: ClusterIP
@@ -46,7 +66,14 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
-  storage_class: cephfs-new
+  storage_class: gp3
+
+postgresql:
+  architecture: standalone
+  auth:
+    createDatabase: true
+    database: openvsx-staging
+    enablePostgresUser: true
 
 # redis
 redis:
@@ -66,7 +93,7 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
-    storageClass: cephfs-new
+    storageClass: gp3
   serviceAccountName: redis-cluster-operator-staging
   clusterRoleName: redis-cluster-operator-role-cluster-staging
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging
