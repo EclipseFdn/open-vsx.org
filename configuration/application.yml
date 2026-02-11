@@ -102,7 +102,7 @@ org:
     miscellaneous:
       allow-anonymous-data-usage: false
 bucket4j:
-  enabled: true
+  enabled: false
   cache-to-use: redis-cluster-jedis
   filters:
     - cache-name: buckets
@@ -227,6 +227,25 @@ ovsx:
     revoked-access-tokens:
       subject: 'Open VSX Access Tokens Revoked'
       template: 'revoked-access-tokens.html'
+
+  # tier-based rate limiting configuration
+  rate-limit:
+    enabled: true
+    filters:
+      - url: '/api/.*'
+        http-response-headers:
+          Access-Control-Allow-Origin: '*'
+          Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+    default-http-content-type: application/json
+    default-http-response-body: >
+      {
+        "type": "https://open-vsx.org/probs/rate-limit-exceeded",
+        "title": "Too Many Requests",
+        "status": 429,
+        "detail": "A request rate limit has been exceeded for your current usage tier. Open VSX enforces tier-based limits to ensure reliable service. If this is unexpected for your use case, please contact us.",
+        "documentation": "https://github.com/EclipseFdn/open-vsx.org/wiki/Rate-Limiting",
+        "contact": "infrastructure@eclipse-foundation.org"
+      }
 
   # General scanning support
   scanning:
