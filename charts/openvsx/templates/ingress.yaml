@@ -12,6 +12,9 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip 
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
     {{- if .Values.ingress.wafv2Arn }}
     alb.ingress.kubernetes.io/wafv2-acl-arn: {{ .Values.ingress.wafv2Arn | quote }}
     {{- end }}
@@ -28,11 +31,7 @@ spec:
            name: {{ .Values.name }}-{{ .Values.environment }}
            port:
             number: {{ .Values.service.port }}
- tls:
-  - hosts:
-    - {{ .Values.host }}
-    secretName: {{ .Values.name }}-tls
-{{- if eq .Values.environment "production" }}
+{{- if eq .Values.environment "eks-production" }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -47,6 +46,12 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip 
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    {{- if .Values.ingress.wafv2Arn }}
+    alb.ingress.kubernetes.io/wafv2-acl-arn: {{ .Values.ingress.wafv2Arn | quote }}
+    {{- end }}
 spec:
  ingressClassName: alb
  rules:
@@ -60,9 +65,5 @@ spec:
           name: {{ .Values.name }}-{{ .Values.environment }}
           port:
            number: {{ .Values.service.port }}
- tls:
-  - hosts:
-    - www.{{ .Values.host }}
-    secretName: {{ .Values.name }}-tls
 {{- end }}
 {{- end }}
