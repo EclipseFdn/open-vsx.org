@@ -14,6 +14,7 @@ server:
     path: /server-error
     whitelabel:
       enabled: false
+    include-stacktrace: never
   compression:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
