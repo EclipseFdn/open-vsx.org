@@ -235,6 +235,8 @@ ovsx:
   # tier-based rate limiting configuration
   rate-limit:
     enabled: true
+    usage-stats:
+      job-schedule: '*/30 * * * *'
     filters:
       - url: '/api/.*'
         http-response-headers:
