@@ -1,81 +1,28 @@
 name: Sonar
 on:
-  workflow_run:
-    workflows: [Build]
-    types: [completed]
+  push:
+    branches:
+      - master
 jobs:
   sonar:
     name: Sonar
     permissions:
-      pull-requests: read
+      contents: read
     runs-on: ubuntu-latest
-    if: github.repository == 'EclipseFdn/open-vsx.org' && github.event.workflow_run.conclusion == 'success'
+    if: github.repository == 'EclipseFdn/open-vsx.org'
     steps:
-    - name: Create artifacts directory
-      run: mkdir -p ${{ runner.temp }}/artifacts
-    - name: Download PR number artifact
-      if: github.event.workflow_run.event == 'pull_request'
-      uses: dawidd6/action-download-artifact@0bd50d53a6d7fb5cb921e607957e9cc12b4ce392 # v12
+    - name: Checkout
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
       with:
-        workflow: Build
-        run_id: ${{ github.event.workflow_run.id }}
-        path: ${{ runner.temp }}/artifacts
-        name: PR_NUMBER
-    - name: Read PR_NUMBER.txt
-      if: github.event.workflow_run.event == 'pull_request'
-      id: pr_number
-      uses: juliangruber/read-file-action@b549046febe0fe86f8cb4f93c24e284433f9ab58 # v1.1.7
-      with:
-        path: ${{ runner.temp }}/artifacts/PR_NUMBER.txt
-    - name: Request GitHub API for PR data
-      if: github.event.workflow_run.event == 'pull_request'
-      uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
-      id: get_pr_data
-      with:
-        route: GET /repos/{full_name}/pulls/{number}
-        number: ${{ steps.pr_number.outputs.content }}
-        full_name: ${{ github.event.repository.full_name }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Checkout head branch
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      with:
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_branch }}
-          fetch-depth: 0
           persist-credentials: false
-    - name: Checkout head branch of pull_request
-      if: github.event.workflow_run.event == 'pull_request'
-      env:
-        HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
-        CLONE_URL: ${{ github.event.repository.clone_url }}
-      run: |
-        BASE_REF="${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}"
-
-        git remote add upstream ${CLONE_URL}
-        git fetch upstream
-        git checkout -B ${BASE_REF} upstream/${BASE_REF}
-        git checkout ${HEAD_BRANCH}
-        git clean -ffdx && git reset --hard HEAD
-    - name: SonarCloud Scan on PR
-      if: github.event.workflow_run.event == 'pull_request'
-      uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 # v7.0.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          fetch-depth: 0
+    - name: Cache SonarCloud packages
+      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb  # v5.0.1
       with:
-        args: >
-          -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}
-          -Dsonar.pullrequest.key=${{ fromJson(steps.get_pr_data.outputs.data).number }}
-          -Dsonar.pullrequest.branch=${{ fromJson(steps.get_pr_data.outputs.data).head.ref }}
-          -Dsonar.pullrequest.base=${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
-    - name: SonarCloud Scan on push
-      if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.event.repository.full_name
-      uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 # v7.0.0
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9  # v7.0.0
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}
-          -Dsonar.branch.name=${{ github.event.workflow_run.head_branch }}
