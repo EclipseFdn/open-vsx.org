@@ -6,7 +6,7 @@
     "repository": "https://github.com/eclipse/open-vsx.org",
     "license": "EPL-2.0",
     "dependencies": {
-        "openvsx-webui": "npm:openvsx-webui-test@0.18.0-dev.0"
+        "openvsx-webui": "npm:openvsx-webui-test@0.18.0-dev.1"
     },
     "resolutions": {
         "qs": "^6.14.1"
@@ -21,7 +21,7 @@
         "source-map-loader": "^4.0.1",
         "style-loader": "^3.3.3",
         "typescript": "~5.1.6",
-        "webpack": "^5.94.0",
+        "webpack": "^5.104.1",
         "webpack-bundle-analyzer": "^4.9.0",
         "webpack-cli": "^5.1.4"
     },

@@ -9,9 +9,43 @@
  ********************************************************************************/
 
 import {
-    ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
-    UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
-    NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole, RegistryVersion, FileDecisionCountsJson, FileDecisionDeleteRequest, FileDecisionDeleteResponse, FileDecisionRequest, FileDecisionResponse, FilesResponse, ScanCounts, ScanDecisionRequest, ScanDecisionResponse, ScanFilterOptions, ScanResultJson, ScanResultsResponse
+    ExtensionRegistryService,
+    SearchResult,
+    ErrorResult,
+    Extension,
+    ExtensionReviewList,
+    SuccessResult,
+    UserData,
+    ExtensionReview,
+    PersonalAccessToken,
+    CsrfTokenJson,
+    ExtensionReference,
+    Namespace,
+    NamespaceMembershipList,
+    AdminService,
+    PublisherInfo,
+    NewReview,
+    ExtensionFilter,
+    UrlString,
+    MembershipRole,
+    RegistryVersion,
+    FileDecisionCountsJson,
+    FileDecisionDeleteRequest,
+    FileDecisionDeleteResponse,
+    FileDecisionRequest,
+    FileDecisionResponse,
+    FilesResponse,
+    ScanCounts,
+    ScanDecisionRequest,
+    ScanDecisionResponse,
+    ScanFilterOptions,
+    ScanResultJson,
+    ScanResultsResponse,
+    CustomerList,
+    Customer,
+    Tier,
+    TierList,
+    UsageStatsList
 } from "openvsx-webui";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Avatar_cupcake.png';
@@ -222,6 +256,33 @@ export class MockAdminService implements AdminService {
         throw new Error("Method not implemented.");
     }
     deleteFileDecisions(abortController: AbortController, request: FileDecisionDeleteRequest): Promise<Readonly<FileDecisionDeleteResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    createCustomer(abortController: AbortController, customer: Customer): Promise<Readonly<Customer>> {
+        throw new Error("Method not implemented.");
+    }
+    createTier(abortController: AbortController, tier: Tier): Promise<Readonly<Tier>> {
+        throw new Error("Method not implemented.");
+    }
+    deleteCustomer(abortController: AbortController, name: string): Promise<Readonly<SuccessResult | ErrorResult>> {
+        throw new Error("Method not implemented.");
+    }
+    deleteTier(abortController: AbortController, name: string): Promise<Readonly<SuccessResult | ErrorResult>> {
+        throw new Error("Method not implemented.");
+    }
+    getCustomers(abortController: AbortController): Promise<Readonly<CustomerList>> {
+        throw new Error("Method not implemented.");
+    }
+    getTiers(abortController: AbortController): Promise<Readonly<TierList>> {
+        throw new Error("Method not implemented.");
+    }
+    getUsageStats(abortController: AbortController, customerName: string, date: Date): Promise<Readonly<UsageStatsList>> {
+        throw new Error("Method not implemented.");
+    }
+    updateCustomer(abortController: AbortController, name: string, customer: Customer): Promise<Readonly<Customer>> {
+        throw new Error("Method not implemented.");
+    }
+    updateTier(abortController: AbortController, name: string, tier: Tier): Promise<Readonly<Tier>> {
         throw new Error("Method not implemented.");
     }
 }

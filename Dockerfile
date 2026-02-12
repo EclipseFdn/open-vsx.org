@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=support-fastly-logs
-ARG SERVER_VERSION_STRING=v0.32.0-fastly.0
+ARG SERVER_VERSION=rate-limiting
+ARG SERVER_VERSION_STRING=v0.32.0-rc.2
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
