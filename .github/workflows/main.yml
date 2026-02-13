@@ -29,7 +29,7 @@ jobs:
 
       - name: Install Yarn
         if: steps.changed_website_files.outputs.any_changed == 'true'
-        working-directory: cli
+        working-directory: website
         run: |
           corepack enable
           corepack prepare yarn@stable --activate
