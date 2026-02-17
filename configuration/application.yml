@@ -306,7 +306,7 @@ ovsx:
         enabled: true
         enforced: false
         type: "CLAMAV_REST"
-        required: true
+        required: false
         async: false
         timeout-minutes: 5
 
@@ -347,7 +347,7 @@ ovsx:
       yara:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
-        required: true
+        required: false
         enforced: false
         async: false     # Synchronous - YARA is fast
         timeout-minutes: 5
