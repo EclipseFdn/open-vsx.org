@@ -112,7 +112,7 @@ alloy:
   namespaceOverride: *namespace
 
 clamav:
-  enabled: true
+  enabled: false
   name: "clamav"
   replicas: 1
   image:
@@ -138,7 +138,7 @@ clamav:
     SCAN_TIMEOUT_MINUTES: 5
 
 yara:
-  enabled: true
+  enabled: false
   name: "yara"
   replicas: 1
   image:
