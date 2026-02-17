@@ -306,7 +306,7 @@ ovsx:
         enabled: true
         enforced: false
         type: "CLAMAV_REST"
-        required: true
+        required: false
         async: false
         timeout-minutes: 5
 
@@ -321,7 +321,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://clamav-staging:9000/scan"
+          url: "http://clamav-production:9000/scan"
           headers:
             Accept: "application/json"
           body:
@@ -347,7 +347,7 @@ ovsx:
       yara:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
-        required: true
+        required: false
         enforced: false
         async: false     # Synchronous - YARA is fast
         timeout-minutes: 5
@@ -361,7 +361,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://yara-staging:9001/scan"
+          url: "http://yara-production:9001/scan"
           headers:
             Accept: "application/json"
           body:
