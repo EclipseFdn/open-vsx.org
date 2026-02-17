@@ -1,8 +1,8 @@
-ARG SERVER_VERSION=v0.31.0
-ARG SERVER_VERSION_STRING=v0.31.0
+ARG SERVER_VERSION=v0.32.0
+ARG SERVER_VERSION_STRING=v0.32.0
 
 # Builder image to compile the website
-FROM ubuntu AS builder
+FROM ubuntu:24.04 AS builder
 
 WORKDIR /workdir
 
@@ -17,14 +17,15 @@ RUN apt-get update \
   && apt-get install -y nodejs \
   && apt-get clean \
   && corepack enable \
-  && corepack prepare yarn@stable --activate
+  && corepack prepare yarn@4.9.1 --activate
 
 # bump to update website
 COPY . /workdir
 
-RUN /usr/bin/yarn --cwd website \
-  && /usr/bin/yarn --cwd website compile \
-  && /usr/bin/yarn --cwd website build
+RUN cd website \
+  && yarn install --immutable \
+  && yarn compile \
+  && yarn build
 
 # Main image derived from openvsx-server
 FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}

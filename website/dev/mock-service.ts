@@ -9,9 +9,44 @@
  ********************************************************************************/
 
 import {
-    ExtensionRegistryService, SearchResult, ErrorResult, Extension, ExtensionReviewList, SuccessResult,
-    UserData, ExtensionReview, PersonalAccessToken, CsrfTokenJson, ExtensionReference, Namespace,
-    NamespaceMembershipList, AdminService, PublisherInfo, NewReview, ExtensionFilter, UrlString, MembershipRole, RegistryVersion
+    ExtensionRegistryService,
+    SearchResult,
+    ErrorResult,
+    Extension,
+    ExtensionReviewList,
+    SuccessResult,
+    UserData,
+    ExtensionReview,
+    PersonalAccessToken,
+    CsrfTokenJson,
+    ExtensionReference,
+    Namespace,
+    NamespaceMembershipList,
+    AdminService,
+    PublisherInfo,
+    NewReview,
+    ExtensionFilter,
+    UrlString,
+    MembershipRole,
+    RegistryVersion,
+    FileDecisionCountsJson,
+    FileDecisionDeleteRequest,
+    FileDecisionDeleteResponse,
+    FileDecisionRequest,
+    FileDecisionResponse,
+    FilesResponse,
+    ScanCounts,
+    ScanDecisionRequest,
+    ScanDecisionResponse,
+    ScanFilterOptions,
+    ScanResultJson,
+    ScanResultsResponse,
+    CustomerList,
+    Customer,
+    Tier,
+    TierList,
+    UsageStatsList,
+    LogPageableList
 } from "openvsx-webui";
 
 const avatarUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Avatar_cupcake.png';
@@ -194,5 +229,63 @@ export class MockAdminService implements AdminService {
 
     revokeAccessTokens(abortController: AbortController, provider: string, login: string): Promise<Readonly<SuccessResult | ErrorResult>> {
         return Promise.resolve({ success: 'ok' });
+    }
+
+    getAllScans(abortController: AbortController, params?: { size?: number | undefined; offset?: number | undefined; status?: string | string[] | undefined; publisher?: string | undefined; namespace?: string | undefined; name?: string | undefined; validationType?: string[] | undefined; threatScannerName?: string[] | undefined; dateStartedFrom?: string | undefined; dateStartedTo?: string | undefined; enforcement?: "enforced" | "notEnforced" | "all" | undefined; } | undefined): Promise<Readonly<ScanResultsResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    getScan(abortController: AbortController, scanId: string): Promise<Readonly<ScanResultJson>> {
+        throw new Error("Method not implemented.");
+    }
+    getScanCounts(abortController: AbortController, params?: { dateStartedFrom?: string | undefined; dateStartedTo?: string | undefined; enforcement?: "enforced" | "notEnforced" | "all" | undefined; threatScannerName?: string[] | undefined; validationType?: string[] | undefined; } | undefined): Promise<Readonly<ScanCounts>> {
+        throw new Error("Method not implemented.");
+    }
+    getScanFilterOptions(abortController: AbortController): Promise<Readonly<ScanFilterOptions>> {
+        throw new Error("Method not implemented.");
+    }
+    getFiles(abortController: AbortController, params?: { size?: number | undefined; offset?: number | undefined; decision?: string | undefined; publisher?: string | undefined; namespace?: string | undefined; name?: string | undefined; dateDecidedFrom?: string | undefined; dateDecidedTo?: string | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; } | undefined): Promise<Readonly<FilesResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    getFileCounts(abortController: AbortController, params?: { dateDecidedFrom?: string | undefined; dateDecidedTo?: string | undefined; } | undefined): Promise<Readonly<FileDecisionCountsJson>> {
+        throw new Error("Method not implemented.");
+    }
+    makeScanDecision(abortController: AbortController, request: ScanDecisionRequest): Promise<Readonly<ScanDecisionResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    makeFileDecision(abortController: AbortController, request: FileDecisionRequest): Promise<Readonly<FileDecisionResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    deleteFileDecisions(abortController: AbortController, request: FileDecisionDeleteRequest): Promise<Readonly<FileDecisionDeleteResponse>> {
+        throw new Error("Method not implemented.");
+    }
+    createCustomer(abortController: AbortController, customer: Customer): Promise<Readonly<Customer>> {
+        throw new Error("Method not implemented.");
+    }
+    createTier(abortController: AbortController, tier: Tier): Promise<Readonly<Tier>> {
+        throw new Error("Method not implemented.");
+    }
+    deleteCustomer(abortController: AbortController, name: string): Promise<Readonly<SuccessResult | ErrorResult>> {
+        throw new Error("Method not implemented.");
+    }
+    deleteTier(abortController: AbortController, name: string): Promise<Readonly<SuccessResult | ErrorResult>> {
+        throw new Error("Method not implemented.");
+    }
+    getCustomers(abortController: AbortController): Promise<Readonly<CustomerList>> {
+        throw new Error("Method not implemented.");
+    }
+    getTiers(abortController: AbortController): Promise<Readonly<TierList>> {
+        throw new Error("Method not implemented.");
+    }
+    getUsageStats(abortController: AbortController, customerName: string, date: Date): Promise<Readonly<UsageStatsList>> {
+        throw new Error("Method not implemented.");
+    }
+    updateCustomer(abortController: AbortController, name: string, customer: Customer): Promise<Readonly<Customer>> {
+        throw new Error("Method not implemented.");
+    }
+    updateTier(abortController: AbortController, name: string, tier: Tier): Promise<Readonly<Tier>> {
+        throw new Error("Method not implemented.");
+    }
+    getLogs(abortController: AbortController, page?: number, size?: number, period?: string): Promise<Readonly<LogPageableList>> {
+        throw new Error("Method not implemented.");
     }
 }
