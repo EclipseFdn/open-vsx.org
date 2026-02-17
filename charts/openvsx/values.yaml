@@ -15,7 +15,20 @@ image:
   tag: 97e1417-99
 
 website:
-  jvmArgs: -Xms4G -Xmx6G -XX:+AlwaysPreTouch -XX:+HeapDumpOnOutOfMemoryError -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+DisableExplicitGC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -Dlog4j2.formatMsgNoLookups=true -Dlog4j.formatMsgNoLookups=true
+  jvmArgs: >
+    -Xms4G -Xmx6G
+    -XX:+AlwaysPreTouch
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+UseStringDeduplication
+    -XX:+ParallelRefProcEnabled
+    -XX:+DisableExplicitGC
+    -XX:+UnlockExperimentalVMOptions
+    -XX:+UnlockDiagnosticVMOptions
+    -Dlog4j2.formatMsgNoLookups=true
+    -Dlog4j.formatMsgNoLookups=true
+    -Dorg.jooq.no-logo=true
+    -Dorg.jooq.no-tips=true
+    --enable-native-access=ALL-UNNAMED
 
 route:
   timeout: 10m
@@ -67,8 +80,8 @@ redis:
   serviceAccountName: redis-cluster-operator
   clusterRoleName: redis-cluster-operator-role-cluster
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster
-  clusterRoleName: redis-cluster-operator-role
-  clusterRoleBinding: redis-cluster-operator-role-binding
+  roleName: redis-cluster-operator-role
+  roleBinding: redis-cluster-operator-role-binding
 
 # grafana alloy
 alloy:
@@ -97,3 +110,54 @@ alloy:
       openvsx-production-alloy: "true"
   fullnameOverride: grafana-alloy-production
   namespaceOverride: *namespace
+
+clamav:
+  enabled: true
+  name: "clamav"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
+    tag: "v0.1.1"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 2
+      memory: 4Gi
+    limits:
+      cpu: 4
+      memory: 6Gi
+  service:
+    port: 9000
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 512
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 256
+    MAX_RECURSION: 16
+    MAX_THREADS: 4
+    SCAN_TIMEOUT_MINUTES: 5
+
+yara:
+  enabled: true
+  name: "yara"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/yara-rest"
+    tag: "v0.1.0"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 1
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  service:
+    port: 9001
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 1024
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 256
+    MAX_RECURSION: 0
+    SCAN_TIMEOUT_MINUTES: 5

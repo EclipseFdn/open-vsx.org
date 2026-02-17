@@ -1,0 +1,12 @@
+{{- if .Values.yara.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yara-rules
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+{{- end }}
