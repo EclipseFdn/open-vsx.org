@@ -39,5 +39,5 @@ jobs:
         working-directory: website
         run: |
           yarn install --immutable
-          yarn build
           yarn compile
+          yarn build
