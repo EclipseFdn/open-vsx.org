@@ -257,7 +257,7 @@ ovsx:
 
   # General scanning support
   scanning:
-    enabled: false
+    enabled: true
 
     # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
     max-archive-size-bytes: 1073741824   # 1 GB total archive limit
