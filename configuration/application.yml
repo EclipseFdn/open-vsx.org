@@ -268,7 +268,7 @@ ovsx:
     similarity:
       enabled: true
       enforced: false
-      similarity-threshold: 0.20           # Min 20% name difference allowed
+      similarity-threshold: 0.2            # Min 20% name difference allowed
       skip-if-publisher-verified: false    # Do not skip checks for verified publishers
       only-protect-verified-names: false
       allow-similarity-to-own-names: true  # Skip checks against extensions in namespaces owned by the same publisher
