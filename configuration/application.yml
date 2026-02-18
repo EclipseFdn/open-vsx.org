@@ -6,6 +6,8 @@
 logging:
   level:
     root: "info"
+    # avoid log messages like: Received invalid Accept header. Assuming all media types are accepted
+    org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
 
 server:
   address: 0.0.0.0
