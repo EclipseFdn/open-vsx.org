@@ -213,7 +213,7 @@ ovsx:
     namespace-details-json:
       ttl: PT1H
     database-search:
-      ttl:PT1H
+      ttl: PT1H
     extension-json:
       ttl: PT1H
     latest-extension-version:
