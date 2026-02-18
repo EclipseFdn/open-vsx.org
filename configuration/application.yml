@@ -6,6 +6,8 @@
 logging:
   level:
     root: "info"
+    # avoid log messages like: Received invalid Accept header. Assuming all media types are accepted
+    org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
 
 server:
   address: 0.0.0.0
@@ -103,60 +105,60 @@ org:
     miscellaneous:
       allow-anonymous-data-usage: false
 bucket4j:
-  enabled: true
-  cache-to-use: redis-cluster-jedis
-  filters:
-    - cache-name: buckets
-      url: '/api/-/(namespace/create|publish)'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: getParameter("token")
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 75
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 75
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - execute-condition: getParameter("token") != null
-          cache-key: getParameter("token")
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
-        - execute-condition: getParameter("token") == null
-          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
+  enabled: false
+#  cache-to-use: redis-cluster-jedis
+#  filters:
+#    - cache-name: buckets
+#      url: '/api/-/(namespace/create|publish)'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - cache-key: getParameter("token")
+#          bandwidths:
+#            - capacity: 15
+#              time: 1
+#              unit: seconds
+#    - cache-name: buckets
+#      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+#          bandwidths:
+#            - capacity: 75
+#              time: 1
+#              unit: seconds
+#    - cache-name: buckets
+#      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+#          bandwidths:
+#            - capacity: 75
+#              time: 1
+#              unit: seconds
+#    - cache-name: buckets
+#      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - execute-condition: getParameter("token") != null
+#          cache-key: getParameter("token")
+#          bandwidths:
+#            - capacity: 15
+#              time: 1
+#              unit: seconds
+#        - execute-condition: getParameter("token") == null
+#          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+#          bandwidths:
+#            - capacity: 15
+#              time: 1
+#              unit: seconds
 ovsx:
   token-prefix: ovsxat_
   storage:
@@ -211,7 +213,7 @@ ovsx:
     namespace-details-json:
       ttl: PT1H
     database-search:
-      ttl:PT1H
+      ttl: PT1H
     extension-json:
       ttl: PT1H
     latest-extension-version:
@@ -233,17 +235,15 @@ ovsx:
       subject: 'Open VSX Access Tokens Revoked'
       template: 'revoked-access-tokens.html'
 
-  # tier-based rate limiting configuration
+  # dynamic tier-based rate limiting configuration
   rate-limit:
-    enabled: false
+    enabled: true
     ip-address-function: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-    usage-stats:
-      job-schedule: '*/30 * * * *'
     filters:
       - url: '/(api|vscode)/.*'
         http-response-headers:
           Access-Control-Allow-Origin: '*'
-          Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+          Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
     default-http-content-type: application/json
     default-http-response-body: >
       {
