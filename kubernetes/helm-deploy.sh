@@ -60,7 +60,7 @@ else
   exit 1
 fi
 
-chmod 600 "${KUBECONFIG}"
+#chmod 600 "${KUBECONFIG}"
 
 export HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
 export HELM_CONFIG_HOME="${ROOT_DIR}/.helm/config"

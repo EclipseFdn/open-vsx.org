@@ -27,6 +27,13 @@ spec:
         - name: {{ .Values.yara.name }}-{{ .Values.environment }}
           image: "{{ .Values.yara.image.repository }}:{{ .Values.yara.image.tag }}"
           imagePullPolicy: {{ .Values.yara.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: {{ .Values.yara.service.port }}
@@ -70,11 +77,4 @@ spec:
           claimName: yara-rules
       - name: tmp-scans
         emptyDir: {}
-      securityContext:
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-        capabilities:
-          drop:
-            - ALL
 {{- end }}
