@@ -124,7 +124,6 @@ alloy:
       app: *name
       environment: *environment
     nodeSelector:
-      openvsx-staging-alloy: "true"
       openvsx-production-alloy: null
   fullnameOverride: grafana-alloy-staging
   namespaceOverride: *namespace

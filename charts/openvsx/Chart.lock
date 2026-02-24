@@ -1,0 +1,15 @@
+dependencies:
+- name: alloy
+  repository: https://grafana.github.io/helm-charts
+  version: 1.1.2
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 18.1.13
+- name: aws-load-balancer-controller
+  repository: https://aws.github.io/eks-charts
+  version: 1.14.0
+- name: external-dns
+  repository: https://kubernetes-sigs.github.io/external-dns/
+  version: 1.14.3
+digest: sha256:cd2f2b0894220676811468447c65ca327bd3bf6b17b134b1de74b807da984327
+generated: "2026-02-24T13:21:59.22293-05:00"
