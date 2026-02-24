@@ -50,17 +50,6 @@ spring:
     enabled: false
   lifecycle:
     timeout-per-shutdown-phase: 10s
-  security:
-    oauth2:
-      client:
-        registration:
-          eclipse:
-            authorization-grant-type: authorization_code
-            scope: openvsx_publisher_agreement, profile
-        provider:
-          eclipse:
-            issuer-uri: https://auth.eclipse.org/auth/realms/community
-            user-name-attribute: preferred_username
 management:
   server:
     port: 8081
