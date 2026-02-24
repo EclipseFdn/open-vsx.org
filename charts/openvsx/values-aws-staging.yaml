@@ -130,7 +130,7 @@ alloy:
   namespaceOverride: *namespace
 
 clamav:
-  enabled: true
+  enabled: false
 
 yara:
-  enabled: true
+  enabled: false
