@@ -42,7 +42,6 @@ ingress:
 
 website:
   jvmArgs: >
-    -Dspring.profiles.active=mirrormode
     -Dspring.datasource.hikari.maximum-pool-size=5
     -Xms512M -Xmx3500M
     -XX:+AlwaysPreTouch
