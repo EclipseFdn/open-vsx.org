@@ -4,8 +4,10 @@
 # Additional properties are loaded from the file provided with the
 # DEPLOYMENT_CONFIG environment variable.
 logging:
-  pattern:
-    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+  level:
+    root: "info"
+    org.eclipse.openvsx.ratelimit: "debug"
+
 server:
   address: 0.0.0.0
   port: 8080
@@ -36,9 +38,6 @@ spring:
     baseline-on-migrate: false
   jpa:
     open-in-view: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   resources:
     cache:
       cachecontrol:
@@ -106,59 +105,59 @@ org:
       allow-anonymous-data-usage: false
 bucket4j:
   enabled: false
-  cache-to-use: redis-cluster-jedis
-  filters:
-    - cache-name: buckets
-      url: '/api/-/(namespace/create|publish)'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: getParameter("token")
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 75
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 75
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - execute-condition: getParameter("token") != null
-          cache-key: getParameter("token")
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
-        - execute-condition: getParameter("token") == null
-          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
+#  cache-to-use: redis-cluster-jedis
+#  filters:
+#    - cache-name: buckets
+#      url: '/api/-/(namespace/create|publish)'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - cache-key: getParameter("token")
+#          bandwidths:
+#            - capacity: 15
+#              time: 1
+#              unit: seconds
+#    - cache-name: buckets
+#      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+#          bandwidths:
+#            - capacity: 75
+#              time: 1
+#              unit: seconds
+#    - cache-name: buckets
+#      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+#          bandwidths:
+#            - capacity: 75
+#              time: 1
+#              unit: seconds
+#    - cache-name: buckets
+#      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
+#      http-response-headers:
+#        Access-Control-Allow-Origin: '*'
+#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+#      rate-limits:
+#        - execute-condition: getParameter("token") != null
+#          cache-key: getParameter("token")
+#          bandwidths:
+#            - capacity: 15
+#              time: 1
+#              unit: seconds
+#        - execute-condition: getParameter("token") == null
+#          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+#          bandwidths:
+#            - capacity: 15
+#              time: 1
+#              unit: seconds
 ovsx:
   token-prefix: ovsxat_
   storage:
@@ -222,6 +221,10 @@ ovsx:
       ttl: PT1H
     malicious-extensions:
       ttl: P3D
+    customer:
+      tti: P1D
+    tier:
+      tti: P1D
   foregroundHttpConnPool:
     maxTotal: 50
     defaultMaxPerRoute: 50
@@ -230,6 +233,28 @@ ovsx:
     revoked-access-tokens:
       subject: 'Open VSX Access Tokens Revoked'
       template: 'revoked-access-tokens.html'
+
+  # tier-based rate limiting configuration
+  rate-limit:
+    enabled: true
+    ip-address-function: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+    usage-stats:
+      job-schedule: '*/30 * * * *'
+    filters:
+      - url: '/(api|vscode)/.*'
+        http-response-headers:
+          Access-Control-Allow-Origin: '*'
+          Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+    default-http-content-type: application/json
+    default-http-response-body: >
+      {
+        "type": "https://open-vsx.org/probs/rate-limit-exceeded",
+        "title": "Too Many Requests",
+        "status": 429,
+        "detail": "A request rate limit has been exceeded for your current usage tier. Open VSX enforces tier-based limits to ensure reliable service. If this is unexpected for your use case, please contact us.",
+        "documentation": "https://github.com/EclipseFdn/open-vsx.org/wiki/Rate-Limiting",
+        "contact": "infrastructure@eclipse-foundation.org"
+      }
 
   # General scanning support
   scanning:
@@ -254,6 +279,7 @@ ovsx:
 
     secret-detection:
       enabled: true
+      required: false
       enforced: false
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'

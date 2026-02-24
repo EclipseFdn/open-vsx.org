@@ -109,7 +109,22 @@ pipeline {
       }
     }
 
-    stage('Deploy OKD-1 staging') {
+    stage('Deploy test') {
+      when {
+        branch 'test'
+      }
+      steps {
+        container('kubectl') {
+          withKubeConfig([credentialsId: 'ci-bot-okd-c1-token', serverUrl: 'https://api.okd-c1.eclipse.org:6443']) {
+            sh '''
+              ./kubernetes/helm-deploy.sh test "${IMAGE_TAG}"
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Deploy staging') {
       when {
         branch 'main'
       }

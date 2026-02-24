@@ -1,9 +1,9 @@
-# Default values for openvsx staging.
+# Default values for openvsx test.
 
 name: &name open-vsx-org
-environment: &environment staging
-namespace: &namespace open-vsx-org-staging
-host: staging.open-vsx.org
+environment: &environment test
+namespace: &namespace open-vsx-org-test
+host: test.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
@@ -13,9 +13,6 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: 6d777ca-570
-
-eks:
-  enabled: false  # Switch to false for OKD installations
 
 website:
   jvmArgs: >
@@ -68,24 +65,24 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
-  serviceAccountName: redis-cluster-operator-staging
-  clusterRoleName: redis-cluster-operator-role-cluster-staging
-  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging
-  roleName: redis-cluster-operator-role-staging
-  roleBinding: redis-cluster-operator-role-binding-staging
+  serviceAccountName: redis-cluster-operator-test
+  clusterRoleName: redis-cluster-operator-role-cluster-test
+  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-test
+  roleName: redis-cluster-operator-role-test
+  roleBinding: redis-cluster-operator-role-binding-test
 
 # grafana alloy
 alloy:
   alloy:
     configMap:
       create: false
-      name: "grafana-alloy-configmap-staging"
+      name: "grafana-alloy-configmap-test"
       key: "config.river"
     envFrom:
       - secretRef: 
-          name: grafana-cloud-secret-staging
+          name: grafana-cloud-secret-test
       - secretRef: 
-          name: redis-secret-staging
+          name: redis-secret-test
   crds:
     create: true
   controller:
@@ -94,9 +91,10 @@ alloy:
       app: *name
       environment: *environment
     nodeSelector:
-      openvsx-staging-alloy: "true"
+      openvsx-test-alloy: "true"
+      openvsx-staging-alloy: null
       openvsx-production-alloy: null
-  fullnameOverride: grafana-alloy-staging
+  fullnameOverride: grafana-alloy-test
   namespaceOverride: *namespace
 
 clamav:

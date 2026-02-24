@@ -6,18 +6,38 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  pr:
-    name: Save PR Info
+  build-website:
     permissions:
-      contents: none
+      contents: read
     runs-on: ubuntu-latest
     steps:
-      - name: Save PR number to file
-        if: github.event_name == 'pull_request'
-        run: echo ${{ github.event.number }} > PR_NUMBER.txt
-      - name: Archive PR number
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          name: PR_NUMBER
-          path: PR_NUMBER.txt
+          persist-credentials: false
+
+      - name: Get all changed website files
+        id: changed_website_files
+        uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # v47.0.1
+        with:
+          files: website/**
+
+      - name: Set up Node.js
+        if: steps.changed_website_files.outputs.any_changed == 'true'
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 24.x
+
+      - name: Install Yarn
+        if: steps.changed_website_files.outputs.any_changed == 'true'
+        working-directory: website
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Build Website
+        if: steps.changed_website_files.outputs.any_changed == 'true'
+        working-directory: website
+        run: |
+          yarn install --immutable
+          yarn compile
+          yarn build
