@@ -1,3 +1,9 @@
+## How to deploy aws-staging instance for a given image?
+
+```bash
+./helm-deploy.sh aws-staging <docker_image_tag>
+```
+
 ## How to deploy staging instance for a given image?
 
 ```bash
