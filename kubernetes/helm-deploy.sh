@@ -30,7 +30,7 @@ image_tag="${2:-}"
 
 # check that environment is not empty
 if [[ -z "${environment}" ]]; then
-  printf "ERROR: an environment ('test', 'staging' or 'production') must be given.\n"
+  printf "ERROR: an environment ('test', 'staging', 'aws-staging' or 'production') must be given.\n"
   exit 1
 fi
 
@@ -44,6 +44,10 @@ if [[ "${environment}" == "staging" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-staging.yaml"
   release_name="${release_name_staging}"
   namespace="${namespace_staging}"
+elif [[ "${environment}" == "aws-staging" ]]; then
+  values_file="${ROOT_DIR}/charts/${chart_name}/values-aws-staging.yaml"
+  release_name="${release_name_staging}"
+  namespace="${namespace_staging}"
 elif [[ "${environment}" == "test" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-test.yaml"
   release_name="${release_name_test}"
@@ -52,7 +56,7 @@ elif [[ "${environment}" == "production" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values.yaml"
   release_name="${release_name_production}"
 else
-  printf "ERROR: Unknown environment. Only 'test', 'staging' or 'production' are supported.\n"
+  printf "ERROR: Unknown environment. Only 'test', 'staging', 'aws-staging' or 'production' are supported.\n"
   exit 1
 fi
 
