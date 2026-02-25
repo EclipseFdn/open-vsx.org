@@ -155,7 +155,7 @@ ovsx:
       server-url: https://open-vsx.org
       requests-per-second: 5
       user-name: mirror_user
-      schedule: '0/1 * * * *'
+      schedule: '0 * * * *'
       read-only:
         disallowed-methods: POST, PUT, PATCH, DELETE
         allowed-endpoints: /vscode/gallery/extensionquery, /admin/update-search-index, /api/-/query
