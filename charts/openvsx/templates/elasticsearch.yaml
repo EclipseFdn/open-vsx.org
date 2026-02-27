@@ -1,4 +1,3 @@
-{{- if not .Values.eks.enabled }}
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -58,4 +57,3 @@ spec:
           resources:
           {{- toYaml .Values.es.resources | nindent 12 }}
   version: 8.7.1
-{{- end }}

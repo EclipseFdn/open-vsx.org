@@ -76,4 +76,4 @@ helm repo add postgresql https://charts.bitnami.com/bitnami
 helm repo add eks https://aws.github.io/eks-charts
 helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
 helm dependency build  "${ROOT_DIR}/charts/openvsx"
-helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
+helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"  --force-conflicts
