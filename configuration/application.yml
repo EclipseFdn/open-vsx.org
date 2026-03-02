@@ -347,8 +347,8 @@ ovsx:
       yara:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
-        required: false
-        enforced: false
+        required: true
+        enforced: true
         async: false     # Synchronous - YARA is fast
         timeout-minutes: 5
 
