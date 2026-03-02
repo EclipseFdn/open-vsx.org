@@ -265,12 +265,12 @@ ovsx:
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
-      enforced: false
+      enforced: true
 
     similarity:
       enabled: true
       enforced: false
-      similarity-threshold: 0.2            # Min 20% name difference allowed
+      similarity-threshold: 0.15           # Max 15% name difference allowed
       skip-if-publisher-verified: false    # Do not skip checks for verified publishers
       only-protect-verified-names: false
       allow-similarity-to-own-names: true  # Skip checks against extensions in namespaces owned by the same publisher
@@ -279,7 +279,7 @@ ovsx:
     secret-detection:
       enabled: true
       required: false
-      enforced: false
+      enforced: true
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
       gitleaks:
@@ -304,7 +304,7 @@ ovsx:
       # Requires clamav-rest service deployment
       clamav-rest:
         enabled: true
-        enforced: false
+        enforced: true
         type: "CLAMAV_REST"
         required: false
         async: false
@@ -347,8 +347,8 @@ ovsx:
       yara:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
-        required: false
-        enforced: false
+        required: true
+        enforced: true
         async: false     # Synchronous - YARA is fast
         timeout-minutes: 5
 
