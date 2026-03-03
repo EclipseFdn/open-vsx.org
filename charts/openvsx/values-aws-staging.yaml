@@ -31,21 +31,6 @@ aws-load-balancer-controller:
     create: false
     name: aws-load-balancer-controller-staging
 
-external-dns:
-  provider:
-    name: aws
-  serviceAccount:
-    create: false
-    name: external-dns-staging
-  txtOwnerId: eks-staging
-  extraArgs:
-    - --source=ingress
-    - --aws-zone-type=public
-    - --domain-filter=open-vsx.org
-
-ingress:
-  wafv2Arn: "arn:aws:wafv2:eu-central-1:365555376529:regional/webacl/ALB-Redirect-ACL/c781575f-d7cc-4764-9d22-f1c78e69548e"
-
 website:
   jvmArgs: >
     -Dspring.datasource.hikari.maximum-pool-size=5

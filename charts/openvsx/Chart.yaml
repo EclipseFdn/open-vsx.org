@@ -16,7 +16,3 @@ dependencies:
     version: 1.14.0
     repository: https://aws.github.io/eks-charts
     condition: eks.enabled
-  - name: external-dns
-    version: 1.14.3
-    repository: https://kubernetes-sigs.github.io/external-dns/
-    condition: eks.enabled

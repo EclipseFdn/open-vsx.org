@@ -8,8 +8,5 @@ dependencies:
 - name: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
   version: 1.14.0
-- name: external-dns
-  repository: https://kubernetes-sigs.github.io/external-dns/
-  version: 1.14.3
-digest: sha256:cd2f2b0894220676811468447c65ca327bd3bf6b17b134b1de74b807da984327
-generated: "2026-02-24T13:21:59.22293-05:00"
+digest: sha256:a0513dbe8b2bb36927f24d2b53120f53700704385b4c98341badc3bcddd1aac3
+generated: "2026-03-03T13:07:41.524372-05:00"
