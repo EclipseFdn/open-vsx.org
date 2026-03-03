@@ -8,7 +8,9 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   progressDeadlineSeconds: 3600
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ .Values.name }}
