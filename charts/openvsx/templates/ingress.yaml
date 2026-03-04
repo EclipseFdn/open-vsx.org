@@ -13,6 +13,7 @@ metadata:
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
     alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.certArn }}
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/security-group-prefix-lists: {{ .Values.cloudfront.cidr }}
     alb.ingress.kubernetes.io/ssl-redirect: "443"
 spec:
  ingressClassName: alb

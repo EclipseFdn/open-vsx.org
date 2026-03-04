@@ -34,6 +34,9 @@ aws-load-balancer-controller:
 ingress:
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
 
+cloudfront:
+  cidr: pl-a3a144ca
+
 website:
   jvmArgs: >
     -Dspring.datasource.hikari.maximum-pool-size=5
