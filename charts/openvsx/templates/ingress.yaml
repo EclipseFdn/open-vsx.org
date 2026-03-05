@@ -15,11 +15,22 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/security-group-prefix-lists: {{ .Values.cloudfront.cidr }}
     alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/actions.forward-cors: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"204"}}
+    alb.ingress.kubernetes.io/conditions.forward-cors: >
+      [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
 spec:
  ingressClassName: alb
  rules:
   - http:
       paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: forward-cors
+            port:
+              name: use-annotation
       - path: /
         pathType: Prefix
         backend:
