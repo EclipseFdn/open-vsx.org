@@ -19,6 +19,7 @@ metadata:
       {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"204"}}
     alb.ingress.kubernetes.io/conditions.forward-cors: >
       [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=65,client_keep_alive.seconds=65
 spec:
  ingressClassName: alb
  rules:

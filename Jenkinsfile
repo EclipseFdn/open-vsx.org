@@ -91,11 +91,28 @@ pipeline {
         }
       }
     }
-     stage('Deploy EKS staging') { 
+
+     stage('Deploy to EKS test environment') { 
       when {
         anyOf {
         expression { return env.BRANCH_NAME.startsWith('feature') }
-        branch 'main'
+      }
+      }
+      steps {
+        container('eks') {
+          withKubeConfig([credentialsId: 'ci-bot-eks-staging-token', serverUrl: 'https://5CF0970816FA7A7C340E6BEF8575A8D4.gr7.eu-central-1.eks.amazonaws.com']) {
+            sh '''
+              ./kubernetes/helm-deploy.sh aws-test "${IMAGE_TAG}"
+            '''
+          }
+        }
+      }
+     }
+     stage('Deploy to EKS staging environment') { 
+      when {
+        anyOf {
+        expression { return env.BRANCH_NAME.startsWith('feature') }
+        branch 'eks-main'
       }
       }
       steps {
