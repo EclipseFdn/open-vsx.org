@@ -8,8 +8,8 @@ replicaCount: 1
 esReplicaCount: 1
 autoscaling:
   enabled: true
-  minReplicas: 1
-  maxReplicas: 5
+  minReplicas: 2
+  maxReplicas: 6
   targetCPUUtilizationPercentage: 70
   targetMemoryUtilizationPercentage: 80
 
@@ -58,11 +58,11 @@ route:
 
 resources:
   limits:
-    cpu: "4000m"
-    memory: "6Gi"
+    cpu: 5000m
+    memory: 8Gi
   requests:
-    cpu: "1500m"
-    memory: "4Gi"
+    cpu: 3000m
+    memory: 8Gi
 
 # elastic search
 es:
