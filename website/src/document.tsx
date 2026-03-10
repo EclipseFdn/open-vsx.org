@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import {FunctionComponent, useContext, useEffect, useRef, useState} from 'react';
+import { FunctionComponent, useContext, useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { SanitizedMarkdown } from 'openvsx-webui/lib/components/sanitized-markdown';
 import { DelayedLoadIndicator } from 'openvsx-webui/lib/components/delayed-load-indicator';

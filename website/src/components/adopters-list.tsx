@@ -51,7 +51,7 @@ const AdoptersList: FunctionComponent = () => {
             if (project) {
                 setAdopters(project.adopters);
             }
-        } catch(err: any) {
+        } catch (err: any) {
             if (err instanceof DOMException && err.name === 'AbortError') return;
             console.error(`Error loading adopters: ${err}`);
         } finally {
@@ -68,8 +68,8 @@ const AdoptersList: FunctionComponent = () => {
     if (!loaded) return <CircularProgress />;
     return (
         <Grid container spacing={3} mt={2}>
-            { adopters.map(adopter => 
-                <AdopterItem 
+            { adopters.map(adopter =>
+                <AdopterItem
                     key={adopter.name}
                     name={adopter.name}
                     logo={adopter.logo}
@@ -92,9 +92,9 @@ interface AdopterItemProps {
 
 const bordered = (theme: Theme) => {
     return {
-        border: '1px solid',            
-        borderColor: theme.palette.mode === 'light' 
-            ? theme.palette.grey['300'] 
+        border: '1px solid',
+        borderColor: theme.palette.mode === 'light'
+            ? theme.palette.grey['300']
             : theme.palette.grey['800']
     };
 };
@@ -104,8 +104,8 @@ const HeaderBox = styled(Box)(({ theme }: { theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',
     minHeight: '6rem',
-    backgroundColor: theme.palette.mode === 'light' 
-        ? theme.palette.grey['300'] 
+    backgroundColor: theme.palette.mode === 'light'
+        ? theme.palette.grey['300']
         : theme.palette.grey['800']
 }));
 
@@ -133,7 +133,7 @@ const AdopterItem: FunctionComponent<AdopterItemProps> = ({ name, logo, logoWhit
             width: '100%',
         },
         logoContainer: {
-            width: '100%',	
+            width: '100%',
             maxWidth: '8rem',
             maxHeight: '8rem',
         },
@@ -145,21 +145,21 @@ const AdopterItem: FunctionComponent<AdopterItemProps> = ({ name, logo, logoWhit
     };
 
     let logoUrl = pageSettings.themeType == 'dark' ? logoWhite : logo;
-    if(logoUrl) {
+    if (logoUrl) {
         logoUrl = 'https://api.eclipse.org/adopters/assets/images/adopters/' + logoUrl;
     }
 
     return (
         <GridContainer item xs={12} md={4}>
             <HeaderBox p={2}>
-                { url 
-                    ? <Link sx={styles.heading} href={url} variant="h6">{name}</Link>
-                    : <Typography sx={styles.heading} variant="h6">{name}</Typography>
+                { url
+                    ? <Link sx={styles.heading} href={url} variant='h6'>{name}</Link>
+                    : <Typography sx={styles.heading} variant='h6'>{name}</Typography>
                 }
             </HeaderBox>
             <BodyBox p={2}>
                 <Box sx={styles.logoContainer}>
-                    { logoUrl 
+                    { logoUrl
                         ? <Box component='img' sx={styles.logo} src={logoUrl} alt='' />
                         : <Typography variant='h6'>{name}</Typography>
                     }

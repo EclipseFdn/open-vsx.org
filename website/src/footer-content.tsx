@@ -16,7 +16,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const styles = {
-    link: (theme: Theme) =>({
+    link: (theme: Theme) => ({
         color: theme.palette.text.primary,
         textDecoration: 'none',
         '&:hover': {
@@ -48,7 +48,7 @@ interface MainFooterProps {
     isLargeDisplay: boolean
 }
 
-const MainFooter = ({isSmallDisplay, isLargeDisplay}: MainFooterProps) => {
+const MainFooter = ({ isSmallDisplay, isLargeDisplay }: MainFooterProps) => {
     const itemSpacing = 2.5;
     return <Box display='flex' justifyContent='space-between' alignItems='center'>
         {isSmallDisplay ? null : repositoryLink()}
@@ -86,7 +86,7 @@ const MainFooter = ({isSmallDisplay, isLargeDisplay}: MainFooterProps) => {
             </>
         }
     </Box>;
-}
+};
 
 const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) => {
     const theme = useTheme();

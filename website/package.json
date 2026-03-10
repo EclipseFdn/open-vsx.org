@@ -32,7 +32,7 @@
     },
     "scripts": {
         "prepare": "yarn build",
-        "lint": "eslint -c ./configs/eslintrc.mjs src",
+        "lint": "eslint -c eslint.config.mjs src",
         "build": "tsc -p ./configs/app.tsconfig.json && vite build",
         "dev": "vite dev"
     },

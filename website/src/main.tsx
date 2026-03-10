@@ -16,7 +16,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
-import {createAbsoluteURL} from 'openvsx-webui/lib/utils';
+import { createAbsoluteURL } from 'openvsx-webui/lib/utils';
 import createPageSettings from './page-settings';
 
 const App: FunctionComponent = () => {
@@ -41,7 +41,7 @@ const App: FunctionComponent = () => {
          console.error('Could not determine server version');
          return 'unknown';
         }
-     }
+     };
 
     const pageSettings = createPageSettings(theme, prefersDarkScheme, getServerVersion());
 
@@ -51,12 +51,12 @@ const App: FunctionComponent = () => {
                 <Main
                     service={service}
                     pageSettings={pageSettings}
-                    loginProviders={{github: createAbsoluteURL(['', 'oauth2', 'authorization', 'github'])}}
+                    loginProviders={{ github: createAbsoluteURL(['', 'oauth2', 'authorization', 'github']) }}
                 />
             </ThemeProvider>
         </HelmetProvider>
     );
-}
+};
 
 const node = document.getElementById('main') as HTMLElement;
 const root = createRoot(node);

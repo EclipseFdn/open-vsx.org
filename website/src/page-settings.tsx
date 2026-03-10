@@ -22,7 +22,7 @@ import { Document } from './document';
 import About from './about';
 import Adopters from './adopters';
 import Members from './members';
-import { MainContext } from "openvsx-webui/lib/context";
+import {MainContext } from "openvsx-webui/lib/context";
 
 //---------- HEAD TAGS
 const HeadTags: FunctionComponent<{ title?: string, description?: string, keywords?: string, url?: string, imageUrl?: string }> = (props) => {
@@ -96,16 +96,16 @@ const ExtensionHeadTags: FunctionComponent<{ extension?: Extension, pageSettings
         url += `${namespace}/${name}`;
     }
 
-    return (<HeadTags title={title} url={url} description={description} keywords={keywords} />)
+    return (<HeadTags title={title} url={url} description={description} keywords={keywords} />);
 };
 
 const NamespaceHeadTags: FunctionComponent<{ namespaceDetails?: NamespaceDetails, pageSettings: PageSettings }> = (props) => {
     const { name } = useParams();
-    const namespaceName = props.namespaceDetails?.displayName ?? props.namespaceDetails?.name ?? name
+    const namespaceName = props.namespaceDetails?.displayName ?? props.namespaceDetails?.name ?? name;
     const title = `${namespaceName} – ${props.pageSettings.pageTitle}`;
     const url = `${location.protocol}//${location.host}/namespace/${namespaceName}`;
-    const description = props.namespaceDetails?.description
-    return (<HeadTags title={title} url={url} description={description} />)
+    const description = props.namespaceDetails?.description;
+    return (<HeadTags title={title} url={url} description={description} />);
 };
 
 export default function createPageSettings(theme: Theme, prefersDarkMode: boolean, serverVersionPromise: Promise<string>): PageSettings {
@@ -139,8 +139,8 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
                 <InfoIcon fontSize='large' />
             </Box>
             <Typography variant='body1'>
-                Open VSX is growing! To support reliable access as usage increases, we've clarified our existing usage limits for community and organization users.
-                Learn more <Link color='secondary' underline='hover' href="https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting">here</Link>.
+                Open VSX is growing! To support reliable access as usage increases, we&apos;ve clarified our existing usage limits for community and organization users.
+                Learn more <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>here</Link>.
             </Typography>
         </Box>;
 
@@ -184,12 +184,12 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     //---------- CLAIM NAMESPACE LINK
     const claimNamespace: FunctionComponent<{ extension: Extension, sx: SxProps<Theme> }> = ({ sx, extension }) => {
         const title = `Claiming namespace \`${extension.namespace}\``;
-        const body = 'Briefly explain what makes you a legitimate owner of the namespace mentioned in the issue title.\nPlease ensure that you have logged in to https://open-vsx.org at least once, otherwise we cannot process your request.'
+        const body = 'Briefly explain what makes you a legitimate owner of the namespace mentioned in the issue title.\nPlease ensure that you have logged in to https://open-vsx.org at least once, otherwise we cannot process your request.';
         return <Link
             href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?labels=namespace&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`}
             target='_blank' variant='body2' color='secondary' underline='hover' sx={sx} >
             Claim Ownership
-        </Link>
+        </Link>;
     };
 
 

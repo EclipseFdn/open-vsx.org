@@ -31,17 +31,17 @@ const Members = () => {
                 VSX Registry at open-vsx.org.
             </Typography>
 
-            <Box display="flex" gap={1} my={4} justifyContent="center" textAlign="center" >
-              <Button 
-                  variant='contained' 
-                  color='secondary' 
+            <Box display='flex' gap={1} my={4} justifyContent='center' textAlign='center' >
+              <Button
+                  variant='contained'
+                  color='secondary'
                   href='https://www.eclipse.org/membership/join-us/'
               >
                 Contact Us About Membership
               </Button>
-              <Button 
-                  variant='contained' 
-                  color='secondary' 
+              <Button
+                  variant='contained'
+                  color='secondary'
                   href='https://membership.eclipse.org/application/ready-to-join'
               >
                 My Organisation Is Ready to Join Now
@@ -51,6 +51,6 @@ const Members = () => {
             <MembersList collaborationId='open-vsx' />
         </Container>
    );
-}
+};
 
 export default Members;

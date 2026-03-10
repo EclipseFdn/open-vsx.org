@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import { FunctionComponent, useState, useEffect, useRef } from 'react';
-import { CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
+import {             CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
 type MembershipLevel = 'SD' | 'AP' | 'AS';
@@ -51,7 +51,7 @@ const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId }) =
 
             const members = await res.json() as Member[];
             setMembers(members);
-        } catch(err: any) {
+        } catch (err: any) {
             if (err instanceof DOMException && err.name === 'AbortError') return;
             console.error(`Error loading members: ${err}`);
         } finally {
@@ -69,8 +69,8 @@ const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId }) =
 
     return (
         <Grid container spacing={3}>
-            { members.map(member => 
-                <MemberItem 
+            { members.map(member =>
+                <MemberItem
                     key={member.organization_id}
                     memberId={member.organization_id}
                     name={member.name}
@@ -91,11 +91,11 @@ interface MemberItemProps {
 
 const bordered = (theme: Theme) => {
     return {
-        border: '1px solid',            
-        borderColor: theme.palette.mode === 'light' 
-            ? theme.palette.grey['300'] 
+        border: '1px solid',
+        borderColor: theme.palette.mode === 'light'
+            ? theme.palette.grey['300']
             : theme.palette.grey['800']
-    }
+    };
 };
 
 const HeaderBox = styled(Box)(({ theme }: { theme: Theme }) => ({
@@ -103,8 +103,8 @@ const HeaderBox = styled(Box)(({ theme }: { theme: Theme }) => ({
     display: 'flex',
     alignItems: 'center',
     minHeight: '6rem',
-    backgroundColor: theme.palette.mode === 'light' 
-        ? theme.palette.grey['300'] 
+    backgroundColor: theme.palette.mode === 'light'
+        ? theme.palette.grey['300']
         : theme.palette.grey['800']
 }));
 
@@ -131,7 +131,7 @@ const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, memberId }
             width: '100%',
         },
         logoContainer: {
-            width: '100%',	
+            width: '100%',
             height: '100%',
             maxWidth: '12rem',
             maxHeight: '6rem',
@@ -148,13 +148,13 @@ const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, memberId }
     return (
         <GridContainer item xs={12} md={4}>
             <HeaderBox p={2}>
-                <Link sx={styles.heading} href={websiteUrl} variant="h6">{name}</Link>
+                <Link sx={styles.heading} href={websiteUrl} variant='h6'>{name}</Link>
             </HeaderBox>
             <BodyBox p={2}>
                 <Box sx={styles.logoContainer}>
-                    { logo 
+                    { logo
                         ? <Box component='img' sx={styles.logo} src={logo} alt='' />
-                        : <Typography color="#333" variant='h6'>{name}</Typography>
+                        : <Typography color='#333' variant='h6'>{name}</Typography>
                     }
                 </Box>
             </BodyBox>

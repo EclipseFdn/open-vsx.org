@@ -30,9 +30,9 @@ const Adopters = () => {
             Our open source projects drive innovation across a broad spectrum of industries and on both private and public clouds — enabling organizations of all shapes and sizes to accelerate cloud native development with world-class tools.
             </Typography>
             <Box mt={4} textAlign='center'>
-              <Button 
-                  variant='contained' 
-                  color='secondary' 
+              <Button
+                  variant='contained'
+                  color='secondary'
                   href='https://ecdtools.eclipse.org/adopters/get-listed/'
               >
                 Get Listed
@@ -41,6 +41,6 @@ const Adopters = () => {
             <AdoptersList/>
         </Container>
    );
-}
+};
 
 export default Adopters;

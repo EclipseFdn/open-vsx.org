@@ -25,14 +25,14 @@ import HubIcon from '@mui/icons-material/Hub';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { UserSettingsRoutes } from 'openvsx-webui';
 import { MainContext } from 'openvsx-webui/lib/context';
-import { MobileMenuItem, itemIcon, MobileMenuItemText, MobileUserAvatar, headerItem, MenuLink, MenuRouteLink } from 'openvsx-webui/lib/default/menu-content'
-import { LoginComponent } from 'openvsx-webui/lib/default/login'
+import { MobileMenuItem, itemIcon, MobileMenuItemText, MobileUserAvatar, headerItem, MenuLink, MenuRouteLink } from 'openvsx-webui/lib/default/menu-content';
+import { LoginComponent } from 'openvsx-webui/lib/default/login';
 import { UserAvatar } from 'openvsx-webui/lib/pages/user/avatar';
 
 //-------------------- Mobile View --------------------//
 
 export const MobileMenuContent: FunctionComponent = () => {
-    const {user, loginProviders} = useContext(MainContext)
+    const { user, loginProviders } = useContext(MainContext);
     return <>
         {loginProviders && (
             user ? (
@@ -87,11 +87,11 @@ export const MobileMenuContent: FunctionComponent = () => {
                 </MobileMenuItemText>
             </Link>
         </MobileMenuItem>
-        <Accordion sx={{border: 0, borderRadius: 0, boxShadow: '0 0', background: 'transparent'}}>
+        <Accordion sx={{ border: 0, borderRadius: 0, boxShadow: '0 0', background: 'transparent' }}>
             <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="working-group-content"
-            id="working-group-header"
+            aria-controls='working-group-content'
+            id='working-group-header'
             >
                 <MobileMenuItemText>
                     <GroupWorkIcon sx={itemIcon} />
@@ -134,13 +134,13 @@ export const MobileMenuContent: FunctionComponent = () => {
             </RouteLink>
         </MobileMenuItem>
     </>;
-}
+};
 
 
 //-------------------- Default View --------------------//
 
 const headerTypography = ({ theme }: { theme: Theme }) => ({
-    ...headerItem({theme}),
+    ...headerItem({ theme }),
     cursor: 'pointer'
 });
 
@@ -153,7 +153,7 @@ const subMenuItem = ({ theme }: { theme: Theme }) => ({
 });
 
 const subMenuLink = ({ theme }: { theme: Theme }) => ({
-    ...headerItem({theme}),
+    ...headerItem({ theme }),
     margin: theme.spacing(0.5)
 });
 
@@ -162,7 +162,7 @@ const SubMenuLink = styled(Link)(subMenuLink);
 
 
 export const DefaultMenuContent: FunctionComponent = () => {
-    const {loginProviders, user} = useContext(MainContext)
+    const { loginProviders, user } = useContext(MainContext);
     const [workingGroupMenuOpen, setWorkingGroupMenuOpen] = useState(false);
     const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
     const toggleWorkingGroupMenu = () => setWorkingGroupMenuOpen(!workingGroupMenuOpen);
@@ -227,4 +227,4 @@ export const DefaultMenuContent: FunctionComponent = () => {
             </>
         )}
     </>;
-}
+};
