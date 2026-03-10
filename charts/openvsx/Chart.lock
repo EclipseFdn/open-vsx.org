@@ -2,11 +2,11 @@ dependencies:
 - name: alloy
   repository: https://grafana.github.io/helm-charts
   version: 1.1.2
-- name: postgresql
+- name: postgresql-ha
   repository: https://charts.bitnami.com/bitnami
-  version: 18.1.13
+  version: 16.3.2
 - name: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
   version: 1.14.0
-digest: sha256:a0513dbe8b2bb36927f24d2b53120f53700704385b4c98341badc3bcddd1aac3
-generated: "2026-03-03T13:07:41.524372-05:00"
+digest: sha256:e2c6dcf71280bba07adec1bf48d16ede03c8e30b5075a1899e460a6c393eaf16
+generated: "2026-03-10T17:21:46.485296-04:00"

@@ -76,12 +76,27 @@ es:
       memory: 2Gi
   storage_class: gp3
 
-postgresql:
-  architecture: standalone
-  auth:
-    createDatabase: true
+postgresql-ha: 
+  postgresql:
+    image:
+      repository: bitnamilegacy/postgresql-repmgr
+      tag: 17.6.0-debian-12-r2
     database: openvsx-staging
+    createDatabase: true
     enablePostgresUser: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  pgpool:
+    image:
+      repository: bitnamilegacy/pgpool
+      tag: 4.6.3-debian-12-r0
+    enabled: true
 
 # redis
 redis:
@@ -95,6 +110,7 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
+    storageClass: "gp3"
   serviceAccountName: redis-cluster-operator-staging
   clusterRoleName: redis-cluster-operator-role-cluster-staging
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging

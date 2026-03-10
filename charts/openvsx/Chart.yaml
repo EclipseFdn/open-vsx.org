@@ -8,8 +8,8 @@ dependencies:
   - name: alloy
     version: 1.1.2
     repository: https://grafana.github.io/helm-charts
-  - name: postgresql
-    version: 18.1.13
+  - name: postgresql-ha
+    version: 16.3.2
     repository: https://charts.bitnami.com/bitnami
     condition: eks.enabled
   - name: aws-load-balancer-controller
