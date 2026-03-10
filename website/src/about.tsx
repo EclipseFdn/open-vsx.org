@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import * as React from 'react';
 import { Link, Typography, Container } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 

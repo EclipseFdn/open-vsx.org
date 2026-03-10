@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import { createRoot } from 'react-dom/client';
-import React, { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -23,7 +23,15 @@ const App: FunctionComponent = () => {
     const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
     const themeType = prefersDarkScheme ? 'dark' : 'light';
     const theme = useMemo(() => createDefaultTheme(themeType), [themeType]);
-    const service = new ExtensionRegistryService();
+
+    let serverUrl = '';
+    if (location.port === '3000') {
+        // Localhost dev environment
+        const serverHost = location.hostname + ':8080';
+        serverUrl = `${location.protocol}//${serverHost}`;
+    }
+    const service = new ExtensionRegistryService(serverUrl);
+
     const getServerVersion = async (): Promise<string> => {
         const abortController = new AbortController();
         try {

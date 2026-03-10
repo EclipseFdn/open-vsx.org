@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import { FunctionComponent, useState, useEffect, useRef } from 'react';
 import { CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
@@ -33,33 +33,39 @@ interface MembersListProps {
 }
 
 const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId }) => {
+    const abortController = useRef<AbortController>(new AbortController());
     const [loaded, setLoaded] = useState(false);
     const [members, setMembers] = useState<Member[]>([]);
 
+    const loadMembers = async () => {
+        try {
+            setLoaded(false);
+
+            const res = await fetch(`https://membership.eclipse.org/api/organizations?working_group=${collaborationId}`, {
+                signal: abortController.current.signal,
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch members');
+            }
+
+            const members = await res.json() as Member[];
+            setMembers(members);
+        } catch(err: any) {
+            if (err instanceof DOMException && err.name === 'AbortError') return;
+            console.error(`Error loading members: ${err}`);
+        } finally {
+            setLoaded(true);
+        }
+    };
+
     useEffect(() => {
         if (loaded) return;
-
-        const abortController = new AbortController();
-
-        fetch(`https://membership.eclipse.org/api/organizations?working_group=${collaborationId}`, { 
-            signal: abortController.signal,
-        })
-            .then(async (res) => {
-                if (!res.ok) throw new Error('Failed to fetch members');
-            
-                const members = await res.json() as Member[];
-                setMembers(members);
-            })
-            .catch((err) => {
-                if (err instanceof DOMException && err.name === 'AbortError') return;
-                console.error(err);
-            })
-            .finally(() => abortController.signal.aborted || setLoaded(true));
-
-        return () => abortController.abort();
+        loadMembers();
+        return () => abortController.current.abort();
     }, [members, loaded]);
 
-    if (members.length === 0) return <CircularProgress />;
+    if (!loaded) return <CircularProgress />;
 
     return (
         <Grid container spacing={3}>

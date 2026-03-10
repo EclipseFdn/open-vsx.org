@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
+import { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
 import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';

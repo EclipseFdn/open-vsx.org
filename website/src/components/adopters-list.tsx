@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, useState, useEffect, useContext } from 'react';
+import { FunctionComponent, useState, useEffect, useContext, useRef } from 'react';
 import { CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 import { MainContext } from 'openvsx-webui/lib/context';
@@ -30,35 +30,42 @@ interface Adopter {
 }
 
 const AdoptersList: FunctionComponent = () => {
+    const abortController = useRef<AbortController>(new AbortController());
     const [loaded, setLoaded] = useState(false);
     const [adopters, setAdopters] = useState<Adopter[]>([]);
 
-    useEffect(() => {
-        if (loaded) return;
+    const loadAdopters = async () => {
+        try {
+            setLoaded(false);
 
-        const abortController = new AbortController();
-        fetch(`https://api.eclipse.org/adopters/projects?working_group=cloud-development-tools`, { 
-            signal: abortController.signal,
-        })
-        .then(async (res) => {
-            if (!res.ok) throw new Error('Failed to fetch adopters');
-        
+            const res = await fetch(`https://api.eclipse.org/adopters/projects?working_group=cloud-development-tools`, {
+                signal: abortController.current.signal,
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch adopters');
+            }
+
             const projects = await res.json() as Project[];
             const project = projects.find((p) => p.project_id == 'ecd.openvsx');
-            if(project) {
+            if (project) {
                 setAdopters(project.adopters);
             }
-        })
-        .catch((err) => {
+        } catch(err: any) {
             if (err instanceof DOMException && err.name === 'AbortError') return;
-            console.error(err);
-        })
-        .finally(() => abortController.signal.aborted || setLoaded(true));
+            console.error(`Error loading adopters: ${err}`);
+        } finally {
+            setLoaded(true);
+        }
+    };
 
-        return () => abortController.abort();
+    useEffect(() => {
+        if (loaded) return;
+        loadAdopters();
+        return () => abortController.current.abort();
     }, [loaded]);
 
-    if (adopters.length === 0) return <CircularProgress />;
+    if (!loaded) return <CircularProgress />;
     return (
         <Grid container spacing={3} mt={2}>
             { adopters.map(adopter => 

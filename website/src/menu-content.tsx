@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, useState, useRef, useContext } from 'react';
+import { FunctionComponent, useState, useRef, useContext } from 'react';
 import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';

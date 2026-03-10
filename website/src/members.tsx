@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import * as React from 'react';
 import { Container, Typography, Box, Button } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 import MembersList from './components/members-list';

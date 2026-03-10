@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { styled } from '@mui/material/styles';
 import { Link, Theme, Box, useMediaQuery, useTheme } from '@mui/material';
 import { Link as RouteLink } from 'react-router-dom';
