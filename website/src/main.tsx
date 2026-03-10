@@ -20,46 +20,48 @@ import { createAbsoluteURL } from 'openvsx-webui/lib/utils';
 import createPageSettings from './page-settings';
 
 const App: FunctionComponent = () => {
-    const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
-    const themeType = prefersDarkScheme ? 'dark' : 'light';
-    const theme = useMemo(() => createDefaultTheme(themeType), [themeType]);
+  const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
+  const themeType = prefersDarkScheme ? 'dark' : 'light';
+  const theme = useMemo(() => createDefaultTheme(themeType), [themeType]);
 
-    let serverUrl = '';
-    if (location.port === '3000') {
-        // Localhost dev environment
-        const serverHost = location.hostname + ':8080';
-        serverUrl = `${location.protocol}//${serverHost}`;
+  let serverUrl = '';
+  if (location.port === '3000') {
+    // Localhost dev environment
+    const serverHost = location.hostname + ':8080';
+    serverUrl = `${location.protocol}//${serverHost}`;
+  }
+  const service = new ExtensionRegistryService(serverUrl);
+
+  const getServerVersion = async (): Promise<string> => {
+    const abortController = new AbortController();
+    try {
+      const result = await service.getRegistryVersion(abortController);
+      return result.version;
+    } catch {
+      console.error('Could not determine server version');
+      return 'unknown';
     }
-    const service = new ExtensionRegistryService(serverUrl);
+  };
 
-    const getServerVersion = async (): Promise<string> => {
-        const abortController = new AbortController();
-        try {
-         const result = await service.getRegistryVersion(abortController);
-         return result.version;
-        } catch {
-         console.error('Could not determine server version');
-         return 'unknown';
-        }
-     };
+  const pageSettings = createPageSettings(theme, prefersDarkScheme, getServerVersion());
 
-    const pageSettings = createPageSettings(theme, prefersDarkScheme, getServerVersion());
-
-    return (
-        <HelmetProvider>
-            <ThemeProvider theme={theme}>
-                <Main
-                    service={service}
-                    pageSettings={pageSettings}
-                    loginProviders={{ github: createAbsoluteURL(['', 'oauth2', 'authorization', 'github']) }}
-                />
-            </ThemeProvider>
-        </HelmetProvider>
-    );
+  return (
+    <HelmetProvider>
+      <ThemeProvider theme={theme}>
+        <Main
+          service={service}
+          pageSettings={pageSettings}
+          loginProviders={{ github: createAbsoluteURL(['', 'oauth2', 'authorization', 'github']) }}
+        />
+      </ThemeProvider>
+    </HelmetProvider>
+  );
 };
 
 const node = document.getElementById('main') as HTMLElement;
 const root = createRoot(node);
-root.render(<BrowserRouter>
+root.render(
+  <BrowserRouter>
     <App />
-</BrowserRouter>);
+  </BrowserRouter>
+);

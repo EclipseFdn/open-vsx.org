@@ -9,155 +9,156 @@
  ********************************************************************************/
 
 import { FunctionComponent, useState, useEffect, useRef } from 'react';
-import {             CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
+import { CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
 
 type MembershipLevel = 'SD' | 'AP' | 'AS';
 
 interface Member {
-    organization_id: number;
-    name: string;
-    logos: {
-        web: string | null
-    };
-    website: string;
-    levels: {
-        level: MembershipLevel;
-        description: string;
-        sort_order: string;
-    }[];
+  organization_id: number;
+  name: string;
+  logos: {
+    web: string | null;
+  };
+  website: string;
+  levels: {
+    level: MembershipLevel;
+    description: string;
+    sort_order: string;
+  }[];
 }
 
 interface MembersListProps {
-    collaborationId: string;
+  collaborationId: string;
 }
 
 const MembersList: FunctionComponent<MembersListProps> = ({ collaborationId }) => {
-    const abortController = useRef<AbortController>(new AbortController());
-    const [loaded, setLoaded] = useState(false);
-    const [members, setMembers] = useState<Member[]>([]);
+  const abortController = useRef<AbortController>(new AbortController());
+  const [loaded, setLoaded] = useState(false);
+  const [members, setMembers] = useState<Member[]>([]);
 
-    const loadMembers = async () => {
-        try {
-            setLoaded(false);
+  const loadMembers = async () => {
+    try {
+      setLoaded(false);
 
-            const res = await fetch(`https://membership.eclipse.org/api/organizations?working_group=${collaborationId}`, {
-                signal: abortController.current.signal,
-            });
+      const res = await fetch(`https://membership.eclipse.org/api/organizations?working_group=${collaborationId}`, {
+        signal: abortController.current.signal
+      });
 
-            if (!res.ok) {
-                throw new Error('Failed to fetch members');
-            }
+      if (!res.ok) {
+        throw new Error('Failed to fetch members');
+      }
 
-            const members = await res.json() as Member[];
-            setMembers(members);
-        } catch (err: any) {
-            if (err instanceof DOMException && err.name === 'AbortError') return;
-            console.error(`Error loading members: ${err}`);
-        } finally {
-            setLoaded(true);
-        }
-    };
+      const members = (await res.json()) as Member[];
+      setMembers(members);
+    } catch (err: any) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      console.error(`Error loading members: ${err}`);
+    } finally {
+      setLoaded(true);
+    }
+  };
 
-    useEffect(() => {
-        if (loaded) return;
-        loadMembers();
-        return () => abortController.current.abort();
-    }, [members, loaded]);
+  useEffect(() => {
+    if (loaded) return;
+    loadMembers();
+    return () => abortController.current.abort();
+  }, [members, loaded]);
 
-    if (!loaded) return <CircularProgress />;
+  if (!loaded) return <CircularProgress />;
 
-    return (
-        <Grid container spacing={3}>
-            { members.map(member =>
-                <MemberItem
-                    key={member.organization_id}
-                    memberId={member.organization_id}
-                    name={member.name}
-                    logo={member.logos.web}
-                />
-            )}
-        </Grid>
-    );
+  return (
+    <Grid container spacing={3}>
+      {members.map((member) => (
+        <MemberItem
+          key={member.organization_id}
+          memberId={member.organization_id}
+          name={member.name}
+          logo={member.logos.web}
+        />
+      ))}
+    </Grid>
+  );
 };
 
 export default MembersList;
 
 interface MemberItemProps {
-    memberId?: number;
-    name: string;
-    logo?: string | null;
+  memberId?: number;
+  name: string;
+  logo?: string | null;
 }
 
 const bordered = (theme: Theme) => {
-    return {
-        border: '1px solid',
-        borderColor: theme.palette.mode === 'light'
-            ? theme.palette.grey['300']
-            : theme.palette.grey['800']
-    };
+  return {
+    border: '1px solid',
+    borderColor: theme.palette.mode === 'light' ? theme.palette.grey['300'] : theme.palette.grey['800']
+  };
 };
 
 const HeaderBox = styled(Box)(({ theme }: { theme: Theme }) => ({
-    ...bordered(theme),
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '6rem',
-    backgroundColor: theme.palette.mode === 'light'
-        ? theme.palette.grey['300']
-        : theme.palette.grey['800']
+  ...bordered(theme),
+  display: 'flex',
+  alignItems: 'center',
+  minHeight: '6rem',
+  backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey['300'] : theme.palette.grey['800']
 }));
 
 const BodyBox = styled(Box)(({ theme }: { theme: Theme }) => ({
-    ...bordered(theme),
-    display: 'flex',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+  ...bordered(theme),
+  display: 'flex',
+  height: '100%',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#fff'
 }));
 
 const GridContainer = styled(Grid)({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    height: '18rem',
-    textAlign: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  height: '18rem',
+  textAlign: 'center'
 });
 
 const MemberItem: FunctionComponent<MemberItemProps> = ({ name, logo, memberId }) => {
-    const styles = {
-        heading: {
-            width: '100%',
-        },
-        logoContainer: {
-            width: '100%',
-            height: '100%',
-            maxWidth: '12rem',
-            maxHeight: '6rem',
-            backgroundColor: '#fff',
-		    },
-        logo: {
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-        },
-    };
+  const styles = {
+    heading: {
+      width: '100%'
+    },
+    logoContainer: {
+      width: '100%',
+      height: '100%',
+      maxWidth: '12rem',
+      maxHeight: '6rem',
+      backgroundColor: '#fff'
+    },
+    logo: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'contain'
+    }
+  };
 
-    const websiteUrl = `https://www.eclipse.org/membership/showMember.php?member_id=${memberId}`;
-    return (
-        <GridContainer item xs={12} md={4}>
-            <HeaderBox p={2}>
-                <Link sx={styles.heading} href={websiteUrl} variant='h6'>{name}</Link>
-            </HeaderBox>
-            <BodyBox p={2}>
-                <Box sx={styles.logoContainer}>
-                    { logo
-                        ? <Box component='img' sx={styles.logo} src={logo} alt='' />
-                        : <Typography color='#333' variant='h6'>{name}</Typography>
-                    }
-                </Box>
-            </BodyBox>
-        </GridContainer>
-    );
+  const websiteUrl = `https://www.eclipse.org/membership/showMember.php?member_id=${memberId}`;
+  return (
+    <GridContainer item xs={12} md={4}>
+      <HeaderBox p={2}>
+        <Link sx={styles.heading} href={websiteUrl} variant='h6'>
+          {name}
+        </Link>
+      </HeaderBox>
+      <BodyBox p={2}>
+        <Box sx={styles.logoContainer}>
+          {logo ? (
+            <Box component='img' sx={styles.logo} src={logo} alt='' />
+          ) : (
+            <Typography color='#333' variant='h6'>
+              {name}
+            </Typography>
+          )}
+        </Box>
+      </BodyBox>
+    </GridContainer>
+  );
 };
