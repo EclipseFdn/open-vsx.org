@@ -39,7 +39,8 @@
     "format": "prettier --write --config .prettierrc src/**/*.{ts,tsx,mjs}",
     "lint": "prettier --check --config .prettierrc src/**/*.{ts,tsx,mjs} && eslint -c eslint.config.mjs src",
     "build": "tsc -p ./configs/app.tsconfig.json && vite build",
-    "dev": "vite dev"
+    "dev": "vite dev",
+    "preview": "vite preview"
   },
   "packageManager": "yarn@4.9.1"
 }
