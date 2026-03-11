@@ -4792,7 +4792,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "npm:openvsx-webui-test@0.19.0-dev.0"
+    openvsx-webui: "npm:openvsx-webui-test@0.19.0-dev.1"
     prettier: "npm:^3.8.1"
     typescript: "npm:^5.9.0"
     typescript-eslint: "npm:^8.57.0"
@@ -4801,10 +4801,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"openvsx-webui@npm:openvsx-webui-test@0.19.0-dev.0":
-  version: 0.19.0-dev.0
-  resolution: "openvsx-webui-test@npm:0.19.0-dev.0"
+"openvsx-webui@npm:openvsx-webui-test@0.19.0-dev.1":
+  version: 0.19.0-dev.1
+  resolution: "openvsx-webui-test@npm:0.19.0-dev.1"
   dependencies:
+    "@babel/core": "npm:^7.29.0"
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
     "@mdit/plugin-alert": "npm:^0.22.3"
@@ -4833,7 +4834,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.3"
     react-router-dom: "npm:^6.30.3"
-  checksum: 10/8184360cb7b5823b8184aff5ad1bb697b1844d4a6c9b8820e1884395817b0cdfb89ee9e1f4c4dd45b012f91cf1fe60b0c2b82a8f19d8b6fcba4558fe737f5158
+  checksum: 10/ddf95c13c60fc4cf4cb80b35dfea01ab0401d65271e2f6414317c6695f9215585c76ef9a85f34792b0fe779623f2ec94b8f19aa29f71603b5c5b26668e82ba5e
   languageName: node
   linkType: hard
 
