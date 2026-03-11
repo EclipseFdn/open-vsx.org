@@ -37,13 +37,12 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { UserSettingsRoutes } from 'openvsx-webui';
 import { MainContext } from 'openvsx-webui/lib/context';
 import {
-  MobileMenuItem,
   itemIcon,
-  MobileMenuItemText,
   MobileUserAvatar,
   headerItem,
   MenuLink,
-  MenuRouteLink
+  MenuRouteLink,
+  MenuItemText
 } from 'openvsx-webui/lib/default/menu-content';
 import { LoginComponent } from 'openvsx-webui/lib/default/login';
 import { UserAvatar } from 'openvsx-webui/lib/pages/user/avatar';
@@ -58,101 +57,83 @@ export const MobileMenuContent: FunctionComponent = () => {
         (user ? (
           <MobileUserAvatar />
         ) : (
-          <MobileMenuItem>
-            <LoginComponent
-              loginProviders={loginProviders}
-              renderButton={(href, onClick) => {
-                return (
-                  <Link href={href} onClick={onClick}>
-                    <MobileMenuItemText>
-                      <AccountBoxIcon sx={itemIcon} />
-                      Log In
-                    </MobileMenuItemText>
-                  </Link>
-                );
-              }}
-            />
-          </MobileMenuItem>
+          <LoginComponent
+            loginProviders={loginProviders}
+            renderButton={(href, onClick) => {
+              return (
+                <MenuItem component={Link} href={href} onClick={onClick}>
+                  <MenuItemText>
+                    <AccountBoxIcon sx={itemIcon} />
+                    Log In
+                  </MenuItemText>
+                </MenuItem>
+              );
+            }}
+          />
         ))}
       {loginProviders && !location.pathname.startsWith(UserSettingsRoutes.ROOT) && (
-        <MobileMenuItem>
-          <RouteLink to='/user-settings/extensions'>
-            <MobileMenuItemText>
-              <PublishIcon sx={itemIcon} />
-              Publish Extension
-            </MobileMenuItemText>
-          </RouteLink>
-        </MobileMenuItem>
+        <MenuItem component={RouteLink} to='/user-settings/extensions'>
+          <MenuItemText>
+            <PublishIcon sx={itemIcon} />
+            Publish Extension
+          </MenuItemText>
+        </MenuItem>
       )}
-      <MobileMenuItem>
-        <Link target='_blank' href='https://github.com/eclipse/openvsx'>
-          <MobileMenuItemText>
-            <GitHubIcon sx={itemIcon} />
-            Source Code
-          </MobileMenuItemText>
-        </Link>
-      </MobileMenuItem>
-      <MobileMenuItem>
-        <Link href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
-          <MobileMenuItemText>
-            <MenuBookIcon sx={itemIcon} />
-            Documentation
-          </MobileMenuItemText>
-        </Link>
-      </MobileMenuItem>
-      <MobileMenuItem>
-        <Link href='https://status.open-vsx.org/'>
-          <MobileMenuItemText>
-            <StatusIcon sx={itemIcon} />
-            Status
-          </MobileMenuItemText>
-        </Link>
-      </MobileMenuItem>
+      <MenuItem component={Link} href='https://github.com/eclipse/openvsx'>
+        <MenuItemText>
+          <GitHubIcon sx={itemIcon} />
+          Source Code
+        </MenuItemText>
+      </MenuItem>
+      <MenuItem component={Link} href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
+        <MenuItemText>
+          <MenuBookIcon sx={itemIcon} />
+          Documentation
+        </MenuItemText>
+      </MenuItem>
+      <MenuItem component={Link} href='https://status.open-vsx.org/'>
+        <MenuItemText>
+          <StatusIcon sx={itemIcon} />
+          Status
+        </MenuItemText>
+      </MenuItem>
       <Accordion sx={{ border: 0, borderRadius: 0, boxShadow: '0 0', background: 'transparent' }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls='working-group-content'
           id='working-group-header'>
-          <MobileMenuItemText>
+          <MenuItemText>
             <GroupWorkIcon sx={itemIcon} />
             Working Group
-          </MobileMenuItemText>
+          </MenuItemText>
         </AccordionSummary>
         <AccordionDetails>
-          <MobileMenuItem>
-            <RouteLink to='/members'>
-              <MobileMenuItemText>
-                <PeopleAltIcon sx={itemIcon} />
-                Members
-              </MobileMenuItemText>
-            </RouteLink>
-          </MobileMenuItem>
-          <MobileMenuItem>
-            <RouteLink to='/adopters'>
-              <MobileMenuItemText>
-                <HubIcon sx={itemIcon} />
-                Adopters
-              </MobileMenuItemText>
-            </RouteLink>
-          </MobileMenuItem>
+          <MenuItem component={RouteLink} to='/members'>
+            <MenuItemText>
+              <PeopleAltIcon sx={itemIcon} />
+              Members
+            </MenuItemText>
+          </MenuItem>
+          <MenuItem component={RouteLink} to='/adopters'>
+            <MenuItemText>
+              <HubIcon sx={itemIcon} />
+              Adopters
+            </MenuItemText>
+          </MenuItem>
         </AccordionDetails>
       </Accordion>
-      <MobileMenuItem>
-        <Link href='https://www.eclipse.org/donate/openvsx/'>
-          <MobileMenuItemText>
-            <StarIcon sx={itemIcon} />
-            Sponsor
-          </MobileMenuItemText>
-        </Link>
-      </MobileMenuItem>
-      <MobileMenuItem>
-        <RouteLink to='/about'>
-          <MobileMenuItemText>
-            <InfoIcon sx={itemIcon} />
-            About
-          </MobileMenuItemText>
-        </RouteLink>
-      </MobileMenuItem>
+      <MenuItem component={Link} href='https://www.eclipse.org/donate/openvsx/'>
+        <MenuItemText>
+          <StarIcon sx={itemIcon} />
+          Sponsor
+        </MenuItemText>
+      </MenuItem>
+      <MenuItem component={RouteLink} to='/about'>
+        <MenuItemText>
+          <InfoIcon sx={itemIcon} />
+          About
+        </MenuItemText>
+      </MenuItem>
     </>
   );
 };
