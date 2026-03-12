@@ -1,9 +1,8 @@
-# Default values for openvsx test.
+# Default values for openvsx eks staging.
 
 name: &name open-vsx-org
 environment: &environment test
-namespace: &namespace open-vsx-org-test
-host: test.open-vsx.org
+namespace: &namespace open-vsx-org-aws-test
 
 replicaCount: 1
 esReplicaCount: 1
@@ -15,6 +14,23 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: 6d777ca-570
+
+eks:
+  enabled: true  # Switch to false for OKD installations
+
+aws-load-balancer-controller:
+  clusterName: eks-staging
+  region: eu-central-1
+  vpcId: vpc-0285cbfe9bfb7e4fd
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller-test
+
+ingress:
+  certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+
+cloudfront:
+  cidr: pl-a3a144ca
 
 website:
   jvmArgs: >
@@ -54,6 +70,14 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
+  storage_class: gp3
+
+postgresql:
+  architecture: standalone
+  auth:
+    createDatabase: true
+    database: openvsx-test
+    enablePostgresUser: true
 
 # redis
 redis:
@@ -93,14 +117,12 @@ alloy:
       app: *name
       environment: *environment
     nodeSelector:
-      openvsx-test-alloy: "true"
-      openvsx-staging-alloy: null
       openvsx-production-alloy: null
   fullnameOverride: grafana-alloy-test
   namespaceOverride: *namespace
 
 clamav:
-  enabled: true
+  enabled: false
 
 yara:
-  enabled: true
+  enabled: false

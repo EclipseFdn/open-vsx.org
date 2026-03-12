@@ -33,6 +33,7 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 30
+      connection-timeout: 2000
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
@@ -50,17 +51,6 @@ spring:
     enabled: false
   lifecycle:
     timeout-per-shutdown-phase: 10s
-  security:
-    oauth2:
-      client:
-        registration:
-          eclipse:
-            authorization-grant-type: authorization_code
-            scope: openvsx_publisher_agreement, profile
-        provider:
-          eclipse:
-            issuer-uri: https://auth.eclipse.org/auth/realms/community
-            user-name-attribute: preferred_username
 management:
   server:
     port: 8081
@@ -169,13 +159,28 @@ bucket4j:
 #              unit: seconds
 ovsx:
   token-prefix: ovsxat_
+  data:
+    mirror:
+      enabled: true
+      server-url: https://open-vsx.org
+      requests-per-second: 5
+      user-name: mirror_user
+      schedule: '0 * * * *'
+      read-only:
+        disallowed-methods: POST, PUT, PATCH, DELETE
+        allowed-endpoints: /vscode/gallery/extensionquery, /admin/update-search-index, /api/-/query
+      exclude-extensions:
+        - vscode.*
+  upstream:
+    url: https://open-vsx.org
   storage:
     cdn:
       enabled: true
       services:
-        aws: https://openvsx-staging.eclipsecontent.org/
-    migration:
-      enabled: false
+        aws: https://openvsx.eclipsecontent.org/
+    aws:
+      region: dummy-value-to-enable-aws
+      bucket: dummy-value-to-enable-aws
     primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
@@ -245,7 +250,7 @@ ovsx:
 
   # tier-based rate limiting configuration
   rate-limit:
-    enabled: true
+    enabled: false
     ip-address-function: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
     usage-stats:
       job-schedule: '*/30 * * * *'
@@ -267,7 +272,7 @@ ovsx:
 
   # General scanning support
   scanning:
-    enabled: true
+    enabled: false
 
     # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
     max-archive-size-bytes: 1073741824   # 1 GB total archive limit

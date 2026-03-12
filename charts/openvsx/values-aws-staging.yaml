@@ -1,14 +1,17 @@
-# Default values for openvsx staging.
+# Default values for openvsx eks staging.
 
 name: &name open-vsx-org
 environment: &environment staging
 namespace: &namespace open-vsx-org-staging
-host: staging.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
 autoscaling:
-  enabled: false
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
@@ -17,12 +20,25 @@ image:
   tag: 6d777ca-570
 
 eks:
-  enabled: false  # Switch to false for OKD installations
+  enabled: true  # Switch to false for OKD installations
+
+aws-load-balancer-controller:
+  clusterName: eks-staging
+  region: eu-central-1
+  vpcId: vpc-0285cbfe9bfb7e4fd
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller-staging
+
+ingress:
+  certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+
+cloudfront:
+  cidr: pl-a3a144ca
 
 website:
   jvmArgs: >
-    -Dspring.datasource.hikari.maximum-pool-size=5
-    -Xms512M -Xmx3500M
+    -Xms4G -Xmx6G
     -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
@@ -41,11 +57,11 @@ route:
 
 resources:
   limits:
-    cpu: 4
-    memory: 4Gi
+    cpu: 5000m
+    memory: 8Gi
   requests:
-    cpu: 2
-    memory: 2Gi
+    cpu: 3000m
+    memory: 8Gi
 
 # elastic search
 es:
@@ -57,6 +73,38 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
+  storage_class: gp3
+
+postgresql-ha: 
+  postgresql:
+    image:
+      repository: bitnamilegacy/postgresql-repmgr
+      tag: 17.6.0-debian-12-r2
+    database: openvsx-staging
+    createDatabase: true
+    enablePostgresUser: true
+    username: "openvsx-staging-rw"
+    extendedConfiguration: |-
+      max_connections = 100
+      shared_buffers = 512MB
+      work_mem = 8MB   
+      effective_cache_size = 1536MB
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "1Gi"
+      limits:
+        cpu: "1"   
+        memory: "2Gi"
+
+  pgpool:
+    image:
+      repository: bitnamilegacy/pgpool
+      tag: 4.6.3-debian-12-r0
+    enabled: true
+    numInitChildren: 100
+    maxPool: 1        
+    childLifeTime: 300
 
 # redis
 redis:
@@ -70,6 +118,7 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
+    storageClass: "gp3"
   serviceAccountName: redis-cluster-operator-staging
   clusterRoleName: redis-cluster-operator-role-cluster-staging
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging
@@ -96,13 +145,12 @@ alloy:
       app: *name
       environment: *environment
     nodeSelector:
-      openvsx-staging-alloy: "true"
       openvsx-production-alloy: null
   fullnameOverride: grafana-alloy-staging
   namespaceOverride: *namespace
 
 clamav:
-  enabled: true
+  enabled: false
 
 yara:
-  enabled: true
+  enabled: false
