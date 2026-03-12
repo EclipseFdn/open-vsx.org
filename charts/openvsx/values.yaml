@@ -4,9 +4,18 @@ name: &name open-vsx-org
 environment: &environment production
 namespace: &namespace open-vsx-org
 host: open-vsx.org
+platform: okd
 
 replicaCount: 6
 esReplicaCount: 3
+
+autoscaling:
+  enabled: false
+  # minReplicas: 6
+  # maxReplicas: 12
+  # targetCPUUtilizationPercentage: 70
+  # targetMemoryUtilizationPercentage: 80
+  # scaleDownWindow: 600
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
