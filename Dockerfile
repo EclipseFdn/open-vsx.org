@@ -24,7 +24,6 @@ COPY . /workdir
 
 RUN cd website \
   && yarn install --immutable \
-  && yarn compile \
   && yarn build
 
 # Main image derived from openvsx-server
@@ -32,7 +31,7 @@ FROM ghcr.io/eclipse/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
 ARG SERVER_VERSION_STRING
 
-COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
+COPY --from=builder --chown=openvsx:openvsx /workdir/website/dist/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/application.yml config/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-spring.xml BOOT-INF/classes/
 COPY --from=builder --chown=openvsx:openvsx /workdir/mail-templates BOOT-INF/classes/mail-templates
