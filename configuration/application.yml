@@ -33,7 +33,7 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 30
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
@@ -65,8 +65,17 @@ spring:
 management:
   server:
     port: 8081
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+        add-additional-paths: true
   health:
-    probes:
+    livenessstate:
+      enabled: true
+    readinessstate:
       enabled: true
   metrics:
     tags:
