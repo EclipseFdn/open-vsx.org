@@ -8,6 +8,7 @@ metadata:
     app: {{ .Values.name }}
     environment: {{ .Values.environment }}
 spec:
+  revisionHistoryLimit: 1
   replicas: {{ .Values.clamav.replicas }}
   selector:
     matchLabels:

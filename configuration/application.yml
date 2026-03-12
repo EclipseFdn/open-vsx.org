@@ -54,8 +54,17 @@ spring:
 management:
   server:
     port: 8081
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+        add-additional-paths: true
   health:
-    probes:
+    livenessstate:
+      enabled: true
+    readinessstate:
       enabled: true
   metrics:
     tags:
@@ -271,7 +280,7 @@ ovsx:
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
-      enforced: false
+      enforced: true
 
     similarity:
       enabled: true
@@ -285,7 +294,7 @@ ovsx:
     secret-detection:
       enabled: true
       required: false
-      enforced: false
+      enforced: true
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
       gitleaks:
@@ -310,7 +319,7 @@ ovsx:
       # Requires clamav-rest service deployment
       clamav-rest:
         enabled: true
-        enforced: false
+        enforced: true
         type: "CLAMAV_REST"
         required: true
         async: false
@@ -354,7 +363,7 @@ ovsx:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
         required: true
-        enforced: false
+        enforced: true
         async: false     # Synchronous - YARA is fast
         timeout-minutes: 5
 

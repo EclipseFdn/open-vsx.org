@@ -1,28 +1,8 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "es6",
-        "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
-        "lib": [
-            "es6",
-            "dom"
-        ],
-        "typeRoots": [
-            "node_modules/@types"
-        ],
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "strictNullChecks": true,
-        "jsx": "react",
-        "skipLibCheck": true,
-        "outDir": "lib"
-    },
-    "include": [
-        "src",
-        "dev"
-    ]
+  "files": [],
+  "references": [
+    { "path": "./configs/app.tsconfig.json" },
+    { "path": "./configs/node.tsconfig.json" }
+  ]
 }
+

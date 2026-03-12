@@ -9,49 +9,59 @@
  ********************************************************************************/
 
 import { createRoot } from 'react-dom/client';
-import React, { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
-import {createAbsoluteURL} from 'openvsx-webui/lib/utils';
 import createPageSettings from './page-settings';
 
 const App: FunctionComponent = () => {
-    const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
-    const themeType = prefersDarkScheme ? 'dark' : 'light';
-    const theme = useMemo(() => createDefaultTheme(themeType), [themeType]);
-    const service = new ExtensionRegistryService();
-    const getServerVersion = async (): Promise<string> => {
-        const abortController = new AbortController();
-        try {
-         const result = await service.getRegistryVersion(abortController);
-         return result.version;
-        } catch {
-         console.error('Could not determine server version');
-         return 'unknown';
-        }
-     }
+  const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
+  const themeType = prefersDarkScheme ? 'dark' : 'light';
+  const theme = useMemo(() => createDefaultTheme(themeType), [themeType]);
 
-    const pageSettings = createPageSettings(theme, prefersDarkScheme, getServerVersion());
+  let serverUrl = '';
+  if (location.port === '3000') {
+    // Localhost dev environment
+    const serverHost = location.hostname + ':8080';
+    serverUrl = `${location.protocol}//${serverHost}`;
+  }
+  const service = new ExtensionRegistryService(serverUrl);
 
-    return (
-        <HelmetProvider>
-            <ThemeProvider theme={theme}>
-                <Main
-                    service={service}
-                    pageSettings={pageSettings}
-                    loginProviders={{github: createAbsoluteURL(['', 'oauth2', 'authorization', 'github'])}}
-                />
-            </ThemeProvider>
-        </HelmetProvider>
-    );
-}
+  const getServerVersion = async (): Promise<string> => {
+    const abortController = new AbortController();
+    try {
+      const result = await service.getRegistryVersion(abortController);
+      return result.version;
+    } catch {
+      console.error('Could not determine server version');
+      return 'unknown';
+    }
+  };
+
+  const pageSettings = createPageSettings(theme, prefersDarkScheme, getServerVersion());
+
+  return (
+    <HelmetProvider>
+      <ThemeProvider theme={theme}>
+        <Main
+          service={service}
+          pageSettings={pageSettings}
+          // get the list of supported login providers from the server instead of hardcoding it
+          // loginProviders={{ github: createAbsoluteURL([serverUrl, 'oauth2', 'authorization', 'github']) }}
+        />
+      </ThemeProvider>
+    </HelmetProvider>
+  );
+};
 
 const node = document.getElementById('main') as HTMLElement;
 const root = createRoot(node);
-root.render(<BrowserRouter>
+root.render(
+  <BrowserRouter>
     <App />
-</BrowserRouter>);
+  </BrowserRouter>
+);
