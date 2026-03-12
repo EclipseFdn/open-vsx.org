@@ -32,7 +32,8 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 30
+      connection-timeout: 2000
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false

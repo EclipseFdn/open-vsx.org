@@ -38,8 +38,7 @@ cloudfront:
 
 website:
   jvmArgs: >
-    -Dspring.datasource.hikari.maximum-pool-size=5
-    -Xms512M -Xmx3500M
+    -Xms4G -Xmx6G
     -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
@@ -84,19 +83,28 @@ postgresql-ha:
     database: openvsx-staging
     createDatabase: true
     enablePostgresUser: true
+    username: "openvsx-staging-rw"
+    extendedConfiguration: |-
+      max_connections = 100
+      shared_buffers = 512MB
+      work_mem = 8MB   
+      effective_cache_size = 1536MB
     resources:
       requests:
-        cpu: 250m
-        memory: 256Mi
+        cpu: "500m"
+        memory: "1Gi"
       limits:
-        cpu: 500m
-        memory: 512Mi
+        cpu: "1"   
+        memory: "2Gi"
 
   pgpool:
     image:
       repository: bitnamilegacy/pgpool
       tag: 4.6.3-debian-12-r0
     enabled: true
+    numInitChildren: 100
+    maxPool: 1        
+    childLifeTime: 300
 
 # redis
 redis:
