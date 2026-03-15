@@ -34,6 +34,11 @@ spring:
     hikari:
       maximum-pool-size: 30
       leak-detection-threshold: 30000
+      minimum-idle: 5
+      max-lifetime: 30000
+      keepalive-time: 15000
+      connection-timeout: 10000
+      idle-timeout: 20000
   flyway:
     baseline-on-migrate: false
   jpa:
