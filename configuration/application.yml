@@ -71,7 +71,6 @@ management:
       show-components: always
       probes:
         enabled: true
-        add-additional-paths: true
   health:
     livenessstate:
       enabled: true

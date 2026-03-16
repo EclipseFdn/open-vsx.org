@@ -77,14 +77,15 @@ data:
 
     otelcol.processor.memory_limiter "default" {
       check_interval = "1s"
-      limit = "400MiB"
-      spike_limit = "80MiB"
+      limit = "800MiB"
+      spike_limit = "120MiB"
       output {
         traces = [otelcol.processor.batch.default.input]
       }
     }
 
     otelcol.processor.batch "default" {
+      timeout = "120s"
       output {
         traces = [otelcol.exporter.otlp.tempo.input]
       }
