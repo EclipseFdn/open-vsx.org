@@ -65,20 +65,20 @@ spec:
         livenessProbe:
           failureThreshold: 3
           httpGet:
-            path: /livez
-            port: http
+            path: /actuator/health/liveness
+            port: http-management
           periodSeconds: 10
         readinessProbe:
           failureThreshold: 2
           httpGet:
-            path: /readyz
-            port: http
+            path: /actuator/health/readiness
+            port: http-management
           periodSeconds: 10
         startupProbe:
           failureThreshold: 360
           httpGet:
-            path: /readyz
-            port: http
+            path: /actuator/health/readiness
+            port: http-management
           periodSeconds: 10
           initialDelaySeconds: 30
       initContainers:
