@@ -5,8 +5,11 @@ dependencies:
 - name: postgresql-ha
   repository: https://charts.bitnami.com/bitnami
   version: 16.3.2
+- name: external-dns
+  repository: https://kubernetes-sigs.github.io/external-dns/
+  version: 1.14.3
 - name: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
   version: 1.14.0
-digest: sha256:e2c6dcf71280bba07adec1bf48d16ede03c8e30b5075a1899e460a6c393eaf16
-generated: "2026-03-10T17:21:46.485296-04:00"
+digest: sha256:57c0970e48d7f0ca63f07399c3ff0410fed1cea87367fa677aecbd79e2c7e8b3
+generated: "2026-03-16T14:34:52.146436-04:00"

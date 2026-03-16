@@ -3,6 +3,7 @@
 name: &name open-vsx-org
 environment: &environment staging
 namespace: &namespace open-vsx-org-staging
+host: eks-staging.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
@@ -30,11 +31,20 @@ aws-load-balancer-controller:
     create: false
     name: aws-load-balancer-controller-staging
 
+external-dns:
+  provider:
+    name: aws
+  serviceAccount:
+    create: false
+    name: external-dns-staging
+  txtOwnerId: eks-staging
+  extraArgs:
+    - --source=ingress
+    - --aws-zone-type=public
+    - --domain-filter=open-vsx.org
+
 ingress:
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
-
-cloudfront:
-  cidr: pl-a3a144ca
 
 website:
   jvmArgs: >
@@ -92,6 +102,7 @@ postgresql-ha:
       tag: 17.6.0-debian-12-r2
     database: openvsx-staging
     createDatabase: true
+    username: "openvsx-staging-rw"
     enablePostgresUser: true
     extraEnvVars:
       - name: POSTGRESQL_SR_CHECK_PASSWORD
