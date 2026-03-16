@@ -245,7 +245,7 @@ ovsx:
   # tier-based rate limiting configuration
   rate-limit:
     enabled: true
-    ip-address-function: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+    ip-address-function: '(getHeader("X-Real-IP")?: getRemoteAddr()).trim()'
     usage-stats:
       job-schedule: '*/30 * * * *'
     filters:
