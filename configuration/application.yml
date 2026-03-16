@@ -53,6 +53,12 @@ spring:
 management:
   server:
     port: 8081
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
   health:
     probes:
       enabled: true
@@ -240,8 +246,8 @@ ovsx:
 
   # tier-based rate limiting configuration
   rate-limit:
-    enabled: false
-    ip-address-function: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+    enabled: true
+    ip-address-function: '(getHeader("X-Real-IP")?: getRemoteAddr()).trim()'
     usage-stats:
       job-schedule: '*/30 * * * *'
     filters:
