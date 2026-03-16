@@ -65,6 +65,14 @@ resources:
 
 # elastic search
 es:
+  commonAnnotations:
+    "karpenter.sh/do-not-disrupt": "true"
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+
+  pdb:
+    create: true
+    minAvailable: 1
+  
   java_opts: -Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true
   resources:
     limits:
@@ -75,7 +83,9 @@ es:
       memory: 2Gi
   storage_class: gp3
 
-postgresql-ha: 
+postgresql-ha:
+  pgpool:
+    enabled: false
   postgresql:
     image:
       repository: bitnamilegacy/postgresql-repmgr
@@ -83,31 +93,53 @@ postgresql-ha:
     database: openvsx-staging
     createDatabase: true
     enablePostgresUser: true
-    username: "openvsx-staging-rw"
-    extendedConfiguration: |-
-      max_connections = 100
-      shared_buffers = 512MB
-      work_mem = 8MB   
-      effective_cache_size = 1536MB
+    extraEnvVars:
+      - name: POSTGRESQL_SR_CHECK_PASSWORD
+    auth:
+      passwordEncryption: "scram-sha-256"
+    authenticationConfiguration: |
+      host all all 0.0.0.0/0 scram-sha-256
+      local all all peer
+    extendedConf: |-
+      max_connections = 250
+      # Optimized for 2Gi RAM (25% rule)
+      shared_buffers = 1024MB
+      # Memory per-query (safe for 100 connections)
+      work_mem = 4MB   
+      maintenance_work_mem = 128MB
+      # Helps the query planner understand 2Gi RAM
+      effective_cache_size = 3000MB
     resources:
       requests:
         cpu: "500m"
         memory: "1Gi"
       limits:
         cpu: "1"   
-        memory: "2Gi"
-
-  pgpool:
-    image:
-      repository: bitnamilegacy/pgpool
-      tag: 4.6.3-debian-12-r0
-    enabled: true
-    numInitChildren: 100
-    maxPool: 1        
-    childLifeTime: 300
+        memory: "4Gi"
+    pdb:
+      create: true
+      minAvailable: 1
+    podAnnotations:
+      "karpenter.sh/do-not-disrupt": "true"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" 
 
 # redis
 redis:
+  master:
+    pdb:
+      create: true
+      minAvailable: 1
+    podAnnotations:
+      "karpenter.sh/do-not-disrupt": "true"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+  replica:
+    pdb:
+      create: true
+      minAvailable: 1
+    podAnnotations:
+      "karpenter.sh/do-not-disrupt": "true"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+
   maxmemory: "256mb"
   resources:
     requests:
