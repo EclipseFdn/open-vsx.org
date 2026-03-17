@@ -97,6 +97,21 @@ postgresql-ha:
   pgpool:
     enabled: false
   postgresql:
+    metrics:
+      enabled: true
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+      serviceMonitor:
+        enabled: true
+        interval: 30s
+        labels:
+          app: open-vsx-org
+          environment: staging
     image:
       repository: bitnamilegacy/postgresql-repmgr
       tag: 17.6.0-debian-12-r2
