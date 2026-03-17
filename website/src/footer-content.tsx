@@ -8,12 +8,13 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Link, Theme, Box, useMediaQuery, useTheme } from '@mui/material';
 import { Link as RouteLink } from 'react-router-dom';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const styles = {
   link: (theme: Theme) => ({
@@ -46,9 +47,11 @@ const LegalLink = styled(RouteLink)(({ theme }: { theme: Theme }) => ({
 interface MainFooterProps {
   isSmallDisplay: boolean;
   isLargeDisplay: boolean;
+  expanded: boolean;
+  toggleExpanded: () => void;
 }
 
-const MainFooter = ({ isSmallDisplay, isLargeDisplay }: MainFooterProps) => {
+const MainFooter = ({ isSmallDisplay, isLargeDisplay, expanded, toggleExpanded }: MainFooterProps) => {
   const itemSpacing = 2.5;
   return (
     <Box display='flex' justifyContent='space-between' alignItems='center'>
@@ -58,7 +61,7 @@ const MainFooter = ({ isSmallDisplay, isLargeDisplay }: MainFooterProps) => {
           <Box>{privacyPolicy()}</Box>
           <Box ml={itemSpacing}>{termsOfUse()}</Box>
           <Box ml={itemSpacing}>{compliance()}</Box>
-          <Box ml={itemSpacing}>{legalResources()}</Box>
+          <Box ml={itemSpacing}>{legalResources(false)}</Box>
           <Box ml={itemSpacing}>{manageCookies()}</Box>
           <Box ml={itemSpacing}>{copyrightText()}</Box>
           <Box ml={itemSpacing}>{rightsReservedText()}</Box>
@@ -67,7 +70,12 @@ const MainFooter = ({ isSmallDisplay, isLargeDisplay }: MainFooterProps) => {
         <>
           {copyrightText()}
           <Box display='flex' alignItems='center'>
-            <ExpandLessIcon /> Legal
+            {legalResources(true)}
+            {expanded ? (
+              <ExpandMoreIcon onClick={() => toggleExpanded()} />
+            ) : (
+              <ExpandLessIcon onClick={() => toggleExpanded()} />
+            )}
           </Box>
         </>
       )}
@@ -79,8 +87,13 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
   const theme = useTheme();
   const isSmallDisplay = useMediaQuery(theme.breakpoints.down('sm'));
   const isLargeDisplay = useMediaQuery(theme.breakpoints.up('xl'));
+  const [expandedFooter, setExpandedFooter] = useState(false);
 
-  if (expanded && !isLargeDisplay) {
+  const toggleExpandedFooter = () => {
+    setExpandedFooter(!expandedFooter);
+  };
+
+  if (expandedFooter && !isLargeDisplay) {
     const itemSpacing = 1;
     return (
       <Box display='flex' flexDirection='column' alignItems='stretch'>
@@ -88,14 +101,26 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
           <Box mb={itemSpacing}>{privacyPolicy()}</Box>
           <Box mb={itemSpacing}>{termsOfUse()}</Box>
           <Box mb={itemSpacing}>{compliance()}</Box>
-          <Box mb={itemSpacing}>{legalResources()}</Box>
+          <Box mb={itemSpacing}>{legalResources(isSmallDisplay)}</Box>
           <Box mb={itemSpacing + 1}>{manageCookies()}</Box>
         </Box>
-        <MainFooter isSmallDisplay={isSmallDisplay} isLargeDisplay={isLargeDisplay} />
+        <MainFooter
+          isSmallDisplay={isSmallDisplay}
+          isLargeDisplay={isLargeDisplay}
+          expanded={expandedFooter}
+          toggleExpanded={toggleExpandedFooter}
+        />
       </Box>
     );
   } else {
-    return <MainFooter isSmallDisplay={isSmallDisplay} isLargeDisplay={isLargeDisplay} />;
+    return (
+      <MainFooter
+        isSmallDisplay={isSmallDisplay}
+        isLargeDisplay={isLargeDisplay}
+        expanded={expandedFooter}
+        toggleExpanded={toggleExpandedFooter}
+      />
+    );
   }
 };
 
@@ -120,9 +145,9 @@ const compliance = () => (
   </Link>
 );
 
-const legalResources = () => (
+const legalResources = (isSmallDisplay: boolean) => (
   <Link href='http://www.eclipse.org/legal/' sx={[styles.link, styles.legalText]}>
-    Legal Resources
+    Legal {!isSmallDisplay && 'Resources'}
   </Link>
 );
 
