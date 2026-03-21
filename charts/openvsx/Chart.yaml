@@ -12,10 +12,6 @@ dependencies:
     version: 16.3.2
     repository: https://charts.bitnami.com/bitnami
     condition: eks.enabled
-  - name: external-dns
-    version: 1.14.3
-    repository: https://kubernetes-sigs.github.io/external-dns/
-    condition: eks.enabled
   - name: aws-load-balancer-controller
     version: 1.14.0
     repository: https://aws.github.io/eks-charts
