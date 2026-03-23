@@ -7,6 +7,8 @@ host: test.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
+autoscaling:
+  enabled: false
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website

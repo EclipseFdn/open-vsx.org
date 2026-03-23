@@ -1,9 +1,8 @@
-# Default values for openvsx staging.
+# Default values for openvsx eks staging.
 
 name: &name open-vsx-org
-environment: &environment staging
-namespace: &namespace open-vsx-org-staging
-host: staging.open-vsx.org
+environment: &environment test
+namespace: &namespace open-vsx-org-aws-test
 
 replicaCount: 1
 esReplicaCount: 1
@@ -17,7 +16,21 @@ image:
   tag: 6d777ca-570
 
 eks:
-  enabled: false  # Switch to false for OKD installations
+  enabled: true  # Switch to false for OKD installations
+
+aws-load-balancer-controller:
+  clusterName: eks-staging
+  region: eu-central-1
+  vpcId: vpc-0285cbfe9bfb7e4fd
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller-test
+
+ingress:
+  certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+
+cloudfront:
+  cidr: pl-a3a144ca
 
 website:
   jvmArgs: >
@@ -30,7 +43,6 @@ website:
     -XX:+DisableExplicitGC
     -XX:+UnlockExperimentalVMOptions
     -XX:+UnlockDiagnosticVMOptions
-    -XX:-OmitStackTraceInFastThrow
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
     -Dorg.jooq.no-logo=true
@@ -58,6 +70,14 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
+  storage_class: gp3
+
+postgresql:
+  architecture: standalone
+  auth:
+    createDatabase: true
+    database: openvsx-test
+    enablePostgresUser: true
 
 # redis
 redis:
@@ -71,24 +91,24 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
-  serviceAccountName: redis-cluster-operator-staging
-  clusterRoleName: redis-cluster-operator-role-cluster-staging
-  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging
-  roleName: redis-cluster-operator-role-staging
-  roleBinding: redis-cluster-operator-role-binding-staging
+  serviceAccountName: redis-cluster-operator-test
+  clusterRoleName: redis-cluster-operator-role-cluster-test
+  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-test
+  roleName: redis-cluster-operator-role-test
+  roleBinding: redis-cluster-operator-role-binding-test
 
 # grafana alloy
 alloy:
   alloy:
     configMap:
       create: false
-      name: "grafana-alloy-configmap-staging"
+      name: "grafana-alloy-configmap-test"
       key: "config.river"
     envFrom:
       - secretRef: 
-          name: grafana-cloud-secret-staging
+          name: grafana-cloud-secret-test
       - secretRef: 
-          name: redis-secret-staging
+          name: redis-secret-test
   crds:
     create: true
   controller:
@@ -97,13 +117,12 @@ alloy:
       app: *name
       environment: *environment
     nodeSelector:
-      openvsx-staging-alloy: "true"
       openvsx-production-alloy: null
-  fullnameOverride: grafana-alloy-staging
+  fullnameOverride: grafana-alloy-test
   namespaceOverride: *namespace
 
 clamav:
-  enabled: true
+  enabled: false
 
 yara:
-  enabled: true
+  enabled: false

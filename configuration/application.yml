@@ -32,7 +32,7 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 30
+      maximum-pool-size: 10
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
@@ -71,9 +71,7 @@ management:
       probes:
         enabled: true
   health:
-    livenessstate:
-      enabled: true
-    readinessstate:
+    probes:
       enabled: true
   metrics:
     tags:
@@ -168,13 +166,28 @@ bucket4j:
 #              unit: seconds
 ovsx:
   token-prefix: ovsxat_
+  data:
+    mirror:
+      enabled: true
+      server-url: https://open-vsx.org
+      requests-per-second: 5
+      user-name: mirror_user
+      schedule: '0 * * * *'
+      read-only:
+        disallowed-methods: POST, PUT, PATCH, DELETE
+        allowed-endpoints: /vscode/gallery/extensionquery, /admin/update-search-index, /api/-/query
+      exclude-extensions:
+        - vscode.*
+  upstream:
+    url: https://open-vsx.org
   storage:
     cdn:
       enabled: true
       services:
-        aws: https://openvsx-staging.eclipsecontent.org/
-    migration:
-      enabled: false
+        aws: https://openvsx.eclipsecontent.org/
+    aws:
+      region: dummy-value-to-enable-aws
+      bucket: dummy-value-to-enable-aws
     primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
@@ -266,7 +279,7 @@ ovsx:
 
   # General scanning support
   scanning:
-    enabled: true
+    enabled: false
 
     # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
     max-archive-size-bytes: 1073741824   # 1 GB total archive limit
@@ -274,7 +287,7 @@ ovsx:
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
-      enforced: true
+      enforced: false
 
     similarity:
       enabled: true
@@ -288,7 +301,7 @@ ovsx:
     secret-detection:
       enabled: true
       required: false
-      enforced: true
+      enforced: false
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
       gitleaks:
@@ -313,7 +326,7 @@ ovsx:
       # Requires clamav-rest service deployment
       clamav-rest:
         enabled: true
-        enforced: true
+        enforced: false
         type: "CLAMAV_REST"
         required: true
         async: false
@@ -357,7 +370,7 @@ ovsx:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
         required: true
-        enforced: true
+        enforced: false
         async: false     # Synchronous - YARA is fast
         timeout-minutes: 5
 
