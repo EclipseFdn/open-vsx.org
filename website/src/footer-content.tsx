@@ -125,9 +125,9 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
 };
 
 const repositoryLink = () => (
-  <Link target='_blank' href='https://github.com/eclipse/openvsx' sx={[styles.link, styles.repositoryLink]}>
+  <Link target='_blank' href='https://github.com/eclipse-openvsx/openvsx' sx={[styles.link, styles.repositoryLink]}>
     <GitHubIcon />
-    &nbsp;eclipse/openvsx
+    &nbsp;eclipse-openvsx/openvsx
   </Link>
 );
 
