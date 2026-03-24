@@ -167,7 +167,14 @@ bucket4j:
 #              time: 1
 #              unit: seconds
 ovsx:
-  token-prefix: ovsxat_
+  access-token:
+    prefix: staging_ovsxat_
+    expiration: P90D
+    notification: P7D
+    send-expired-mail: true
+    max-token-notifications: 100
+    expiration-schedule: '0 */1 * * * *'
+    notification-schedule: '30 */1 * * * *'
   storage:
     cdn:
       enabled: true
@@ -238,9 +245,6 @@ ovsx:
     defaultMaxPerRoute: 50
   mail:
     from: no-reply@open-vsx.org
-    revoked-access-tokens:
-      subject: 'Open VSX Access Tokens Revoked'
-      template: 'revoked-access-tokens.html'
 
   # tier-based rate limiting configuration
   rate-limit:
