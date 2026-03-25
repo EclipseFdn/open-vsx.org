@@ -111,61 +111,10 @@ org:
       type: sql
     miscellaneous:
       allow-anonymous-data-usage: false
+
 bucket4j:
   enabled: false
-#  cache-to-use: redis-cluster-jedis
-#  filters:
-#    - cache-name: buckets
-#      url: '/api/-/(namespace/create|publish)'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: getParameter("token")
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 75
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 75
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - execute-condition: getParameter("token") != null
-#          cache-key: getParameter("token")
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
-#        - execute-condition: getParameter("token") == null
-#          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
+
 ovsx:
   access-token:
     prefix: staging_ovsxat_
@@ -321,6 +270,7 @@ ovsx:
         type: "CLAMAV_REST"
         required: true
         async: false
+        maxConcurrency: 4
         timeout-minutes: 5
 
         # Per-scanner HTTP client configuration
@@ -363,6 +313,7 @@ ovsx:
         required: true
         enforced: true
         async: false     # Synchronous - YARA is fast
+        maxConcurrency: 10
         timeout-minutes: 5
 
         http:
