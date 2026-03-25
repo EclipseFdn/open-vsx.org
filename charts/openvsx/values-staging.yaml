@@ -80,9 +80,9 @@ alloy:
       name: "grafana-alloy-configmap-staging"
       key: "config.river"
     envFrom:
-      - secretRef: 
+      - secretRef:
           name: grafana-cloud-secret-staging
-      - secretRef: 
+      - secretRef:
           name: redis-secret-staging
   crds:
     create: true

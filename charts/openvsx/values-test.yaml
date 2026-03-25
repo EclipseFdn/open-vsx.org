@@ -80,9 +80,9 @@ alloy:
       name: "grafana-alloy-configmap-test"
       key: "config.river"
     envFrom:
-      - secretRef: 
+      - secretRef:
           name: grafana-cloud-secret-test
-      - secretRef: 
+      - secretRef:
           name: redis-secret-test
   crds:
     create: true
