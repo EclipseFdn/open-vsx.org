@@ -60,5 +60,6 @@ jobs:
         run: |
           corepack enable
           corepack prepare yarn@stable --activate
+          yarn install --immutable
 
       - uses: j178/prek-action@79f765515bd648eb4d6bb1b17277b7cb22cb6468 # v2.0.0
