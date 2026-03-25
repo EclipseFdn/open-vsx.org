@@ -3,11 +3,13 @@ on:
   push:
     branches:
       - master
+
+permissions:
+  contents: none
+
 jobs:
   sonar:
     name: Sonar
-    permissions:
-      contents: read
     runs-on: ubuntu-latest
     if: github.repository == 'EclipseFdn/open-vsx.org'
     steps:

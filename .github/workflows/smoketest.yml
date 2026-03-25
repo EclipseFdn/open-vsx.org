@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - production
+
+permissions:
+  contents: none
+
 jobs:
   test:
-    permissions:
-      contents: none
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
