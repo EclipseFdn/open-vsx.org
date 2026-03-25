@@ -33,7 +33,7 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 30
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
@@ -65,8 +65,16 @@ spring:
 management:
   server:
     port: 8081
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
   health:
-    probes:
+    livenessstate:
+      enabled: true
+    readinessstate:
       enabled: true
   metrics:
     tags:
@@ -104,63 +112,14 @@ org:
       type: sql
     miscellaneous:
       allow-anonymous-data-usage: false
+
 bucket4j:
   enabled: false
-#  cache-to-use: redis-cluster-jedis
-#  filters:
-#    - cache-name: buckets
-#      url: '/api/-/(namespace/create|publish)'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: getParameter("token")
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 75
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 75
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - execute-condition: getParameter("token") != null
-#          cache-key: getParameter("token")
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
-#        - execute-condition: getParameter("token") == null
-#          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
+
 ovsx:
   token-prefix: ovsxat_
+  expiration: 0
+  notification: 0
   storage:
     cdn:
       enabled: true
@@ -231,14 +190,11 @@ ovsx:
     defaultMaxPerRoute: 50
   mail:
     from: no-reply@open-vsx.org
-    revoked-access-tokens:
-      subject: 'Open VSX Access Tokens Revoked'
-      template: 'revoked-access-tokens.html'
 
   # dynamic tier-based rate limiting configuration
   rate-limit:
     enabled: true
-    ip-address-function: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+    ip-address-function: '(getHeader("X-Real-IP")?: getRemoteAddr()).trim()'
     filters:
       - url: '/(api|vscode)/.*'
         http-response-headers:
@@ -265,7 +221,7 @@ ovsx:
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
-      enforced: false
+      enforced: true
 
     similarity:
       enabled: true
@@ -279,7 +235,7 @@ ovsx:
     secret-detection:
       enabled: true
       required: false
-      enforced: false
+      enforced: true
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
       gitleaks:
@@ -304,10 +260,11 @@ ovsx:
       # Requires clamav-rest service deployment
       clamav-rest:
         enabled: true
-        enforced: false
+        enforced: true
         type: "CLAMAV_REST"
-        required: false
+        required: true
         async: false
+        maxConcurrency: 5
         timeout-minutes: 5
 
         # Per-scanner HTTP client configuration
@@ -321,7 +278,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://clamav-production:9000/scan"
+          url: "http://clamav-staging:9000/scan"
           headers:
             Accept: "application/json"
           body:
@@ -347,9 +304,10 @@ ovsx:
       yara:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
-        required: false
-        enforced: false
+        required: true
+        enforced: true
         async: false     # Synchronous - YARA is fast
+        maxConcurrency: 10
         timeout-minutes: 5
 
         http:
@@ -361,7 +319,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://yara-production:9001/scan"
+          url: "http://yara-staging:9001/scan"
           headers:
             Accept: "application/json"
           body:

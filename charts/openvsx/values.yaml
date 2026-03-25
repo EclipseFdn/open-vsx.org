@@ -24,6 +24,7 @@ website:
     -XX:+DisableExplicitGC
     -XX:+UnlockExperimentalVMOptions
     -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
     -Dorg.jooq.no-logo=true
@@ -91,9 +92,9 @@ alloy:
       name: "grafana-alloy-configmap-production"
       key: "config.river"
     envFrom:
-      - secretRef: 
+      - secretRef:
           name: grafana-cloud-secret-production
-      - secretRef: 
+      - secretRef:
           name: redis-secret-production
     extraPorts:
       - name: zipkin

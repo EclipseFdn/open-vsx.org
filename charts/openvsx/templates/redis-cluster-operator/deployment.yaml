@@ -7,6 +7,7 @@ metadata:
   name: redis-cluster-operator-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
 spec:
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: {{ .Values.name }}

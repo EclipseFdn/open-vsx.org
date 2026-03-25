@@ -21,7 +21,7 @@ The main artifact is the Docker image available at [ghcr.io/eclipsefdn/openvsx-w
 
 ## Publishing and Managing Extensions
 
-For information on publishing and managing extensions at [open-vsx.org](https://open-vsx.org), please see 
+For information on publishing and managing extensions at [open-vsx.org](https://open-vsx.org), please see
 the [open-vsx.org wiki](https://github.com/EclipseFdn/open-vsx.org/wiki).
 
 ## Claiming Namespace Ownership
@@ -45,7 +45,7 @@ yarn --cwd website build:dev
 yarn --cwd website start:dev
 ```
 
-### Development 
+### Development
 
 We recommend running `watch:tsc` and `watch:dev` afterwards to run the TypeScript compiler and Webpack in watch mode.
 
