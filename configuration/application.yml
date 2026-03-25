@@ -117,9 +117,10 @@ bucket4j:
   enabled: false
 
 ovsx:
-  token-prefix: ovsxat_
-  expiration: 0
-  notification: 0
+  access-token:
+    prefix: ovsxat_
+    expiration: 0
+    notification: 0
   storage:
     cdn:
       enabled: true
