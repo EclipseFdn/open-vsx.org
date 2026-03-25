@@ -5,7 +5,7 @@ environment: &environment production
 namespace: &namespace open-vsx-org
 host: open-vsx.org
 
-replicaCount: 6
+replicaCount: 12
 esReplicaCount: 3
 
 image:
