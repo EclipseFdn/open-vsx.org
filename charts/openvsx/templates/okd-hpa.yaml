@@ -1,0 +1,46 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.name }}-{{ .Values.environment }}-{{ .Values.platform }}-hpa
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.name }}-{{ .Values.environment }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+  behavior:
+    scaleDown:
+      # Look at the last N minutes and pick the HIGHEST replica count recommended.
+      # This ensures we don't scale down during a brief dip in traffic.
+      stabilizationWindowSeconds: {{ .Values.autoscaling.scaleDownWindow | default 600 }}
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60  # Only remove 10% of pods per minute
+    scaleUp:
+      # Scale up almost immediately to handle spikes quickly.
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15  # Double the fleet size every 15s if needed
+{{- end }}

@@ -8,6 +8,14 @@ host: staging.open-vsx.org
 replicaCount: 1
 esReplicaCount: 1
 
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 70
+  scaleDownWindow: 300
+
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
