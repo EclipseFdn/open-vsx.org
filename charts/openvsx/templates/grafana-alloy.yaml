@@ -63,8 +63,7 @@ data:
 
         tls_config {
           insecure_skip_verify = true
-        }
-        
+        }       
         /*
         basic_auth {
           username = sys.env("PROMETHEUS_USERNAME")
