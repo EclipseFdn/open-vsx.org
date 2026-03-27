@@ -1,7 +1,7 @@
 """
 Script to collect availability data from open-vsx endpoints monitored by
-betteruptime. Used by graph_availability_trends Jupyter Notebook.Requires 
-an access token from IT team. 
+betteruptime. Used by graph_availability_trends Jupyter Notebook.Requires
+an access token from IT team.
 """
 import requests
 from datetime import datetime, timedelta
@@ -130,4 +130,3 @@ def get_monthly_data():
 if __name__ == '__main__':
     results = get_monthly_data()
     print(results)
-

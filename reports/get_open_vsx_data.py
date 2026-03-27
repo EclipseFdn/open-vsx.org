@@ -1,11 +1,11 @@
 """
-Script to collect activity stats, used by Jupyter Notebooks. Requires an access token 
-from https://open-vsx.org/user-settings/tokens with admin access.  The following use 
+Script to collect activity stats, used by Jupyter Notebooks. Requires an access token
+from https://open-vsx.org/user-settings/tokens with admin access.  The following use
 web auth, not the API token:
    - https://open-vsx.org/admin/log
    - https://open-vsx.org/admin/stats
 
-Currently there is a bug in stats that requires a token query paramater, the value of 
+Currently there is a bug in stats that requires a token query paramater, the value of
 which is ignored.
 """
 
@@ -145,13 +145,13 @@ def get_most_active_data(starting_year, starting_month):
         response = requests.get(url)
         if response.status_code == 200:
             try:
-                extract_most_active_data_from_json(most_active, response.json(), start_date.year, start_date.month)                
+                extract_most_active_data_from_json(most_active, response.json(), start_date.year, start_date.month)
             except JSONDecodeError:
                 print("Error decoding JSON results for %s" % url)
         else:
             print("%s error processing results for %s" % (response.status_code, url))
         start_date = start_date + relativedelta(months=1)
-    
+
     return process_most_active_data(most_active)
 
 if __name__ == '__main__':
@@ -171,4 +171,3 @@ if __name__ == '__main__':
         print(key)
         dates = most_active_dfs[key]['date']
         print(most_active_dfs[key].to_string())
-

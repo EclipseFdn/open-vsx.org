@@ -8,6 +8,14 @@ host: test.open-vsx.org
 replicaCount: 1
 esReplicaCount: 1
 
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 70
+  scaleDownWindow: 300
+
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
@@ -17,13 +25,15 @@ image:
 website:
   jvmArgs: >
     -Dspring.datasource.hikari.maximum-pool-size=5
-    -Xms512M -Xmx3500M -XX:+AlwaysPreTouch
+    -Xms512M -Xmx3500M
+    -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
     -XX:+ParallelRefProcEnabled
     -XX:+DisableExplicitGC
     -XX:+UnlockExperimentalVMOptions
     -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
     -Dorg.jooq.no-logo=true
@@ -33,18 +43,13 @@ website:
 route:
   timeout: 30s
 
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 8080
-
 resources:
   limits:
-    cpu: 4
-    memory: 4Gi
+    cpu: 5000m
+    memory: 8Gi
   requests:
-    cpu: 2
-    memory: 2Gi
+    cpu: 3000m
+    memory: 8Gi
 
 # elastic search
 es:
@@ -56,16 +61,9 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
-  storage_class: cephfs-new
 
 # redis
 redis:
-  name: redis
-  replicas: 6
-  image:
-    repository: redis
-    tag: "7.2.10"
-    pullPolicy: IfNotPresent
   maxmemory: "256mb"
   resources:
     requests:
@@ -76,12 +74,11 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
-    storageClass: cephfs-new
   serviceAccountName: redis-cluster-operator-test
   clusterRoleName: redis-cluster-operator-role-cluster-test
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-test
-  clusterRoleName: redis-cluster-operator-role-test
-  clusterRoleBinding: redis-cluster-operator-role-binding-test
+  roleName: redis-cluster-operator-role-test
+  roleBinding: redis-cluster-operator-role-binding-test
 
 # grafana alloy
 alloy:
@@ -94,14 +91,10 @@ alloy:
       - name: GRPC_ENFORCE_ALPN_ENABLED
         value: "false"
     envFrom:
-      - secretRef: 
+      - secretRef:
           name: grafana-cloud-secret-test
-      - secretRef: 
+      - secretRef:
           name: redis-secret-test
-    extraPorts:
-      - name: zipkin
-        port: 9411
-        targetPort: 9411
   crds:
     create: true
   controller:
@@ -117,50 +110,7 @@ alloy:
   namespaceOverride: *namespace
 
 clamav:
-  name: "clamav"
-  replicas: 1
-  image:
-    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.0"
-    pullPolicy: Always
-  resources:
-    requests:
-      cpu: 2
-      memory: 4Gi
-    limits:
-      cpu: 4
-      memory: 6Gi
-  service:
-    port: 9000
-  env:
-    MAX_UPLOAD_SIZE_MB: 512
-    MAX_EXTRACTED_SIZE_MB: 512
-    MAX_FILE_COUNT: 100000
-    MAX_SINGLE_FILE_MB: 256
-    MAX_RECURSION: 16
-    MAX_THREADS: 4
-    SCAN_TIMEOUT_MINUTES: 5
+  enabled: true
 
 yara:
-  name: "yara"
-  replicas: 1
-  image:
-    repository: "ghcr.io/eclipsefdn/yara-rest"
-    tag: "v0.1.0"
-    pullPolicy: Always
-  resources:
-    requests:
-      cpu: 1
-      memory: 1Gi
-    limits:
-      cpu: 2
-      memory: 2Gi
-  service:
-    port: 9001
-  env:
-    MAX_UPLOAD_SIZE_MB: 512
-    MAX_EXTRACTED_SIZE_MB: 1024
-    MAX_FILE_COUNT: 100000
-    MAX_SINGLE_FILE_MB: 256
-    MAX_RECURSION: 0
-    SCAN_TIMEOUT_MINUTES: 5
+  enabled: true

@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=rate-limiting
-ARG SERVER_VERSION_STRING=v0.32.0-rc.2
+ARG SERVER_VERSION=v0.33.0
+ARG SERVER_VERSION_STRING=v0.33.0
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
@@ -24,15 +24,14 @@ COPY . /workdir
 
 RUN cd website \
   && yarn install --immutable \
-  && yarn compile \
   && yarn build
 
 # Main image derived from openvsx-server
-FROM ghcr.io/eclipse/openvsx-server-snapshot:${SERVER_VERSION}
+FROM ghcr.io/eclipse-openvsx/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
 ARG SERVER_VERSION_STRING
 
-COPY --from=builder --chown=openvsx:openvsx /workdir/website/static/ BOOT-INF/classes/static/
+COPY --from=builder --chown=openvsx:openvsx /workdir/website/dist/ BOOT-INF/classes/static/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/application.yml config/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-spring.xml BOOT-INF/classes/
 COPY --from=builder --chown=openvsx:openvsx /workdir/mail-templates BOOT-INF/classes/mail-templates

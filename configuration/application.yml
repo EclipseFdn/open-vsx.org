@@ -4,8 +4,10 @@
 # Additional properties are loaded from the file provided with the
 # DEPLOYMENT_CONFIG environment variable.
 logging:
-  pattern:
-    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+  level:
+    root: "info"
+    org.eclipse.openvsx.ratelimit: "debug"
+
 server:
   address: 0.0.0.0
   port: 8080
@@ -21,7 +23,9 @@ server:
     min-response-size: 1024
   jetty:
     threads:
-      max-queue-capacity: 100
+      min: 50
+      max: 100
+      max-queue-capacity: 1000
     connection-idle-timeout: 10000
 spring:
   application:
@@ -30,7 +34,8 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 50
+      connection-timeout: 3000
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
@@ -62,8 +67,16 @@ spring:
 management:
   server:
     port: 8081
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
   health:
-    probes:
+    livenessstate:
+      enabled: true
+    readinessstate:
       enabled: true
   metrics:
     tags:
@@ -101,63 +114,19 @@ org:
       type: sql
     miscellaneous:
       allow-anonymous-data-usage: false
+
 bucket4j:
   enabled: false
-  cache-to-use: redis-cluster-jedis
-  filters:
-    - cache-name: buckets
-      url: '/api/-/(namespace/create|publish)'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: getParameter("token")
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 75
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 75
-              time: 1
-              unit: seconds
-    - cache-name: buckets
-      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
-      http-response-headers:
-        Access-Control-Allow-Origin: '*'
-        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-      rate-limits:
-        - execute-condition: getParameter("token") != null
-          cache-key: getParameter("token")
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
-        - execute-condition: getParameter("token") == null
-          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-          bandwidths:
-            - capacity: 15
-              time: 1
-              unit: seconds
+
 ovsx:
-  token-prefix: ovsxat_
+  access-token:
+    prefix: staging_ovsxat_
+    expiration: P90D
+    notification: P7D
+    send-expired-mail: true
+    max-token-notifications: 100
+    expiration-schedule: '0 */1 * * * *'
+    notification-schedule: '30 */1 * * * *'
   storage:
     cdn:
       enabled: true
@@ -222,20 +191,24 @@ ovsx:
       ttl: PT1H
     malicious-extensions:
       ttl: P3D
+    customer:
+      tti: P1D
+    tier:
+      tti: P1D
   foregroundHttpConnPool:
     maxTotal: 50
     defaultMaxPerRoute: 50
   mail:
     from: no-reply@open-vsx.org
-    revoked-access-tokens:
-      subject: 'Open VSX Access Tokens Revoked'
-      template: 'revoked-access-tokens.html'
 
   # tier-based rate limiting configuration
   rate-limit:
     enabled: true
+    ip-address-function: '(getHeader("X-Real-IP")?: getRemoteAddr()).trim()'
+    usage-stats:
+      job-schedule: '*/30 * * * *'
     filters:
-      - url: '/api/.*'
+      - url: '/(api|vscode)/.*'
         http-response-headers:
           Access-Control-Allow-Origin: '*'
           Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
@@ -260,7 +233,7 @@ ovsx:
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
-      enforced: false
+      enforced: true
 
     similarity:
       enabled: true
@@ -274,7 +247,7 @@ ovsx:
     secret-detection:
       enabled: true
       required: false
-      enforced: false
+      enforced: true
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
       gitleaks:
@@ -299,10 +272,11 @@ ovsx:
       # Requires clamav-rest service deployment
       clamav-rest:
         enabled: true
-        enforced: false
+        enforced: true
         type: "CLAMAV_REST"
         required: true
         async: false
+        maxConcurrency: 4
         timeout-minutes: 5
 
         # Per-scanner HTTP client configuration
@@ -343,8 +317,9 @@ ovsx:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
         required: true
-        enforced: false
+        enforced: true
         async: false     # Synchronous - YARA is fast
+        maxConcurrency: 10
         timeout-minutes: 5
 
         http:

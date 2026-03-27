@@ -1,7 +1,5 @@
-/.project
-/generated-production/
-/generated-staging/
-/jsonnet-generated-production/
-/jsonnet-generated-staging/
-/charts/openvsx/charts
+.project
 .DS_Store
+
+.helm
+charts/openvsx/charts

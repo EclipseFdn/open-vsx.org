@@ -2,7 +2,7 @@
 Reports and supporting scripts for graphing availability and activity at open-vsx.org. Most require some sort of access token.
 
 ### graph_availability_trends.ipynb
-Jupyter notebook for graphing site availability based on data from Better Stack, née Better Uptime. Requires an access key from the IT Team. 
+Jupyter notebook for graphing site availability based on data from Better Stack, née Better Uptime. Requires an access key from the IT Team.
 
 ### graph_licenses.ipynb
 Jupyter notebook that provides a count of the different types of licenses and a pie chart of their distribution.
@@ -28,4 +28,3 @@ Script to collect activity data.
 
 ### get_vs_marketplace_data.py
 Script to collect meta data on all published extensions at VS Code Marketplace.
-

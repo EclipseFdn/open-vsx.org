@@ -17,13 +17,15 @@ image:
 website:
   jvmArgs: >
     -Dspring.datasource.hikari.maximum-pool-size=5
-    -Xms512M -Xmx3500M -XX:+AlwaysPreTouch
+    -Xms512M -Xmx3500M
+    -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
     -XX:+ParallelRefProcEnabled
     -XX:+DisableExplicitGC
     -XX:+UnlockExperimentalVMOptions
     -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
     -Dorg.jooq.no-logo=true
@@ -32,11 +34,6 @@ website:
 
 route:
   timeout: 30s
-
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 8080
 
 resources:
   limits:
@@ -56,16 +53,9 @@ es:
     requests:
       cpu: 250m
       memory: 2Gi
-  storage_class: cephfs-new
 
 # redis
 redis:
-  name: redis
-  replicas: 6
-  image:
-    repository: redis
-    tag: "7.2.10"
-    pullPolicy: IfNotPresent
   maxmemory: "256mb"
   resources:
     requests:
@@ -76,12 +66,11 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
-    storageClass: cephfs-new
   serviceAccountName: redis-cluster-operator-staging
   clusterRoleName: redis-cluster-operator-role-cluster-staging
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-staging
-  clusterRoleName: redis-cluster-operator-role-staging
-  clusterRoleBinding: redis-cluster-operator-role-binding-staging
+  roleName: redis-cluster-operator-role-staging
+  roleBinding: redis-cluster-operator-role-binding-staging
 
 # grafana alloy
 alloy:
@@ -91,14 +80,10 @@ alloy:
       name: "grafana-alloy-configmap-staging"
       key: "config.river"
     envFrom:
-      - secretRef: 
+      - secretRef:
           name: grafana-cloud-secret-staging
-      - secretRef: 
+      - secretRef:
           name: redis-secret-staging
-    extraPorts:
-      - name: zipkin
-        port: 9411
-        targetPort: 9411
   crds:
     create: true
   controller:
@@ -113,50 +98,7 @@ alloy:
   namespaceOverride: *namespace
 
 clamav:
-  name: "clamav"
-  replicas: 1
-  image:
-    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.0"
-    pullPolicy: Always
-  resources:
-    requests:
-      cpu: 2
-      memory: 4Gi
-    limits:
-      cpu: 4
-      memory: 6Gi
-  service:
-    port: 9000
-  env:
-    MAX_UPLOAD_SIZE_MB: 512
-    MAX_EXTRACTED_SIZE_MB: 512
-    MAX_FILE_COUNT: 100000
-    MAX_SINGLE_FILE_MB: 256
-    MAX_RECURSION: 16
-    MAX_THREADS: 4
-    SCAN_TIMEOUT_MINUTES: 5
+  enabled: true
 
 yara:
-  name: "yara"
-  replicas: 1
-  image:
-    repository: "ghcr.io/eclipsefdn/yara-rest"
-    tag: "v0.1.0"
-    pullPolicy: Always
-  resources:
-    requests:
-      cpu: 1
-      memory: 1Gi
-    limits:
-      cpu: 2
-      memory: 2Gi
-  service:
-    port: 9001
-  env:
-    MAX_UPLOAD_SIZE_MB: 512
-    MAX_EXTRACTED_SIZE_MB: 1024
-    MAX_FILE_COUNT: 100000
-    MAX_SINGLE_FILE_MB: 256
-    MAX_RECURSION: 0
-    SCAN_TIMEOUT_MINUTES: 5
+  enabled: true
