@@ -8,6 +8,14 @@ host: test.open-vsx.org
 replicaCount: 1
 esReplicaCount: 1
 
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 70
+  scaleDownWindow: 300
+
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
@@ -37,11 +45,11 @@ route:
 
 resources:
   limits:
-    cpu: 4
-    memory: 4Gi
+    cpu: 5000m
+    memory: 8Gi
   requests:
-    cpu: 2
-    memory: 2Gi
+    cpu: 3000m
+    memory: 8Gi
 
 # elastic search
 es:
