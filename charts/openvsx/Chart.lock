@@ -2,5 +2,8 @@ dependencies:
 - name: alloy
   repository: https://grafana.github.io/helm-charts
   version: 1.1.2
-digest: sha256:66403884b7f293e86e2a61d0d822fd0878a6b4a64e5e88f181b93022bc4f9bcd
-generated: "2025-08-20T12:51:18.346537659+03:00"
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 18.1.13
+digest: sha256:8ad30b97a7ab82e1518b4a2769364f00f857608cc5a6a9037119a4f37efbb4ba
+generated: "2026-02-05T21:28:03.170154961+01:00"

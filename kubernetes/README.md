@@ -20,6 +20,13 @@ Since EF [JIRO](https://foundation.eclipse.org/ci/infra/job/open-vsx.org) runs w
 kubectl apply -f clusterroles.yaml
 ```
 
+## Alloy
+In order to get access to alloy web interface on openshift:
+
+```
+oc create route edge grafana-alloy --service=grafana-alloy-production --insecure-policy=Redirect
+```
+
 ## Dependencies
 
 * bash 4
