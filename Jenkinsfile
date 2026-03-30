@@ -5,6 +5,9 @@ pipeline {
       yaml '''
         apiVersion: v1
         kind: Pod
+        metadata:
+          labels:
+            logging.grafana.com/collect: "true"
         spec:
           containers:
           - name: kubectl
@@ -139,7 +142,9 @@ pipeline {
         body: "Project: ${env.JOB_NAME}<br/>Build Number: ${env.BUILD_NUMBER}<br/>Build URL: ${env.BUILD_URL}<br/>Console: ${env.BUILD_URL}/console"
     }
     cleanup {
-      deleteDir() /* clean up workspace */
+      node('') {
+        deleteDir() /* clean up workspace */
+      }
     }
   }
 }
