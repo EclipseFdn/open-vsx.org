@@ -9,10 +9,10 @@ replicaCount: 1
 esReplicaCount: 1
 autoscaling:
   enabled: true
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 6
-  targetCPUUtilizationPercentage: 70
-  targetMemoryUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 70
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
