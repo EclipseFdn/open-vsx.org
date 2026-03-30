@@ -23,9 +23,9 @@ server:
     min-response-size: 1024
   jetty:
     threads:
-      min: 100
-      max: 300
-      max-queue-capacity: 100
+      min: 50
+      max: 200
+      max-queue-capacity: 50
     connection-idle-timeout: 10000
 spring:
   application:
@@ -34,8 +34,9 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 80
-      connection-timeout: 3000
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 5000
       leak-detection-threshold: 30000
   flyway:
     baseline-on-migrate: false
