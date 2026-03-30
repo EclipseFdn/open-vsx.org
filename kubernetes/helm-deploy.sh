@@ -56,7 +56,7 @@ else
   exit 1
 fi
 
-chmod 600 "${KUBECONFIG}"
+#chmod 600 "${KUBECONFIG}"
 
 export HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
 export HELM_CONFIG_HOME="${ROOT_DIR}/.helm/config"
@@ -65,16 +65,6 @@ export HELM_DATA_HOME="${ROOT_DIR}/.helm/data"
 mkdir -p "${HELM_CACHE_HOME}"
 mkdir -p "${HELM_CONFIG_HOME}"
 mkdir -p "${HELM_DATA_HOME}"
-
-# Apply cluster-level RBAC resources (e.g. ci-bot permissions for ServiceMonitors)
-kubectl apply -f "${SCRIPT_FOLDER}/clusterroles.yaml"
-
-# Delete ClusterRoleBinding before upgrade because K8s does not allow changing
-# the immutable roleRef field. Helm will recreate it with the correct value.
-cluster_role_binding_name=$(grep 'clusterRoleBindingName' "${values_file}" | awk '{print $2}')
-if [[ -n "${cluster_role_binding_name}" ]]; then
-  kubectl delete clusterrolebinding "${cluster_role_binding_name}" --ignore-not-found
-fi
 
 helm version
 helm repo add grafana https://grafana.github.io/helm-charts

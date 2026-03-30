@@ -5,7 +5,7 @@ metadata:
 rules:
   - apiGroups: ["rbac.authorization.k8s.io"]
     resources: ["clusterroles","clusterrolebindings"]
-    verbs: ["get","list","watch"]
+    verbs: ["get","list","watch","patch","update","delete"]
   - apiGroups: ["rbac.authorization.k8s.io"]
     resources: ["roles","rolebindings"]
     verbs: ["get","list","watch"]
