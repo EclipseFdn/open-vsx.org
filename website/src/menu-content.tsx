@@ -8,8 +8,19 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import React, { FunctionComponent, useState, useRef, useContext } from 'react';
-import { Theme, Typography, Menu, MenuItem, Link, Button, Accordion, AccordionDetails, AccordionSummary, IconButton } from '@mui/material';
+import { FunctionComponent, useState, useRef, useContext } from 'react';
+import {
+  Theme,
+  Typography,
+  Menu,
+  MenuItem,
+  Link,
+  Button,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  IconButton
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -25,206 +36,188 @@ import HubIcon from '@mui/icons-material/Hub';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { UserSettingsRoutes } from 'openvsx-webui';
 import { MainContext } from 'openvsx-webui/lib/context';
-import { MobileMenuItem, itemIcon, MobileMenuItemText, MobileUserAvatar, headerItem, MenuLink, MenuRouteLink } from 'openvsx-webui/lib/default/menu-content'
-import { LoginComponent } from 'openvsx-webui/lib/default/login'
+import {
+  itemIcon,
+  MobileUserAvatar,
+  headerItem,
+  MenuLink,
+  MenuRouteLink,
+  MenuItemText
+} from 'openvsx-webui/lib/default/menu-content';
+import { LoginComponent } from 'openvsx-webui/lib/default/login';
 import { UserAvatar } from 'openvsx-webui/lib/pages/user/avatar';
 
 //-------------------- Mobile View --------------------//
 
 export const MobileMenuContent: FunctionComponent = () => {
-    const {user, loginProviders} = useContext(MainContext)
-    return <>
-        {loginProviders && (
-            user ? (
-                <MobileUserAvatar />
-            ) : (
-                <MobileMenuItem>
-                    <LoginComponent
-                        loginProviders={loginProviders}
-                        renderButton={(href, onClick) => {
-                            return (<Link href={href} onClick={onClick}>
-                                <MobileMenuItemText>
-                                    <AccountBoxIcon sx={itemIcon} />
-                                    Log In
-                                </MobileMenuItemText>
-                            </Link>);
-                        }}
-                    />
-                </MobileMenuItem>
-            )
-        )}
-        {loginProviders && !location.pathname.startsWith(UserSettingsRoutes.ROOT) && (
-            <MobileMenuItem>
-                <RouteLink to='/user-settings/extensions'>
-                    <MobileMenuItemText>
-                        <PublishIcon sx={itemIcon} />
-                        Publish Extension
-                    </MobileMenuItemText>
-                </RouteLink>
-            </MobileMenuItem>
-        )}
-        <MobileMenuItem>
-            <Link target='_blank' href='https://github.com/eclipse/openvsx'>
-                <MobileMenuItemText>
-                    <GitHubIcon sx={itemIcon} />
-                    Source Code
-                </MobileMenuItemText>
-            </Link>
-        </MobileMenuItem>
-        <MobileMenuItem>
-            <Link href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
-                <MobileMenuItemText>
-                    <MenuBookIcon sx={itemIcon} />
-                    Documentation
-                </MobileMenuItemText>
-            </Link>
-        </MobileMenuItem>
-        <MobileMenuItem>
-            <Link href='https://status.open-vsx.org/'>
-                <MobileMenuItemText>
-                    <StatusIcon sx={itemIcon} />
-                    Status
-                </MobileMenuItemText>
-            </Link>
-        </MobileMenuItem>
-        <Accordion sx={{border: 0, borderRadius: 0, boxShadow: '0 0', background: 'transparent'}}>
-            <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="working-group-content"
-            id="working-group-header"
-            >
-                <MobileMenuItemText>
-                    <GroupWorkIcon sx={itemIcon} />
-                    Working Group
-                </MobileMenuItemText>
-            </AccordionSummary>
-            <AccordionDetails>
-                <MobileMenuItem>
-                    <RouteLink to='/members'>
-                        <MobileMenuItemText>
-                            <PeopleAltIcon sx={itemIcon} />
-                            Members
-                        </MobileMenuItemText>
-                    </RouteLink>
-                </MobileMenuItem>
-                <MobileMenuItem>
-                    <RouteLink to='/adopters'>
-                        <MobileMenuItemText>
-                            <HubIcon sx={itemIcon} />
-                            Adopters
-                        </MobileMenuItemText>
-                    </RouteLink>
-                </MobileMenuItem>
-            </AccordionDetails>
-        </Accordion>
-        <MobileMenuItem>
-            <Link href='https://www.eclipse.org/donate/openvsx/'>
-                <MobileMenuItemText>
-                    <StarIcon sx={itemIcon} />
-                    Sponsor
-                </MobileMenuItemText>
-            </Link>
-        </MobileMenuItem>
-        <MobileMenuItem>
-            <RouteLink to='/about'>
-                <MobileMenuItemText>
-                    <InfoIcon sx={itemIcon} />
-                    About
-                </MobileMenuItemText>
-            </RouteLink>
-        </MobileMenuItem>
-    </>;
-}
-
+  const { user, loginProviders } = useContext(MainContext);
+  return (
+    <>
+      {loginProviders &&
+        (user ? (
+          <MobileUserAvatar />
+        ) : (
+          <LoginComponent
+            loginProviders={loginProviders}
+            renderButton={(href, onClick) => {
+              return (
+                <MenuItem component={Link} href={href} onClick={onClick}>
+                  <MenuItemText>
+                    <AccountBoxIcon sx={itemIcon} />
+                    Log In
+                  </MenuItemText>
+                </MenuItem>
+              );
+            }}
+          />
+        ))}
+      {loginProviders && !location.pathname.startsWith(UserSettingsRoutes.ROOT) && (
+        <MenuItem component={RouteLink} to='/user-settings/extensions'>
+          <MenuItemText>
+            <PublishIcon sx={itemIcon} />
+            Publish Extension
+          </MenuItemText>
+        </MenuItem>
+      )}
+      <MenuItem component={Link} href='https://github.com/eclipse/openvsx'>
+        <MenuItemText>
+          <GitHubIcon sx={itemIcon} />
+          Source Code
+        </MenuItemText>
+      </MenuItem>
+      <MenuItem component={Link} href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
+        <MenuItemText>
+          <MenuBookIcon sx={itemIcon} />
+          Documentation
+        </MenuItemText>
+      </MenuItem>
+      <MenuItem component={Link} href='https://status.open-vsx.org/'>
+        <MenuItemText>
+          <StatusIcon sx={itemIcon} />
+          Status
+        </MenuItemText>
+      </MenuItem>
+      <Accordion sx={{ border: 0, borderRadius: 0, boxShadow: '0 0', background: 'transparent' }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls='working-group-content'
+          id='working-group-header'>
+          <MenuItemText>
+            <GroupWorkIcon sx={itemIcon} />
+            Working Group
+          </MenuItemText>
+        </AccordionSummary>
+        <AccordionDetails>
+          <MenuItem component={RouteLink} to='/members'>
+            <MenuItemText>
+              <PeopleAltIcon sx={itemIcon} />
+              Members
+            </MenuItemText>
+          </MenuItem>
+          <MenuItem component={RouteLink} to='/adopters'>
+            <MenuItemText>
+              <HubIcon sx={itemIcon} />
+              Adopters
+            </MenuItemText>
+          </MenuItem>
+        </AccordionDetails>
+      </Accordion>
+      <MenuItem component={Link} href='https://www.eclipse.org/donate/openvsx/'>
+        <MenuItemText>
+          <StarIcon sx={itemIcon} />
+          Sponsor
+        </MenuItemText>
+      </MenuItem>
+      <MenuItem component={RouteLink} to='/about'>
+        <MenuItemText>
+          <InfoIcon sx={itemIcon} />
+          About
+        </MenuItemText>
+      </MenuItem>
+    </>
+  );
+};
 
 //-------------------- Default View --------------------//
 
 const headerTypography = ({ theme }: { theme: Theme }) => ({
-    ...headerItem({theme}),
-    cursor: 'pointer'
+  ...headerItem({ theme }),
+  cursor: 'pointer'
 });
 
 const MenuTypography = styled(Typography)(headerTypography);
 
 const subMenuItem = ({ theme }: { theme: Theme }) => ({
-    '&:focus, &:hover': {
-        background: 'transparent'
-    }
+  '&:focus, &:hover': {
+    background: 'transparent'
+  }
 });
 
 const subMenuLink = ({ theme }: { theme: Theme }) => ({
-    ...headerItem({theme}),
-    margin: theme.spacing(0.5)
+  ...headerItem({ theme }),
+  margin: theme.spacing(0.5)
 });
 
 const SubMenuItem = styled(MenuItem)(subMenuItem);
 const SubMenuLink = styled(Link)(subMenuLink);
 
-
 export const DefaultMenuContent: FunctionComponent = () => {
-    const {loginProviders, user} = useContext(MainContext)
-    const [workingGroupMenuOpen, setWorkingGroupMenuOpen] = useState(false);
-    const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
-    const toggleWorkingGroupMenu = () => setWorkingGroupMenuOpen(!workingGroupMenuOpen);
-    const closeWorkingGroupMenu = () => setWorkingGroupMenuOpen(false);
+  const { loginProviders, user } = useContext(MainContext);
+  const [workingGroupMenuOpen, setWorkingGroupMenuOpen] = useState(false);
+  const workingGroupMenuEl = useRef<HTMLButtonElement | null>(null);
+  const toggleWorkingGroupMenu = () => setWorkingGroupMenuOpen(!workingGroupMenuOpen);
+  const closeWorkingGroupMenu = () => setWorkingGroupMenuOpen(false);
 
-    return <>
-        <MenuLink href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
-            Documentation
-        </MenuLink>
-        <MenuLink href='https://status.open-vsx.org/'>
-            Status
-        </MenuLink>
-        <MenuTypography onClick={toggleWorkingGroupMenu} ref={workingGroupMenuEl}>Working Group</MenuTypography>
-        <Menu open={workingGroupMenuOpen} onClose={closeWorkingGroupMenu} anchorEl={workingGroupMenuEl.current}>
-            <SubMenuItem>
-                <SubMenuLink href='/members' onClick={closeWorkingGroupMenu}>
-                    Members
-                </SubMenuLink>
-            </SubMenuItem>
-            <SubMenuItem>
-                <SubMenuLink href='/adopters' onClick={closeWorkingGroupMenu}>
-                    Adopters
-                </SubMenuLink>
-            </SubMenuItem>
-        </Menu>
-        <MenuLink href='https://www.eclipse.org/donate/openvsx/'>
-            Sponsor
-        </MenuLink>
-        <MenuRouteLink to='/about'>
-            About
-        </MenuRouteLink>
-        {loginProviders && (
-            <>
-                <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
-                    Publish
-                </Button>
-                {
-                    user ?
-                        <UserAvatar />
-                        :
-                        <LoginComponent
-                            loginProviders={loginProviders}
-                            renderButton={(href, onClick) => {
-                                if (href) {
-                                    return (<IconButton
-                                        href={href}
-                                        title='Log In'
-                                        aria-label='Log In' >
-                                        <AccountBoxIcon />
-                                    </IconButton>);
-                                } else {
-                                    return (<IconButton
-                                        onClick={onClick}
-                                        title='Log In'
-                                        aria-label='Log In' >
-                                        <AccountBoxIcon />
-                                    </IconButton>);
-                                }
-                            }}
-                        />
+  return (
+    <>
+      <MenuLink href='https://github.com/EclipseFdn/open-vsx.org/wiki'>Documentation</MenuLink>
+      <MenuLink href='https://status.open-vsx.org/'>Status</MenuLink>
+      <MenuTypography onClick={toggleWorkingGroupMenu} ref={workingGroupMenuEl}>
+        Working Group
+      </MenuTypography>
+      <Menu open={workingGroupMenuOpen} onClose={closeWorkingGroupMenu} anchorEl={workingGroupMenuEl.current}>
+        <SubMenuItem>
+          <SubMenuLink href='/members' onClick={closeWorkingGroupMenu}>
+            Members
+          </SubMenuLink>
+        </SubMenuItem>
+        <SubMenuItem>
+          <SubMenuLink href='/adopters' onClick={closeWorkingGroupMenu}>
+            Adopters
+          </SubMenuLink>
+        </SubMenuItem>
+      </Menu>
+      <MenuLink href='https://www.eclipse.org/donate/openvsx/'>Sponsor</MenuLink>
+      <MenuRouteLink to='/about'>About</MenuRouteLink>
+      {loginProviders && (
+        <>
+          <Button variant='contained' color='secondary' href='/user-settings/extensions' sx={{ mx: 2.5 }}>
+            Publish
+          </Button>
+          {user ? (
+            <UserAvatar />
+          ) : (
+            <LoginComponent
+              loginProviders={loginProviders}
+              renderButton={(href, onClick) => {
+                if (href) {
+                  return (
+                    <IconButton href={href} title='Log In' aria-label='Log In'>
+                      <AccountBoxIcon />
+                    </IconButton>
+                  );
+                } else {
+                  return (
+                    <IconButton onClick={onClick} title='Log In' aria-label='Log In'>
+                      <AccountBoxIcon />
+                    </IconButton>
+                  );
                 }
-            </>
-        )}
-    </>;
-}
+              }}
+            />
+          )}
+        </>
+      )}
+    </>
+  );
+};

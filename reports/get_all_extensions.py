@@ -24,7 +24,7 @@ def retrieve_extensions():
             response = requests.get(search_url)
             results = response.json()
             extensions = extensions + results['extensions']
-            offset = len(extensions) 
+            offset = len(extensions)
             print('Retrieved %s extensions' % len(extensions))
             if len(extensions) == results['totalSize']:
                 done = True
@@ -52,7 +52,7 @@ def get_extension(extension):
 def get_all_extensions():
     count = 1
     all_extensions = []
-    extensions = retrieve_extensions()    
+    extensions = retrieve_extensions()
     print("\n\nStarting: %s" % datetime.now())
     for extension in extensions:
         results = get_extension(extension)
@@ -107,8 +107,3 @@ if __name__ == '__main__':
     extensions = get_all_extensions()
     write_json_file(extensions)
     write_tsv_file(extensions)
-
-
-    
-
-

@@ -60,7 +60,7 @@ data:
       endpoint {
         name = "hosted-prometheus"
         url = sys.env("PROMETHEUS_URL")
-    
+
         basic_auth {
           username = sys.env("PROMETHEUS_USERNAME")
           password = sys.env("PROMETHEUS_PASSWORD")
