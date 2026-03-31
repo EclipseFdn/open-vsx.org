@@ -23,8 +23,9 @@ server:
     min-response-size: 1024
   jetty:
     threads:
-      max-queue-capacity: 100
-    connection-idle-timeout: 10000
+      max: 500
+      max-queue-capacity: 500
+    connection-idle-timeout: 30000
 spring:
   application:
     name: openvsx-server
@@ -32,8 +33,10 @@ spring:
     import: file:${DEPLOYMENT_CONFIG}
   datasource:
     hikari:
-      maximum-pool-size: 30
+      maximum-pool-size: 64
+      minimum-idle: 64
       leak-detection-threshold: 30000
+      connection-timeout: 30000
   flyway:
     baseline-on-migrate: false
   jpa:
