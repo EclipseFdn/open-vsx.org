@@ -6,6 +6,7 @@
 logging:
   level:
     root: "info"
+    io.lettuce.core.protocol: "warn"
     org.eclipse.openvsx.ratelimit: "debug"
 
 server:
