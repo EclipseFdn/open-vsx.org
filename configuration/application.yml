@@ -8,7 +8,9 @@ logging:
     root: "info"
     # avoid log messages like: Received invalid Accept header. Assuming all media types are accepted
     org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
-
+    # reduce log verbosity for redis connection watchdog
+    io.lettuce.core.protocol: "warn"
+    
 server:
   address: 0.0.0.0
   port: 8080
@@ -195,7 +197,10 @@ ovsx:
   # dynamic tier-based rate limiting configuration
   rate-limit:
     enabled: true
-    ip-address-function: '(getHeader("X-Real-IP")?: getRemoteAddr()).trim()'
+    # on the trust boundary, "X-Real-IP" is set for any external requests
+    # for internal requests from within the cluster check first of "X-Forwarded-For" is set, otherwise use the remote addr.
+    # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
+    ip-address-function: '(getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
     filters:
       - url: '/(api|vscode)/.*'
         http-response-headers:
