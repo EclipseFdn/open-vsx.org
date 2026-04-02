@@ -155,7 +155,7 @@ ovsx:
       seconds: 10800
     once-per-version: true
   extension-control:
-    update-on-start: true
+    update-on-start: false
   integrity:
     key-pair: create
   registry:
