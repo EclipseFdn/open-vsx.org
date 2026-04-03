@@ -34,7 +34,7 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HubIcon from '@mui/icons-material/Hub';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import { UserSettingsRoutes } from 'openvsx-webui';
+import { UserSettingsRoutes } from 'openvsx-webui/lib/pages/user/user-settings-routes';
 import { MainContext } from 'openvsx-webui/lib/context';
 import {
   itemIcon,
