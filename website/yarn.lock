@@ -2899,15 +2899,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.30.0":
-  version: 2.30.0
-  resolution: "date-fns@npm:2.30.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-  checksum: 10/70b3e8ea7aaaaeaa2cd80bd889622a4bcb5d8028b4de9162cbcda359db06e16ff6e9309e54eead5341e71031818497f19aaf9839c87d1aba1e27bb4796e758a9
-  languageName: node
-  linkType: hard
-
 "debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
@@ -4441,6 +4432,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:^3.7.2":
+  version: 3.7.2
+  resolution: "luxon@npm:3.7.2"
+  checksum: 10/b24cd205ed306ce7415991687897dcc4027921ae413c9116590bc33a95f93b86ce52cf74ba72b4f5c5ab1c10090517f54ac8edfb127c049e0bf55b90dc2260be
+  languageName: node
+  linkType: hard
+
 "make-fetch-happen@npm:^15.0.0":
   version: 15.0.4
   resolution: "make-fetch-happen@npm:15.0.4"
@@ -4792,7 +4790,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "npm:openvsx-webui@0.19.0"
+    openvsx-webui: "npm:openvsx-webui-test@0.20.0-dev.0"
     prettier: "npm:^3.8.1"
     typescript: "npm:^5.9.0"
     typescript-eslint: "npm:^8.57.0"
@@ -4801,9 +4799,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"openvsx-webui@npm:openvsx-webui@0.19.0":
-  version: 0.19.0
-  resolution: "openvsx-webui@npm:0.19.0"
+"openvsx-webui@npm:openvsx-webui-test@0.20.0-dev.0":
+  version: 0.20.0-dev.0
+  resolution: "openvsx-webui-test@npm:0.20.0-dev.0"
   dependencies:
     "@babel/core": "npm:^7.29.0"
     "@emotion/react": "npm:^11.11.1"
@@ -4818,10 +4816,10 @@ __metadata:
     "@mui/x-date-pickers": "npm:^6.20"
     clipboard-copy: "npm:^4.0.1"
     clsx: "npm:^1.2.1"
-    date-fns: "npm:^2.30.0"
     dompurify: "npm:^3.0.4"
     fetch-retry: "npm:^5.0.6"
     lodash: "npm:^4.17.21"
+    luxon: "npm:^3.7.2"
     markdown-it: "npm:^14.1.0"
     markdown-it-anchor: "npm:^9.2.0"
     prop-types: "npm:^15.8.1"
@@ -4834,7 +4832,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.3"
     react-router-dom: "npm:^6.30.3"
-  checksum: 10/796e1429c59130db22a10bbb025fd5d138ebada6cd8ab73518f412ba7d6119f32016a71fd7a43f21683248c45d6d95ed4dfd6e3084f98a61de33a5dec9b284a9
+  checksum: 10/dac6d3e27652997f342dae40b3adabf3520986ec838b6dae19a04fc6b9f5cffaa2bafc9b13087f31ac5edb6642a02e4c869bc239768f2b79221e0fb7624de951
   languageName: node
   linkType: hard
 

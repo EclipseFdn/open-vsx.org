@@ -6,6 +6,8 @@
 logging:
   level:
     root: "info"
+    # avoid log messages like: Received invalid Accept header. Assuming all media types are accepted
+    org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
     io.lettuce.core.protocol: "warn"
     org.eclipse.openvsx.ratelimit: "debug"
 
@@ -201,7 +203,7 @@ ovsx:
   rate-limit:
     enabled: true
     # on the trust boundary, "X-Real-IP" is set for any external requests
-    # for internal requests from within the cluster check first of "X-Forwarded-For" is set, otherwise use the remote addr.
+    # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
     # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
     ip-address-function: '(getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
     usage-stats:
@@ -210,7 +212,7 @@ ovsx:
       - url: '/(api|vscode)/.*'
         http-response-headers:
           Access-Control-Allow-Origin: '*'
-          Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+          Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
     default-http-content-type: application/json
     default-http-response-body: >
       {
