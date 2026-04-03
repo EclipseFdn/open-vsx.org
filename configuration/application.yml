@@ -207,7 +207,7 @@ ovsx:
     # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
     ip-address-function: '(getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
     usage-stats:
-      job-schedule: '*/30 * * * *'
+      job-schedule: '*/30 * * * * *'
     filters:
       - url: '/(api|vscode)/.*'
         http-response-headers:
