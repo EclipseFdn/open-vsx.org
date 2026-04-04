@@ -10,6 +10,7 @@ logging:
     org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
     io.lettuce.core.protocol: "warn"
     org.eclipse.openvsx.ratelimit: "debug"
+    org.eclipse.openvsx.scanning: "debug"
 
 server:
   address: 0.0.0.0
