@@ -31,7 +31,7 @@
     "prettier": "^3.8.1",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.57.0",
-    "vite": "^7.3.0",
+    "vite": "^7.3.2",
     "vite-plugin-webfont-dl": "^3.12.0"
   },
   "scripts": {
