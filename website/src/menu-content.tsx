@@ -34,6 +34,7 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HubIcon from '@mui/icons-material/Hub';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import BusinessIcon from '@mui/icons-material/Business';
 import { UserSettingsRoutes } from 'openvsx-webui/lib/pages/user/user-settings-routes';
 import { MainContext } from 'openvsx-webui/lib/context';
 import {
@@ -79,10 +80,16 @@ export const MobileMenuContent: FunctionComponent = () => {
           </MenuItemText>
         </MenuItem>
       )}
-      <MenuItem component={Link} href='https://github.com/eclipse/openvsx'>
+      <MenuItem component={Link} href='https://github.com/eclipse-openvsx/openvsx'>
         <MenuItemText>
           <GitHubIcon sx={itemIcon} />
           Source Code
+        </MenuItemText>
+      </MenuItem>
+      <MenuItem component={Link} href='https://managed.open-vsx.org/'>
+        <MenuItemText>
+          <BusinessIcon sx={itemIcon} />
+          Commercial Usage
         </MenuItemText>
       </MenuItem>
       <MenuItem component={Link} href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
@@ -170,6 +177,7 @@ export const DefaultMenuContent: FunctionComponent = () => {
 
   return (
     <>
+      <MenuLink href='https://managed.open-vsx.org/'>Commercial Usage</MenuLink>
       <MenuLink href='https://github.com/EclipseFdn/open-vsx.org/wiki'>Documentation</MenuLink>
       <MenuLink href='https://status.open-vsx.org/'>Status</MenuLink>
       <MenuTypography onClick={toggleWorkingGroupMenu} ref={workingGroupMenuEl}>
