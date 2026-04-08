@@ -21,7 +21,7 @@ export default defineConfig(() => ({
   },
   publicDir: 'static',
   build: {
-    target: 'es6',
+    target: 'es2020',
     minify: true,
     sourcemap: true,
     outDir: outRootDir,
