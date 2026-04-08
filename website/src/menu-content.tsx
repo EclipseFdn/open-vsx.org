@@ -79,7 +79,7 @@ export const MobileMenuContent: FunctionComponent = () => {
           </MenuItemText>
         </MenuItem>
       )}
-      <MenuItem component={Link} href='https://github.com/eclipse/openvsx'>
+      <MenuItem component={Link} href='https://github.com/eclipse-openvsx/openvsx'>
         <MenuItemText>
           <GitHubIcon sx={itemIcon} />
           Source Code

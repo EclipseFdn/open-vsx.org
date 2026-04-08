@@ -282,7 +282,7 @@ export default function createPageSettings(
     },
     urls: {
       extensionDefaultIcon: '/default-icon.png',
-      namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access',
+      namespaceAccessInfo: 'https://github.com/eclipse-openvsx/openvsx/wiki/Namespace-Access',
       publisherAgreement: '/documents/publisher-agreement-v1.1.md'
     }
   };
