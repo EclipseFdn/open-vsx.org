@@ -162,8 +162,8 @@ export default function createPageSettings(
         <InfoIcon fontSize='large' />
       </Box>
       <Typography variant='body1'>
-        Open VSX is growing! To support reliable access as usage increases, we&apos;ve clarified our existing usage
-        limits for community and organization users. Learn more{' '}
+        Open VSX is growing! To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers
+        that govern usage. Learn more{' '}
         <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>
           here
         </Link>
@@ -260,7 +260,7 @@ export default function createPageSettings(
           color: 'info'
         },
         cookie: {
-          key: 'Rate-Limit-Announcement',
+          key: 'Rate-Limit-Implementation',
           value: 'closed',
           path: '/'
         }
@@ -282,7 +282,7 @@ export default function createPageSettings(
     },
     urls: {
       extensionDefaultIcon: '/default-icon.png',
-      namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access',
+      namespaceAccessInfo: 'https://github.com/eclipse-openvsx/openvsx/wiki/Namespace-Access',
       publisherAgreement: '/documents/publisher-agreement-v1.1.md'
     }
   };
