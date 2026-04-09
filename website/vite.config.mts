@@ -31,7 +31,8 @@ export default defineConfig(() => ({
     rollupOptions: {
       output: {
         entryFileNames: 'bundle-[hash].js',
-        assetFileNames: 'bundle-[name].css',
+        assetFileNames: '[name]-[hash][extname]',
+        chunkFileNames: '[name]-[hash].js',
         manualChunks: {
           lodash: ['lodash'],
           luxon: ['luxon'],
