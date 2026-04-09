@@ -10,8 +10,12 @@
 
 import { FunctionComponent, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Link, Theme, Box, useMediaQuery, useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link as RouteLink } from 'react-router-dom';
+import { Theme } from '@mui/material/styles/createTheme';
+import useTheme from '@mui/material/styles/useTheme';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';

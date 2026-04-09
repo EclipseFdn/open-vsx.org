@@ -9,7 +9,11 @@
  ********************************************************************************/
 
 import { FunctionComponent, useState, useEffect, useRef } from 'react';
-import { CircularProgress, Grid, Box, Link, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 import { styled, Theme } from '@mui/material/styles';
 
 type MembershipLevel = 'SD' | 'AP' | 'AS';

@@ -9,7 +9,11 @@
  ********************************************************************************/
 
 import { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
-import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles/createTheme';
+import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
 import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';

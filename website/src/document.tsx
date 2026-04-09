@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 import { FunctionComponent, useContext, useEffect, useRef, useState } from 'react';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import { SanitizedMarkdown } from 'openvsx-webui/lib/components/sanitized-markdown';
 import { DelayedLoadIndicator } from 'openvsx-webui/lib/components/delayed-load-indicator';
 import { MainContext } from 'openvsx-webui/lib/context';

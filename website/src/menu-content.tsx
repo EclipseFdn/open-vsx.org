@@ -9,18 +9,16 @@
  ********************************************************************************/
 
 import { FunctionComponent, useState, useRef, useContext } from 'react';
-import {
-  Theme,
-  Typography,
-  Menu,
-  MenuItem,
-  Link,
-  Button,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  IconButton
-} from '@mui/material';
+import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles/createTheme';
 import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
