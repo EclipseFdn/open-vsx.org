@@ -8,6 +8,7 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "type": "module",
   "dependencies": {
     "openvsx-webui": "npm:openvsx-webui-test@0.20.0-dev.2"
   },
@@ -37,8 +38,8 @@
   },
   "scripts": {
     "prepare": "yarn build",
-    "format": "prettier --write --config .prettierrc src/**/*.{ts,tsx,mjs,mts}",
-    "lint": "prettier --check --config .prettierrc src/**/*.{ts,tsx,mjs,mts} && eslint -c eslint.config.mjs src",
+    "format": "prettier --write --config .prettierrc src/**/*.{ts,tsx,mjs}",
+    "lint": "prettier --check --config .prettierrc src/**/*.{ts,tsx,mjs} && eslint -c eslint.config.mjs src",
     "build": "tsc -p ./configs/app.tsconfig.json && vite build",
     "dev": "vite dev",
     "preview": "vite preview"
