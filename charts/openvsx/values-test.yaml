@@ -103,3 +103,20 @@ clamav:
 
 yara:
   enabled: true
+
+postgresql:
+  enabled: true
+  architecture: standalone
+
+  auth:
+    enablePostgresUser: true
+
+    # The username to auto-create
+    username: "openvsx-test-rw"
+
+    # The database to auto-create
+    database: "openvsx-test"
+
+    # Reference to an existing secret containing the passwords.
+    # Expected keys: "password" (for the username above) and "postgres-password" (for the postgres admin user).
+    existingSecret: "postgresql-test-creds"
