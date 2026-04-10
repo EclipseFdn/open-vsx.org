@@ -343,3 +343,70 @@ ovsx:
               file-hash-path: "$.file_hash"
               description-path: "$.description"
               severity-path: "$.severity"
+
+      # Argus Scanner - cloud-based multi-engine malware and AI analysis service
+      # API: POST /api/scan to start, GET /api/scan/{jobId} to poll for completion.
+      # Requires an Argus API key set as a Bearer token (set ARGUS_API_KEY env var).
+      argus:
+        enabled: true
+        type: "ARGUS"
+        required: false
+        enforced: true
+        async: true        # Asynchronous - POST returns a jobId, then poll until done
+        timeout-minutes: 30
+
+        http:
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000   # Time to get connection from pool (1 min)
+          connect-timeout-ms: 60000              # Time to establish TCP connection (1 min)
+          socket-timeout-ms: 60000               # Short - start call only returns jobId, not results
+
+        start:
+          method: POST
+          url: "https://api.yeethsecurity.com/api/scan"
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            job-id-path: "$.jobId"  # Extract jobId for use in poll/result URLs
+
+        poll:
+          method: GET
+          url: "https://api.yeethsecurity.com/api/scan/{jobId}"  # {jobId} substituted at runtime
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          response:
+            format: json
+            status-path: "$.status"
+            status-mapping:
+              queued: SUBMITTED
+              scanning: PROCESSING
+              completed: COMPLETED
+              error: FAILED
+
+        result:
+          method: GET
+          url: "https://api.yeethsecurity.com/api/scan/{jobId}"
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          response:
+            format: json
+            threats-path: "$.matches[*]"
+            threat-mapping:
+              condition: "true"
+              name-path: "$.rule"
+              description-path: "$.details"
+              severity-path: "$.severity"
+              file-hash-path: "$.fileHash"
+
+        polling:
+          initial-delay-seconds: 10
+          interval-seconds: 15
+          max-attempts: 120
