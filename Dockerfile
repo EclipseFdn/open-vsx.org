@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=improve-usage-collection
-ARG SERVER_VERSION_STRING=v0.34.0-rc.3
+ARG SERVER_VERSION=e31579d
+ARG SERVER_VERSION_STRING=v0.34.0-rc.4
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
