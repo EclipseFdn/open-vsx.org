@@ -13,7 +13,7 @@ import { FunctionComponent, useMemo } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import { useMediaQuery } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import createPageSettings from './page-settings';

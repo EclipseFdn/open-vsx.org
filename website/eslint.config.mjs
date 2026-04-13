@@ -24,7 +24,7 @@ export default [
         'plugin:react/recommended'
     ),
     {
-        files: ['**/*.ts', '**/*.tsx'],
+        files: ['**/*.ts', '**/*.tsx', '**/*.mts'],
         plugins: {
             '@typescript-eslint': typescriptEslint,
             '@stylistic': stylistic,
@@ -44,6 +44,14 @@ export default [
         rules: {
             '@typescript-eslint/ban-types': 'off',
             '@/brace-style': ['warn', '1tbs'],
+
+            // https://mui.com/material-ui/guides/minimizing-bundle-size/#enforce-best-practices-with-eslint
+            'no-restricted-imports': [
+                'error',
+                {
+                    'patterns': [{ 'regex': '^@mui/[^/]+$' }]
+                }
+            ],
 
             '@/comma-spacing': [
                 'warn',

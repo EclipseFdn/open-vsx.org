@@ -9,18 +9,16 @@
  ********************************************************************************/
 
 import { FunctionComponent, useState, useRef, useContext } from 'react';
-import {
-  Theme,
-  Typography,
-  Menu,
-  MenuItem,
-  Link,
-  Button,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  IconButton
-} from '@mui/material';
+import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles/createTheme';
 import { styled } from '@mui/material/styles';
 import { Link as RouteLink } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -35,7 +33,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HubIcon from '@mui/icons-material/Hub';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import BusinessIcon from '@mui/icons-material/Business';
-import { UserSettingsRoutes } from 'openvsx-webui';
+import { UserSettingsRoutes } from 'openvsx-webui/lib/pages/user/user-settings-routes';
 import { MainContext } from 'openvsx-webui/lib/context';
 import {
   itemIcon,
@@ -86,16 +84,16 @@ export const MobileMenuContent: FunctionComponent = () => {
           Source Code
         </MenuItemText>
       </MenuItem>
+      <MenuItem component={Link} href='https://managed.open-vsx.org/'>
+        <MenuItemText>
+          <BusinessIcon sx={itemIcon} />
+          Commercial Usage
+        </MenuItemText>
+      </MenuItem>
       <MenuItem component={Link} href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
         <MenuItemText>
           <MenuBookIcon sx={itemIcon} />
           Documentation
-        </MenuItemText>
-      </MenuItem>
-      <MenuItem component={Link} href='https://managed.open-vsx.org'>
-        <MenuItemText>
-          <BusinessIcon sx={itemIcon} />
-          Commercial Usage
         </MenuItemText>
       </MenuItem>
       <MenuItem component={Link} href='https://status.open-vsx.org/'>
@@ -177,8 +175,8 @@ export const DefaultMenuContent: FunctionComponent = () => {
 
   return (
     <>
+      <MenuLink href='https://managed.open-vsx.org/'>Commercial Usage</MenuLink>
       <MenuLink href='https://github.com/EclipseFdn/open-vsx.org/wiki'>Documentation</MenuLink>
-      <MenuLink href='https://managed.open-vsx.org'>Commercial Usage</MenuLink>
       <MenuLink href='https://status.open-vsx.org/'>Status</MenuLink>
       <MenuTypography onClick={toggleWorkingGroupMenu} ref={workingGroupMenuEl}>
         Working Group

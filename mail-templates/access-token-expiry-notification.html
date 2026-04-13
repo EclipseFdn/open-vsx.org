@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p>Hi <span th:text="${name}">John Doe</span>,</p>
+<p>
+    This is a friendly reminder that your Open VSX Personal Access Token <code th:if="${!#strings.isEmpty(tokenName)}" th:text="${tokenName}">Test token</code> will expire on <strong><span th:text="${#temporals.format(expiryDate, 'MM/dd/yyyy')}">11/14/2025</span></strong>.
+</p>
+<p>
+    To prevent any disruption to your publishing workflows, automated pipelines or API access, please log in to your Open VSX account to generate a new token before this date. Be sure to rotate the new token into your CI/CD environments (such as GitHub Actions or GitLab CI).
+</p>
+<p>
+    If you have any questions or require assistance, please reach out to us at <a href="mailto:openvsx@eclipse-foundation.org">openvsx@eclipse-foundation.org</a>.
+</p>
+<p>
+    Best,<br />
+    Eclipse Foundation<br />
+    <em>The Open VSX Team</em>
+</p>
+</body>
+</html>
