@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=rate-limiting-p2
-ARG SERVER_VERSION_STRING=v0.34.0-rc.2
+ARG SERVER_VERSION=improve-usage-collection
+ARG SERVER_VERSION_STRING=v0.34.0-rc.3
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
