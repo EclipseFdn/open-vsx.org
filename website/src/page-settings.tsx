@@ -9,11 +9,15 @@
  ********************************************************************************/
 
 import { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
-import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles/createTheme';
+import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
 import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
-import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
+import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-routes';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
 import InfoIcon from '@mui/icons-material/Info';
 import OpenVSXLogo from './openvsx-registry-logo';
@@ -260,7 +264,7 @@ export default function createPageSettings(
           color: 'info'
         },
         cookie: {
-          key: 'Rate-Limit-Implementation',
+          key: 'Rate-Limit-Announcement',
           value: 'closed',
           path: '/'
         }

@@ -8,8 +8,9 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "type": "module",
   "dependencies": {
-    "openvsx-webui": "npm:openvsx-webui@0.19.1"
+    "openvsx-webui": "npm:openvsx-webui@0.20.0"
   },
   "resolutions": {
     "qs": "^6.14.1"
@@ -29,6 +30,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.0",
     "prettier": "^3.8.1",
+    "rollup-plugin-visualizer": "^7.0.1",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.57.0",
     "vite": "^7.3.0",

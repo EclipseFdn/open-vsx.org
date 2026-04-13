@@ -8,7 +8,9 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import { Link, Typography, Container } from '@mui/material';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 import { styled, Theme } from '@mui/material/styles';
 
 const Heading = styled(Typography)(({ theme }: { theme: Theme }) => ({

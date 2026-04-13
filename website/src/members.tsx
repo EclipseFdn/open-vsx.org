@@ -8,7 +8,10 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import { Container, Typography, Box, Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import { styled, Theme } from '@mui/material/styles';
 import MembersList from './components/members-list';
 

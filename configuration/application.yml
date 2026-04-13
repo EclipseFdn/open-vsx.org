@@ -197,6 +197,7 @@ ovsx:
   # dynamic tier-based rate limiting configuration
   rate-limit:
     enabled: true
+    token-prefix: ovsx_rl_
     # on the trust boundary, "X-Real-IP" is set for any external requests
     # for internal requests from within the cluster check first of "X-Forwarded-For" is set, otherwise use the remote addr.
     # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening

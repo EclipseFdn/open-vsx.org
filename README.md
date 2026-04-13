@@ -32,7 +32,7 @@ If you want to refute a previously granted ownership, please comment on the corr
 
 ## Getting started
 
-Enable Yarn, install dependencies and start a dev server:
+Enable Yarn, install dependencies start a dev server:
 
 ```bash
 cd website

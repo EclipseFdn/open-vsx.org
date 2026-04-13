@@ -10,8 +10,12 @@
 
 import { FunctionComponent, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Link, Theme, Box, useMediaQuery, useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link as RouteLink } from 'react-router-dom';
+import { Theme } from '@mui/material/styles/createTheme';
+import useTheme from '@mui/material/styles/useTheme';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -58,8 +62,7 @@ const MainFooter = ({ isSmallDisplay, isLargeDisplay, expanded, toggleExpanded }
       {isSmallDisplay ? null : repositoryLink()}
       {isLargeDisplay ? (
         <Box display='flex'>
-          <Box>{ossAccess()}</Box>
-          <Box ml={itemSpacing}>{privacyPolicy()}</Box>
+          <Box>{privacyPolicy()}</Box>
           <Box ml={itemSpacing}>{termsOfUse()}</Box>
           <Box ml={itemSpacing}>{compliance()}</Box>
           <Box ml={itemSpacing}>{legalResources(false)}</Box>
@@ -99,7 +102,6 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
     return (
       <Box display='flex' flexDirection='column' alignItems='stretch'>
         <Box display='flex' flexDirection='column' alignItems='flex-end'>
-          <Box mb={itemSpacing}>{ossAccess()}</Box>
           <Box mb={itemSpacing}>{privacyPolicy()}</Box>
           <Box mb={itemSpacing}>{termsOfUse()}</Box>
           <Box mb={itemSpacing}>{compliance()}</Box>
@@ -130,12 +132,6 @@ const repositoryLink = () => (
   <Link target='_blank' href='https://github.com/eclipse-openvsx/openvsx' sx={[styles.link, styles.repositoryLink]}>
     <GitHubIcon />
     &nbsp;eclipse-openvsx/openvsx
-  </Link>
-);
-
-const ossAccess = () => (
-  <Link href='https://managed.open-vsx.org/contact' sx={[styles.link, styles.legalText]}>
-    OSS Access
   </Link>
 );
 
