@@ -137,7 +137,7 @@ ovsx:
       enabled: false
     primary-service: aws
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
+    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error,/.well-known/**"
   eclipse:
     base-url: https://api.eclipse.org/
     publisher-agreement:

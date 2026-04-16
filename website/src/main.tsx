@@ -11,13 +11,14 @@
 import { createRoot } from 'react-dom/client';
 import { FunctionComponent, useMemo } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import createPageSettings from './page-settings';
 import { createAbsoluteURL } from 'openvsx-webui/lib/utils';
+import { Route, Routes } from 'react-router-dom';
 
 const App: FunctionComponent = () => {
   const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
@@ -48,11 +49,22 @@ const App: FunctionComponent = () => {
   return (
     <HelmetProvider>
       <ThemeProvider theme={theme}>
-        <Main
-          service={service}
-          pageSettings={pageSettings}
-          loginProviders={{ github: createAbsoluteURL([serverUrl, 'oauth2', 'authorization', 'github']) }}
-        />
+        <Routes>
+          <Route
+            path='/security'
+            element={<Navigate to='https://researcher-recognition.open-vsx.org/open-vsx-security-policy/' />}
+          />
+          <Route
+            path='*'
+            element={
+              <Main
+                service={service}
+                pageSettings={pageSettings}
+                loginProviders={{ github: createAbsoluteURL([serverUrl, 'oauth2', 'authorization', 'github']) }}
+              />
+            }
+          />
+        </Routes>
       </ThemeProvider>
     </HelmetProvider>
   );
