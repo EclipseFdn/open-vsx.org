@@ -215,7 +215,7 @@ export default function createPageSettings(
     );
     return (
       <Link
-        href={`mailto:openvsx@eclipse-foundation.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
+        href={`mailto:security@open-vsx.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
         variant='body2'
         color='secondary'
         underline='hover'

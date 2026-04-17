@@ -61,12 +61,7 @@ const About = () => {
 
       <Heading variant='h5'>Contact Us</Heading>
       <Paragraph variant='body1'>
-        To report malicious extensions, extensions with known vulnerabilities, or other urgent matters, connect with us
-        at&nbsp;
-        <Link color='secondary' underline='hover' href='mailto:openvsx@eclipse-foundation.org'>
-          openvsx@eclipse-foundation.org
-        </Link>
-        . For non-urgent questions, including managing namespaces or publishing extensions, please visit our&nbsp;
+        For non-urgent questions, including managing namespaces or publishing extensions, please visit our&nbsp;
         <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki'>
           wiki
         </Link>
