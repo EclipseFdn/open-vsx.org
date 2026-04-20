@@ -62,7 +62,9 @@ const MainFooter = ({ isSmallDisplay, isLargeDisplay, expanded, toggleExpanded }
       {isSmallDisplay ? null : repositoryLink()}
       {isLargeDisplay ? (
         <Box display='flex'>
-          <Box>{privacyPolicy()}</Box>
+          <Box>{ossAccess()}</Box>
+          <Box ml={itemSpacing}>{privacyPolicy()}</Box>
+          <Box ml={itemSpacing}>{securityPolicy()}</Box>
           <Box ml={itemSpacing}>{termsOfUse()}</Box>
           <Box ml={itemSpacing}>{compliance()}</Box>
           <Box ml={itemSpacing}>{legalResources(false)}</Box>
@@ -102,7 +104,9 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
     return (
       <Box display='flex' flexDirection='column' alignItems='stretch'>
         <Box display='flex' flexDirection='column' alignItems='flex-end'>
+          <Box mb={itemSpacing}>{ossAccess()}</Box>
           <Box mb={itemSpacing}>{privacyPolicy()}</Box>
+          <Box mb={itemSpacing}>{securityPolicy()}</Box>
           <Box mb={itemSpacing}>{termsOfUse()}</Box>
           <Box mb={itemSpacing}>{compliance()}</Box>
           <Box mb={itemSpacing}>{legalResources(isSmallDisplay)}</Box>
@@ -135,9 +139,21 @@ const repositoryLink = () => (
   </Link>
 );
 
+const ossAccess = () => (
+  <Link href='https://managed.open-vsx.org/contact' sx={[styles.link, styles.legalText]}>
+    OSS Access
+  </Link>
+);
+
 const privacyPolicy = () => (
   <Link href='https://www.eclipse.org/legal/privacy/' sx={[styles.link, styles.legalText]}>
     Privacy Policy
+  </Link>
+);
+
+const securityPolicy = () => (
+  <Link href='/security/' sx={[styles.link, styles.legalText]}>
+    Security Policy
   </Link>
 );
 
