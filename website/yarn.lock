@@ -4838,7 +4838,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "npm:openvsx-webui@0.20.0"
+    openvsx-webui: "npm:openvsx-webui-test@0.20.1-rc.0"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -4862,9 +4862,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:openvsx-webui@0.20.0":
-  version: 0.20.0
-  resolution: "openvsx-webui@npm:0.20.0"
+"openvsx-webui@npm:openvsx-webui-test@0.20.1-rc.0":
+  version: 0.20.1-rc.0
+  resolution: "openvsx-webui-test@npm:0.20.1-rc.0"
   dependencies:
     "@babel/core": "npm:^7.29.0"
     "@emotion/react": "npm:^11.11.1"
@@ -4895,7 +4895,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.3"
     react-router-dom: "npm:^6.30.3"
-  checksum: 10/baba402b9d0cc7f7c42978eff26ac9b1fae736e28fd15a354ddcaf83f13a3b501bf4325f72a1eebbb8f2e6fc67958dcae8c46ee5bbc00fa9c2bc326648631edc
+  checksum: 10/bba34ca0985c9dfe3af8e05d6875d6c4fe6ba921a7c467a0f736169a71c54dcab481b2594136d727bf27c03e5e7bbf37dfa9dfc4966aa4e4377c353270db7d46
   languageName: node
   linkType: hard
 
