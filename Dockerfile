@@ -27,7 +27,7 @@ RUN cd website \
   && yarn build
 
 # Main image derived from openvsx-server
-FROM ghcr.io/eclipse-openvsx/openvsx-server-snapshots:${SERVER_VERSION}
+FROM ghcr.io/eclipse-openvsx/openvsx-server-snapshot:${SERVER_VERSION}
 ARG SERVER_VERSION
 ARG SERVER_VERSION_STRING
 
