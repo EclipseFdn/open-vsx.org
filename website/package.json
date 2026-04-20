@@ -10,7 +10,7 @@
   },
   "type": "module",
   "dependencies": {
-    "openvsx-webui": "npm:openvsx-webui@0.20.0"
+    "openvsx-webui": "npm:openvsx-webui@0.20.1"
   },
   "resolutions": {
     "qs": "^6.14.1"
