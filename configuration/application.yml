@@ -204,10 +204,11 @@ ovsx:
   rate-limit:
     enabled: true
     token-prefix: staging_ovsxrl_
-    # on the trust boundary, "X-Real-IP" is set for any external requests
+    # on the trust boundary (fastly edge), "X-Fastly-Real-IP" is set for any external requests
+    # on nginx, "X-Real-IP" is set for any external requests, kept as a fallback
     # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
     # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
-    ip-address-function: '(getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+    ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
     usage-stats:
       job-schedule: '*/30 * * * * *'
       daily-job-schedule: '*/30 * * * * *'
