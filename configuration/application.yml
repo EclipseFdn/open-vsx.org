@@ -138,6 +138,7 @@ ovsx:
     primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error,/security/"
+    additional-routes: "/.well-known/**"
   eclipse:
     base-url: https://api.eclipse.org/
     publisher-agreement:
