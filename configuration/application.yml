@@ -354,13 +354,19 @@ ovsx:
         enforced: true
         async: true        # Asynchronous - POST returns a jobId, then poll until done
         timeout-minutes: 30
+        max-concurrent-scans: 40
+
+        # Deep-link template for the admin scan dashboard. {jobId} is replaced
+        # with the scanner's externalJobId at render time, giving admins a
+        # clickable link from a scan check result to Argus's own UI.
+        external-url-template: "https://app.yeethsecurity.com/dashboard/scans/{jobId}"
 
         http:
           max-total: 20
           default-max-per-route: 10
-          connection-request-timeout-ms: 60000   # Time to get connection from pool (1 min)
-          connect-timeout-ms: 60000              # Time to establish TCP connection (1 min)
-          socket-timeout-ms: 60000               # Short - start call only returns jobId, not results
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 300000   # 5 min for large extensions
 
         start:
           method: POST
@@ -404,6 +410,7 @@ ovsx:
               name-path: "$.rule"
               description-path: "$.details"
               severity-path: "$.severity"
+              file-path-path: "$.fileName"
               file-hash-path: "$.fileHash"
 
         polling:
