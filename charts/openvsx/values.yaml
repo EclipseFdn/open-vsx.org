@@ -2,6 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment production
+platform: &platform okd-c1
 namespace: &namespace open-vsx-org
 host: open-vsx.org
 
@@ -100,6 +101,9 @@ alloy:
       - name: zipkin
         port: 9411
         targetPort: 9411
+      - name: loki
+        port: 3100
+        targetPort: 3100
   crds:
     create: true
   controller:

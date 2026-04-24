@@ -2,6 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment test
+platform: &platform okd-c1
 namespace: &namespace open-vsx-org-test
 host: test.open-vsx.org
 
