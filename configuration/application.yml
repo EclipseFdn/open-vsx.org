@@ -354,7 +354,7 @@ ovsx:
         enforced: true
         async: true        # Asynchronous - POST returns a jobId, then poll until done
         timeout-minutes: 30
-        max-concurrent-scans: 40
+        max-concurrency: 40
 
         # Deep-link template for the admin scan dashboard. {jobId} is replaced
         # with the scanner's externalJobId at render time, giving admins a
