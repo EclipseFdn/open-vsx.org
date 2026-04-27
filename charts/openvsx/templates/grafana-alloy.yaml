@@ -90,20 +90,18 @@ data:
       limit = "400MiB"
       spike_limit = "80MiB"
       output {
-        traces = [otelcol.processor.resource.add_labels.input]
+        traces = [otelcol.processor.transform.add_labels.input]
       }
     }
 
-    otelcol.processor.resource "add_labels" {
-      attributes {
-        action = "upsert"
-        key    = "cluster"
-        value  = "{{ .Values.environment }}-{{ .Values.platform }}"
-      }
-      attributes {
-        action = "upsert"
-        key    = "environment"
-        value  = "{{ .Values.environment }}"
+    otelcol.processor.transform "add_labels" {
+      error_mode = "ignore"
+      trace_statements {
+        context = "resource"
+        statements = [
+          `set(attributes["cluster"], "{{ .Values.environment }}-{{ .Values.platform }}")`,
+          `set(attributes["environment"], "{{ .Values.environment }}")`,
+        ]
       }
       output {
         traces = [otelcol.processor.batch.default.input]
