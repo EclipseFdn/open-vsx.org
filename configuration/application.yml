@@ -11,7 +11,8 @@ logging:
     io.lettuce.core.protocol: "warn"
     org.eclipse.openvsx.ratelimit: "debug"
     org.eclipse.openvsx.scanning: "debug"
-    org.jooq.tools.LoggerListener: "debug"
+    #org.jooq.tools.LoggerListener: "debug"
+    org.springframework: "debug"
     org.springframework.web.servlet.DispatcherServlet: "debug"
 
 server:
