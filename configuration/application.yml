@@ -12,7 +12,7 @@ logging:
     org.eclipse.openvsx.ratelimit: "debug"
     org.eclipse.openvsx.scanning: "debug"
     org.jooq.tools.LoggerListener: "debug"
-    org.springframework: "debug"
+    org.springframework.web.servlet.DispatcherServlet: "debug"
 
 server:
   address: 0.0.0.0
