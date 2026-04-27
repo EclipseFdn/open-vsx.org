@@ -78,6 +78,40 @@ data:
       }
     }
 
+    loki.source.api "loki_push" {
+      http {
+        listen_address = "0.0.0.0"
+        listen_port    = 3100
+      }
+      forward_to = [loki.relabel.add_labels.receiver]
+    }
+
+    loki.relabel "add_labels" {
+      rule {
+        target_label = "environment"
+        replacement  = "{{ .Values.environment }}"
+      }
+      rule {
+        target_label = "cluster"
+        replacement  = "{{ .Values.platform }}"
+      }
+      forward_to = [loki.write.grafana_cloud.receiver]
+    }
+
+    loki.write "grafana_cloud" {
+      endpoint {
+        url = sys.env("LOKI_URL")
+        basic_auth {
+          username = sys.env("LOKI_USERNAME")
+          password = sys.env("LOKI_PASSWORD")
+        }
+      }
+      external_labels = {
+        cluster  = "{{ .Values.environment }}-{{ .Values.platform }}",
+        platform = "{{ .Values.platform }}",
+      }
+    }
+
     otelcol.receiver.zipkin "default" {
       endpoint = "0.0.0.0:9411"
       output {
