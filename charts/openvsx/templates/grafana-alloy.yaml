@@ -33,7 +33,7 @@ data:
       }
 
       rule {
-        regex   = "^(exported_instance|deployment_environment|service_instance_id|service_name)$"
+        regex   = "^(exported_instance|deployment_environment|service_instance_id)$"
         action  = "labeldrop"
       }
 
@@ -57,6 +57,10 @@ data:
 
     {{- end }}
     prometheus.remote_write "default" {
+      external_labels = {
+        cluster  = "{{ .Values.environment }}-{{ .Values.platform }}",
+        platform = "{{ .Values.platform }}",
+      }
       endpoint {
         name = "hosted-prometheus"
         url = sys.env("PROMETHEUS_URL")
@@ -85,6 +89,22 @@ data:
       check_interval = "1s"
       limit = "400MiB"
       spike_limit = "80MiB"
+      output {
+        traces = [otelcol.processor.resource.add_labels.input]
+      }
+    }
+
+    otelcol.processor.resource "add_labels" {
+      attributes {
+        action = "upsert"
+        key    = "cluster"
+        value  = "{{ .Values.environment }}-{{ .Values.platform }}"
+      }
+      attributes {
+        action = "upsert"
+        key    = "environment"
+        value  = "{{ .Values.environment }}"
+      }
       output {
         traces = [otelcol.processor.batch.default.input]
       }
