@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=c54b144
-ARG SERVER_VERSION_STRING=v0.34.2-dev.1
+ARG SERVER_VERSION=fix-latest-endpoint
+ARG SERVER_VERSION_STRING=v0.34.2-dev.2
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
