@@ -5,12 +5,12 @@ environment: &environment staging
 namespace: &namespace open-vsx-org-staging
 host: premium-staging.open-vsx.org
 
-replicaCount: 1
-esReplicaCount: 1
+replicaCount: 6
+esReplicaCount: 3
 autoscaling:
   enabled: true
-  minReplicas: 1
-  maxReplicas: 6
+  minReplicas: 6
+  maxReplicas: 12
   targetCPUUtilizationPercentage: 50
   targetMemoryUtilizationPercentage: 70
 
