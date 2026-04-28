@@ -10,8 +10,8 @@ replicaCount: 6
 esReplicaCount: 3
 autoscaling:
   enabled: true
-  minReplicas: 6
-  maxReplicas: 12
+  minReplicas: 4
+  maxReplicas: 6
   targetCPUUtilizationPercentage: 50
   targetMemoryUtilizationPercentage: 70
 
@@ -19,7 +19,7 @@ image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 6d777ca-570
+  tag: 97e1417-99
 
 eks:
   enabled: true  # Switch to false for OKD installations
@@ -57,9 +57,6 @@ website:
     -Dorg.jooq.no-logo=true
     -Dorg.jooq.no-tips=true
     --enable-native-access=ALL-UNNAMED
-
-route:
-  timeout: 30s
 
 resources:
   limits:
@@ -147,7 +144,6 @@ postgresql-ha:
       "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" 
   pgpool:
     enabled: false
-    adminPassword: "qLUUHyyKEZQyZ6cT"
 # redis
 redis:
   master:
