@@ -18,7 +18,7 @@ image:
   tag: 97e1417-99
 
 eks:
-  enabled: false  # Switch to false for OKD installations
+  enabled: false
 
 website:
   jvmArgs: >
