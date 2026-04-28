@@ -6,7 +6,13 @@
 logging:
   level:
     root: "info"
+    # avoid log messages like: Received invalid Accept header. Assuming all media types are accepted
+    org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
+    io.lettuce.core.protocol: "warn"
     org.eclipse.openvsx.ratelimit: "debug"
+    org.eclipse.openvsx.scanning: "debug"
+    #org.jooq.tools.LoggerListener: "debug"
+    #org.springframework.web.servlet.DispatcherServlet: "debug"
 
 server:
   address: 0.0.0.0
@@ -23,9 +29,8 @@ server:
     min-response-size: 1024
   jetty:
     threads:
-      max: 600
-      max-queue-capacity: 1000
-    connection-idle-timeout: 30000
+      max-queue-capacity: 100
+    connection-idle-timeout: 10000
 spring:
   application:
     name: openvsx-server
@@ -72,7 +77,9 @@ management:
       probes:
         enabled: true
   health:
-    probes:
+    livenessstate:
+      enabled: true
+    readinessstate:
       enabled: true
   metrics:
     tags:
@@ -110,88 +117,30 @@ org:
       type: sql
     miscellaneous:
       allow-anonymous-data-usage: false
+
 bucket4j:
   enabled: false
-#  cache-to-use: redis-cluster-jedis
-#  filters:
-#    - cache-name: buckets
-#      url: '/api/-/(namespace/create|publish)'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: getParameter("token")
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/vscode/asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 75
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/vscode/(?!asset/.*/.*/.*/Microsoft.VisualStudio.Services.Icons.Default).*'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 75
-#              time: 1
-#              unit: seconds
-#    - cache-name: buckets
-#      url: '/api/(?!(.*/.*/review(/delete)?)|(-/(namespace/create|publish))).*'
-#      http-response-headers:
-#        Access-Control-Allow-Origin: '*'
-#        Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
-#      rate-limits:
-#        - execute-condition: getParameter("token") != null
-#          cache-key: getParameter("token")
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
-#        - execute-condition: getParameter("token") == null
-#          cache-key: '(getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-#          bandwidths:
-#            - capacity: 15
-#              time: 1
-#              unit: seconds
+
 ovsx:
-  token-prefix: ovsxat_
-  data:
-    mirror:
-      enabled: true
-      server-url: https://open-vsx.org
-      requests-per-second: 5
-      user-name: mirror_user
-      schedule: '0 * * * *'
-      read-only:
-        disallowed-methods: POST, PUT, PATCH, DELETE
-        allowed-endpoints: /vscode/gallery/extensionquery, /admin/update-search-index, /api/-/query
-      exclude-extensions:
-        - vscode.*
-  upstream:
-    url: https://open-vsx.org
+  access-token:
+    prefix: staging_ovsxat_
+    expiration: P90D
+    notification: P7D
+    send-expired-mail: true
+    max-token-notifications: 100
+    expiration-schedule: '0 */1 * * * *'
+    notification-schedule: '30 */1 * * * *'
   storage:
     cdn:
       enabled: true
       services:
-        aws: https://openvsx.eclipsecontent.org/
-    aws:
-      region: dummy-value-to-enable-aws
-      bucket: dummy-value-to-enable-aws
+        aws: https://openvsx-staging.eclipsecontent.org/
+    migration:
+      enabled: false
     primary-service: aws
   webui:
     frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
+    additional-routes: "/.well-known/**"
   eclipse:
     base-url: https://api.eclipse.org/
     publisher-agreement:
@@ -214,7 +163,8 @@ ovsx:
       seconds: 10800
     once-per-version: true
   extension-control:
-    update-on-start: true
+    # do not update on application start as this would trigger multiple jobs in multi-pod configuration
+    update-on-start: false
   integrity:
     key-pair: create
   registry:
@@ -252,21 +202,24 @@ ovsx:
     defaultMaxPerRoute: 50
   mail:
     from: no-reply@open-vsx.org
-    revoked-access-tokens:
-      subject: 'Open VSX Access Tokens Revoked'
-      template: 'revoked-access-tokens.html'
 
-  # tier-based rate limiting configuration
+  # dynamic tier-based rate limiting configuration
   rate-limit:
     enabled: true
-    ip-address-function: '(getHeader("X-Real-IP")?: getRemoteAddr()).trim()'
+    token-prefix: staging_ovsxrl_
+    # on the trust boundary (fastly edge), "X-Fastly-Real-IP" is set for any external requests
+    # on nginx, "X-Real-IP" is set for any external requests, kept as a fallback
+    # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
+    # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
+    ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
     usage-stats:
-      job-schedule: '*/30 * * * *'
+      job-schedule: '*/30 * * * * *'
+      daily-job-schedule: '*/30 * * * * *'
     filters:
       - url: '/(api|vscode)/.*'
         http-response-headers:
           Access-Control-Allow-Origin: '*'
-          Access-Control-Expose-Headers: X-Rate-Limit-Retry-After-Seconds, X-Rate-Limit-Remaining
+          Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
     default-http-content-type: application/json
     default-http-response-body: >
       {
@@ -280,7 +233,7 @@ ovsx:
 
   # General scanning support
   scanning:
-    enabled: false
+    enabled: true
 
     # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
     max-archive-size-bytes: 1073741824   # 1 GB total archive limit
@@ -288,7 +241,7 @@ ovsx:
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
-      enforced: false
+      enforced: true
 
     similarity:
       enabled: true
@@ -302,7 +255,7 @@ ovsx:
     secret-detection:
       enabled: true
       required: false
-      enforced: false
+      enforced: true
       rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
       suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
       gitleaks:
@@ -327,10 +280,11 @@ ovsx:
       # Requires clamav-rest service deployment
       clamav-rest:
         enabled: true
-        enforced: false
+        enforced: true
         type: "CLAMAV_REST"
         required: true
         async: false
+        max-concurrency: 4
         timeout-minutes: 5
 
         # Per-scanner HTTP client configuration
@@ -371,8 +325,9 @@ ovsx:
         enabled: true   # Enable when yara-rest service is deployed
         type: "YARA"
         required: true
-        enforced: false
+        enforced: true
         async: false     # Synchronous - YARA is fast
+        max-concurrency: 10
         timeout-minutes: 5
 
         http:
@@ -402,3 +357,77 @@ ovsx:
               file-hash-path: "$.file_hash"
               description-path: "$.description"
               severity-path: "$.severity"
+
+      # Argus Scanner - cloud-based multi-engine malware and AI analysis service
+      # API: POST /api/scan to start, GET /api/scan/{jobId} to poll for completion.
+      # Requires an Argus API key set as a Bearer token (set ARGUS_API_KEY env var).
+      argus:
+        enabled: true
+        type: "ARGUS"
+        required: false
+        enforced: true
+        async: true        # Asynchronous - POST returns a jobId, then poll until done
+        timeout-minutes: 30
+        max-concurrency: 40
+
+        # Deep-link template for the admin scan dashboard. {jobId} is replaced
+        # with the scanner's externalJobId at render time, giving admins a
+        # clickable link from a scan check result to Argus's own UI.
+        external-url-template: "https://app.yeethsecurity.com/dashboard/scans/{jobId}"
+
+        http:
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000   # Time to get connection from pool (1 min)
+          connect-timeout-ms: 60000              # Time to establish TCP connection (1 min)
+          socket-timeout-ms: 300000              # 5 min for large extensions
+
+        start:
+          method: POST
+          url: "https://api.yeethsecurity.com/api/scan"
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            job-id-path: "$.jobId"  # Extract jobId for use in poll/result URLs
+
+        poll:
+          method: GET
+          url: "https://api.yeethsecurity.com/api/scan/{jobId}"  # {jobId} substituted at runtime
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          response:
+            format: json
+            status-path: "$.status"
+            status-mapping:
+              queued: SUBMITTED
+              scanning: PROCESSING
+              completed: COMPLETED
+              error: FAILED
+
+        result:
+          method: GET
+          url: "https://api.yeethsecurity.com/api/scan/{jobId}"
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          response:
+            format: json
+            threats-path: "$.matches[*]"
+            threat-mapping:
+              condition: "true"
+              name-path: "$.rule"
+              description-path: "$.details"
+              severity-path: "$.severity"
+              file-path-path: "$.fileName"
+              file-hash-path: "$.fileHash"
+
+        polling:
+          initial-delay-seconds: 10
+          interval-seconds: 15
+          max-attempts: 120
