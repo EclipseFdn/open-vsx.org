@@ -32,14 +32,12 @@ export default defineConfig(() => ({
       output: {
         entryFileNames: 'bundle-[hash].js',
         assetFileNames: '[name]-[hash][extname]',
-        chunkFileNames: '[name]-[hash].js',
+        chunkFileNames: 'chunk-[name]-[hash].js',
         manualChunks: {
-          lodash: ['lodash'],
-          luxon: ['luxon'],
-          react: ['react', 'react-router-dom', 'react-dom'],
-          material: ['@mui/material'],
-          'mui-xtnd': ['@mui/x-charts', '@mui/x-data-grid', '@mui/x-date-pickers'],
-        },
+            lodash: ['lodash'],
+            material: ['@mui/material'],
+            'mui-x': ['@mui/x-charts', '@mui/x-data-grid', '@mui/x-date-pickers'],
+        }
       }
     }
   }
