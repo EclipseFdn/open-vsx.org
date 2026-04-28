@@ -9,11 +9,15 @@
  ********************************************************************************/
 
 import { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
-import { Link, Typography, Theme, Box, SxProps } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles/createTheme';
+import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
 import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
-import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-container';
+import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-routes';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
 import InfoIcon from '@mui/icons-material/Info';
 import OpenVSXLogo from './openvsx-registry-logo';
@@ -162,8 +166,8 @@ export default function createPageSettings(
         <InfoIcon fontSize='large' />
       </Box>
       <Typography variant='body1'>
-        Open VSX is growing! To support reliable access as usage increases, we&apos;ve clarified our existing usage
-        limits for community and organization users. Learn more{' '}
+        Open VSX is growing! To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers
+        that govern usage. Learn more{' '}
         <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>
           here
         </Link>
@@ -211,7 +215,7 @@ export default function createPageSettings(
     );
     return (
       <Link
-        href={`mailto:openvsx@eclipse-foundation.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
+        href={`mailto:security@open-vsx.org?subject=Report%20Abuse%20-%20${extension.namespace}.${extension.name}&Body=${reportAbuseText}%0A%0A${extensionURL}`}
         variant='body2'
         color='secondary'
         underline='hover'
@@ -282,7 +286,7 @@ export default function createPageSettings(
     },
     urls: {
       extensionDefaultIcon: '/default-icon.png',
-      namespaceAccessInfo: 'https://github.com/eclipse/openvsx/wiki/Namespace-Access',
+      namespaceAccessInfo: 'https://github.com/eclipse-openvsx/openvsx/wiki/Namespace-Access',
       publisherAgreement: '/documents/publisher-agreement-v1.1.md'
     }
   };

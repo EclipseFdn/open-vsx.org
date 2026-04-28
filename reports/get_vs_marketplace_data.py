@@ -1,7 +1,7 @@
 """
-Script to collect metadata on all extensions published on VS Code Marketplace. Outputs 
-both a JSON and a CSV file. Note, this relies on interfaces that are not fully documented 
-and are subject to change. 
+Script to collect metadata on all extensions published on VS Code Marketplace. Outputs
+both a JSON and a CSV file. Note, this relies on interfaces that are not fully documented
+and are subject to change.
 """
 import os
 import requests
@@ -25,7 +25,7 @@ def get_ms_info(ext):
         pricing = [prop for prop in ext['versions'][0]['properties'] if prop['key'] == 'Microsoft.VisualStudio.Services.Content.Pricing'][0]['value']
     except Exception:
         pricing = None
-    
+
     return extension_name, publisher_name, display_name, latest_version, last_updated, repo, pricing
 
 def convert_date_str(input_str):
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         }
         API_ENDPOINT = os.environ['API_ENDPOINT']
         VSX_API = '%sapi' % API_ENDPOINT
-        
+
         # Looks like 1000 is the max page size
         get_all_extensions_payload = {
                 "assetTypes": [
@@ -117,7 +117,7 @@ if __name__ == '__main__':
                                 ms_display_name,
                                 ms_pricing,
                                 ms_latest_version,
-                                convert_date_str(ms_last_updated), 
+                                convert_date_str(ms_last_updated),
                                 vsx_results['version'],
                                 convert_date_str(vsx_results['timestamp']),
                                 vsx_results['publishedBy']['loginName'],
@@ -140,7 +140,7 @@ if __name__ == '__main__':
                 print(response.status_code)
                 print(response.content)
                 response.raise_for_status()
-        
+
         # Output JSON File
         json_file = open(JSON_FILE_NAME, 'w')
         json_file.write(json.dumps(all_extensions, indent=4))

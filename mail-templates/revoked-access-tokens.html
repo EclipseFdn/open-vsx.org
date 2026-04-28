@@ -4,10 +4,25 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<p>Hi <span th:text="${name}">John Doe</span>,</p>
-<p>Your access tokens have been revoked.</p>
+<p>Hello <span th:text="${name}">Contributor</span>,</p>
+
+<p>This is an automated notification to inform you that one or more of your Personal Access Tokens (PATs) for the Open VSX Registry have been revoked.</p>
+
+<p>Tokens are typically revoked for the following reasons:</p>
+<ul>
+    <li>Reaching the end of their 90-day expiration lifecycle.</li>
+    <li>Manual revocation from your account settings.</li>
+    <li>Routine security precautions.</li>
+</ul>
+
+<p><strong>Action Required:</strong><br/>
+To prevent failed deployments or interruptions in your publishing pipelines, please log in and generate a new PAT via your Open VSX account settings. Remember to update your active pipelines with the new token.</p>
+
+<p>If you believe this was a mistake or if you need assistance, please reach out to us at <a href="mailto:openvsx@eclipse-foundation.org">openvsx@eclipse-foundation.org</a>.</p>
+
 <p>
-    Regards, <br />
+    Best,<br />
+    Eclipse Foundation<br />
     <em>The Open VSX Team</em>
 </p>
 </body>

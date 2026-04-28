@@ -12,3 +12,4 @@ node_modules/
 /dev/static/bundle.*
 /dev/static/report-*
 yarn-error.log
+stats.html

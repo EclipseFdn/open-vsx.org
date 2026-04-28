@@ -13,10 +13,11 @@ import { FunctionComponent, useMemo } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import { useMediaQuery } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
 import createDefaultTheme from 'openvsx-webui/lib/default/theme';
 import createPageSettings from './page-settings';
+import { createAbsoluteURL } from 'openvsx-webui/lib/utils';
 
 const App: FunctionComponent = () => {
   const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
@@ -50,8 +51,7 @@ const App: FunctionComponent = () => {
         <Main
           service={service}
           pageSettings={pageSettings}
-          // get the list of supported login providers from the server instead of hardcoding it
-          // loginProviders={{ github: createAbsoluteURL([serverUrl, 'oauth2', 'authorization', 'github']) }}
+          loginProviders={{ github: createAbsoluteURL([serverUrl, 'oauth2', 'authorization', 'github']) }}
         />
       </ThemeProvider>
     </HelmetProvider>

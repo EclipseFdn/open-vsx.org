@@ -1,0 +1,8 @@
+Contact: mailto:security@open-vsx.org
+Expires: 2034-10-10T10:30:00.000Z
+Encryption: https://www.eclipse.org/security/team/
+Preferred-Languages: en
+Canonical: https://open-vsx.org/.well-known/security.txt
+Canonical: https://www.eclipse.org/.well-known/security.txt
+Canonical: https://gitlab.eclipse.org/.well-known/security.txt
+Policy: https://open-vsx.org/security/

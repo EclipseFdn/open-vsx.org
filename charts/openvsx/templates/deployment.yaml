@@ -63,6 +63,8 @@ spec:
             name: grafana-cloud-secret-{{ .Values.environment }}
         - secretRef:
             name: deployment-configuration-{{ .Values.environment }}-aws
+        - secretRef:
+            name: deployment-configuration-{{ .Values.environment }}-argus
         livenessProbe:
           failureThreshold: 3
           httpGet:

@@ -2,6 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment staging
+platform: &platform okd-c1
 namespace: &namespace open-vsx-org-staging
 host: staging.open-vsx.org
 
@@ -30,6 +31,7 @@ website:
     -XX:+DisableExplicitGC
     -XX:+UnlockExperimentalVMOptions
     -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
     -Dorg.jooq.no-logo=true
@@ -84,9 +86,9 @@ alloy:
       name: "grafana-alloy-configmap-staging"
       key: "config.river"
     envFrom:
-      - secretRef: 
+      - secretRef:
           name: grafana-cloud-secret-staging
-      - secretRef: 
+      - secretRef:
           name: redis-secret-staging
   crds:
     create: true

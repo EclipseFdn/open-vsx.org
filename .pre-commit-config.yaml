@@ -1,0 +1,27 @@
+exclude: ^website/.yarn/.*$
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+    - id: check-yaml
+      exclude: 'charts|kubernetes' # exclude kubernetes yaml files
+    - id: end-of-file-fixer
+    - id: mixed-line-ending
+    - id: trailing-whitespace
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.11.0.1
+  hooks:
+  -   id: shellcheck
+- repo: https://github.com/woodruffw/zizmor-pre-commit
+  rev: v1.23.1
+  hooks:
+    - id: zizmor
+      args: [ --min-severity, low ]
+- repo: local
+  hooks:
+    - id: lint
+      name: eslint & prettier
+      entry: bash -c 'cd website && yarn lint' --
+      language: system
+      files: ^website/
+      types: [file]

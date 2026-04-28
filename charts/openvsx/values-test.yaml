@@ -2,6 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment test
+platform: &platform okd-c1
 namespace: &namespace open-vsx-org-test
 host: test.open-vsx.org
 
@@ -27,6 +28,7 @@ website:
     -XX:+DisableExplicitGC
     -XX:+UnlockExperimentalVMOptions
     -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
     -Dorg.jooq.no-logo=true
@@ -81,9 +83,9 @@ alloy:
       name: "grafana-alloy-configmap-test"
       key: "config.river"
     envFrom:
-      - secretRef: 
+      - secretRef:
           name: grafana-cloud-secret-test
-      - secretRef: 
+      - secretRef:
           name: redis-secret-test
   crds:
     create: true

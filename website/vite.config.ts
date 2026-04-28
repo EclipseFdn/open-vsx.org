@@ -1,12 +1,13 @@
 import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import webfontDownload from 'vite-plugin-webfont-dl';
-import { defineConfig } from 'vite';
+import { visualizer } from 'rollup-plugin-visualizer';
+import { defineConfig, type PluginOption } from 'vite';
 
 const outRootDir = path.join(__dirname, 'dist');
 
 export default defineConfig(() => ({
-  plugins: [react(), webfontDownload()],
+  plugins: [react(), webfontDownload(), visualizer() as PluginOption],
   server: {
     host: true,
     port: 3000
@@ -21,15 +22,22 @@ export default defineConfig(() => ({
   },
   publicDir: 'static',
   build: {
-    target: 'es6',
+    target: 'es2020',
     minify: true,
     sourcemap: true,
     outDir: outRootDir,
     emptyOutDir: true,
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
       output: {
-        entryFileNames: 'bundle.js',
-        assetFileNames: 'bundle-[name].css'
+        entryFileNames: 'bundle-[hash].js',
+        assetFileNames: '[name]-[hash][extname]',
+        chunkFileNames: 'chunk-[name]-[hash].js',
+        manualChunks: {
+            lodash: ['lodash'],
+            material: ['@mui/material'],
+            'mui-x': ['@mui/x-charts', '@mui/x-data-grid', '@mui/x-date-pickers'],
+        }
       }
     }
   }
