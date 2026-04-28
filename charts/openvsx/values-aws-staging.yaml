@@ -2,6 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment staging
+platform: &platform eks
 namespace: &namespace open-vsx-org-staging
 host: premium-staging.open-vsx.org
 
