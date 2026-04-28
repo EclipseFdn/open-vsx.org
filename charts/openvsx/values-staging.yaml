@@ -2,7 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment staging
-platform: &platform okd-c1
+platform: &platform eks
 namespace: &namespace open-vsx-org-staging
 host: staging.open-vsx.org
 
@@ -18,7 +18,7 @@ image:
   tag: 6d777ca-570
 
 eks:
-  enabled: false  # Switch to false for OKD installations
+  enabled: false
 
 website:
   jvmArgs: >
