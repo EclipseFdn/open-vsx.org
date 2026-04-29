@@ -5,9 +5,13 @@ environment: &environment test
 platform: &platform okd-c1
 namespace: &namespace open-vsx-org-test
 host: test.open-vsx.org
+platform: okd
 
 replicaCount: 1
 esReplicaCount: 1
+
+autoscaling:
+  enabled: false
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website

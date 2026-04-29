@@ -5,9 +5,18 @@ environment: &environment staging
 platform: &platform okd-c1
 namespace: &namespace open-vsx-org-staging
 host: staging.open-vsx.org
+platform: okd
 
 replicaCount: 1
 esReplicaCount: 1
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+  scaleDownWindow: 300
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
