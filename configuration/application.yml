@@ -421,4 +421,3 @@ ovsx:
           initial-delay-seconds: 10
           interval-seconds: 15
           max-attempts: 120
-  
