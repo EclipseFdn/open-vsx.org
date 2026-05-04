@@ -15,3 +15,9 @@ spec:
     {{- toYaml .Values.redis.resources | nindent 4 }}
   persistence:
     {{- toYaml .Values.redis.persistence | nindent 4 }}
+  {{- if hasKey .Values.redis "disablePersistence" }}
+  disablePersistence: {{ .Values.redis.disablePersistence }}
+  {{- end }}
+  {{- if hasKey .Values.redis "clusterNodeTimeout" }}
+  clusterNodeTimeout: {{ .Values.redis.clusterNodeTimeout }}
+  {{- end }}
