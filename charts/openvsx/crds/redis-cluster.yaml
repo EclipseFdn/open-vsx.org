@@ -56,6 +56,11 @@ spec:
                       format: int32
                     storageClass:
                       type: string
+                disablePersistence:
+                  type: boolean
+                clusterNodeTimeout:
+                  type: integer
+                  minimum: 1000
             status:
               type: object
               x-kubernetes-preserve-unknown-fields: true
