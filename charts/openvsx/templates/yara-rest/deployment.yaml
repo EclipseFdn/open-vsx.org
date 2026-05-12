@@ -24,6 +24,7 @@ spec:
         environment: {{ .Values.environment }}
         component: {{ .Values.yara.name }}-{{ .Values.environment }}
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
         - name: {{ .Values.yara.name }}-{{ .Values.environment }}
           image: "{{ .Values.yara.image.repository }}:{{ .Values.yara.image.tag }}"

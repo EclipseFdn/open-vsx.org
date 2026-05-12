@@ -91,7 +91,7 @@ es:
       memory: 8Gi
     requests:
       cpu: 1
-      memory: 8Gi
+      memory: 8Gi 
   storage_class: gp3
 
 postgresql-ha:
@@ -147,16 +147,16 @@ postgresql-ha:
         cpu: "500m"
         memory: "3Gi"
       limits:
-        cpu: "2"
+        cpu: "2"   
         memory: "4Gi"
     pdb:
       create: true
       minAvailable: 1
     podAnnotations:
       "karpenter.sh/do-not-disrupt": "true"
-      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" 
   pgpool:
-    enabled: false
+    replicaCount: 0
 
 # redis
 redis:
@@ -200,14 +200,16 @@ redis:
 # grafana alloy
 alloy:
   alloy:
+    clustering:
+      enabled: true
     configMap:
       create: false
       name: "grafana-alloy-configmap-staging"
       key: "config.river"
     envFrom:
-      - secretRef:
+      - secretRef: 
           name: grafana-cloud-secret-staging
-      - secretRef:
+      - secretRef: 
           name: redis-secret-staging
     extraPorts:
       - name: zipkin

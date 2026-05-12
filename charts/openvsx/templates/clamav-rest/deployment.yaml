@@ -24,6 +24,7 @@ spec:
         environment: {{ .Values.environment }}
         component: {{ .Values.clamav.name }}-{{ .Values.environment }}
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
         - name: {{ .Values.clamav.name }}-{{ .Values.environment }}
           image: "{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag }}"
