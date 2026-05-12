@@ -127,7 +127,7 @@ clamav:
   replicas: 1
   image:
     repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.1"
+    tag: "v0.1.2"
     pullPolicy: Always
   resources:
     requests:
@@ -153,7 +153,7 @@ yara:
   replicas: 1
   image:
     repository: "ghcr.io/eclipsefdn/yara-rest"
-    tag: "v0.1.0"
+    tag: "v0.1.1"
     pullPolicy: Always
   resources:
     requests:

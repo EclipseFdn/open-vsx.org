@@ -238,7 +238,7 @@ ovsx:
 
     # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
     max-archive-size-bytes: 1073741824   # 1 GB total archive limit
-    max-single-file-bytes: 268435456     # 256 MB per-file limit
+    max-single-file-bytes: 536870912     # 512 MB per-file limit
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
@@ -307,6 +307,7 @@ ovsx:
             file-field: "file"
           response:
             format: json
+            error-path: "$.error"
             # Our wrapper returns: { status, threats[], scanned_files, scan_time_ms }
             threats-path: "$.threats[*]"
             threat-mapping:
@@ -348,6 +349,7 @@ ovsx:
             file-field: "file"
           response:
             format: json
+            error-path: "$.error"
             # Matches are returned as an array
             threats-path: "$.matches[*]"
             threat-mapping:

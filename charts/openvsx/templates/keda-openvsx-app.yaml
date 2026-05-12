@@ -34,7 +34,7 @@ spec:
         name: keda-prometheus-trigger-auth
       metadata:
         serverAddress: {{ .Values.autoscaling.prometheusUrl }}   # ← add this line
-        authModes: "basic" 
+        authModes: "basic"
         metricName: jetty_queue_utilization_sustained
         query: |
           avg(
