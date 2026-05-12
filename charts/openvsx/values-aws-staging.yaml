@@ -109,7 +109,7 @@ postgresql-ha:
         memory: 256Mi
     serviceMonitor:
       enabled: true
-      interval: 30s
+      interval: 60s
       labels:
         app: open-vsx-org
         environment: staging
@@ -211,6 +211,13 @@ alloy:
           name: grafana-cloud-secret-staging
       - secretRef: 
           name: redis-secret-staging
+    extraEnv:
+    - name: CLUSTER_NAME
+      value: "eks-staging"
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
     extraPorts:
       - name: zipkin
         port: 9411
