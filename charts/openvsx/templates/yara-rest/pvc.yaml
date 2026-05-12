@@ -5,7 +5,7 @@ metadata:
   name: yara-rules
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
