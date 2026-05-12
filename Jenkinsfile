@@ -92,7 +92,7 @@ pipeline {
       }
     }
 
-    stage('Deploy to EKS staging environment') { 
+    stage('Deploy to EKS staging environment') {
       when {
         anyOf {
         expression { return env.BRANCH_NAME.startsWith('feature') }
