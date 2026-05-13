@@ -1,0 +1,291 @@
+# Default values for openvsx eks staging.
+
+name: &name open-vsx-org
+environment: &environment staging
+platform: &platform eks
+namespace: &namespace open-vsx-org-staging
+host: staging.open-vsx.org
+
+replicaCount: 6
+esReplicaCount: 3
+autoscaling:
+  enabled: true
+  minReplicas: 12
+  maxReplicas: 18
+  prometheusUrl: "https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom"
+  pollingInterval: 30
+  cooldownPeriod: 600
+  scaleUp:
+    stabilizationWindowSeconds: 180
+    pods: 2
+    periodSeconds: 120
+  scaleDown:
+    stabilizationWindowSeconds: 600
+    pods: 1
+    periodSeconds: 180
+
+image:
+  repository: ghcr.io/eclipsefdn/openvsx-website
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 97e1417-99
+
+eks:
+  enabled: true  # Switch to false for OKD installations
+
+aws-load-balancer-controller:
+  resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  clusterName: eks-staging
+  region: eu-central-1
+  vpcId: vpc-0285cbfe9bfb7e4fd
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller-staging
+
+ingress:
+  certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+
+website:
+  jvmArgs: >
+    -Xms4G -Xmx6G
+    -XX:+AlwaysPreTouch
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+UseStringDeduplication
+    -XX:+ParallelRefProcEnabled
+    -XX:+DisableExplicitGC
+    -XX:+UnlockExperimentalVMOptions
+    -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
+    -Dlog4j2.formatMsgNoLookups=true
+    -Dlog4j.formatMsgNoLookups=true
+    -Dorg.jooq.no-logo=true
+    -Dorg.jooq.no-tips=true
+    --enable-native-access=ALL-UNNAMED
+
+resources:
+  limits:
+    cpu: 5000m
+    memory: 8Gi
+  requests:
+    cpu: 3000m
+    memory: 8Gi
+
+# elastic search
+es:
+  commonAnnotations:
+    "karpenter.sh/do-not-disrupt": "true"
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+  pdb:
+    create: true
+    minAvailable: 1
+  java_opts: -Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true
+  resources:
+    limits:
+      cpu: 4
+      memory: 8Gi
+    requests:
+      cpu: 1
+      memory: 8Gi
+  storage_class: gp3
+
+postgresql-ha:
+  metrics:
+    enabled: true
+    image:
+      repository: bitnamilegacy/postgres-exporter
+      tag: 0.17.1-debian-12-r14
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    serviceMonitor:
+      enabled: true
+      interval: 60s
+      labels:
+        app: open-vsx-org
+        environment: staging
+  postgresql:
+    image:
+      repository: bitnamilegacy/postgresql-repmgr
+      tag: 17.6.0-debian-12-r2
+    podSecurityContext:
+      enabled: true
+      fsGroup: 1001
+    containerSecurityContext:
+      enabled: true
+      runAsUser: 1001
+    database: openvsx-staging
+    createDatabase: true
+    passwordEncryption: "scram-sha-256"
+    enablePostgresUser: true
+    extraEnvVars:
+      - name: POSTGRESQL_SR_CHECK_PASSWORD
+    authenticationConfiguration: |
+      host all all 0.0.0.0/0 scram-sha-256
+      local all all peer
+    extendedConf: |-
+      max_connections = 1000
+      # Reduced to ~20% of RAM to leave room for connection overhead
+      shared_buffers = 800MB
+      # Critical: Set low because it can be allocated multiple times per query
+      work_mem = 1MB
+      # Lowered to avoid spikes during maintenance
+      maintenance_work_mem = 64MB
+      # 50-75% of total RAM is the standard planner hint
+      effective_cache_size = 3000MB
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "3Gi"
+      limits:
+        cpu: "2"
+        memory: "4Gi"
+    pdb:
+      create: true
+      minAvailable: 1
+    podAnnotations:
+      "karpenter.sh/do-not-disrupt": "true"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+  pgpool:
+    replicaCount: 0
+
+# redis
+redis:
+  master:
+    pdb:
+      create: true
+      minAvailable: 1
+    podAnnotations:
+      "karpenter.sh/do-not-disrupt": "true"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+  replica:
+    pdb:
+      create: true
+      minAvailable: 1
+    podAnnotations:
+      "karpenter.sh/do-not-disrupt": "true"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+  name: redis
+  replicas: 6
+  image:
+    repository: redis
+    tag: "7.2.10"
+    pullPolicy: IfNotPresent
+  maxmemory: "896mb"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1536Mi"
+      cpu: "500m"
+  persistence:
+    storageGi: 5
+    storageClass: "gp3"
+  serviceAccountName: redis-cluster-operator
+  clusterRoleName: redis-cluster-operator-role-cluster
+  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster
+  roleName: redis-cluster-operator-role
+  roleBinding: redis-cluster-operator-role-binding
+
+# grafana alloy
+alloy:
+  alloy:
+    clustering:
+      enabled: true
+    configMap:
+      create: false
+      name: "grafana-alloy-configmap-staging"
+      key: "config.river"
+    envFrom:
+      - secretRef:
+          name: grafana-cloud-secret-staging
+      - secretRef:
+          name: redis-secret-staging
+    extraEnv:
+    - name: CLUSTER_NAME
+      value: "eks-staging"
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    extraPorts:
+      - name: zipkin
+        port: 9411
+        targetPort: 9411
+      - name: loki
+        port: 3100
+        targetPort: 3100
+  crds:
+    create: true
+  controller:
+    type: "daemonset"
+    podLabels:
+      app: *name
+      environment: *environment
+    nodeSelector:
+      openvsx-production-alloy: null
+  fullnameOverride: grafana-alloy-staging
+  namespaceOverride: *namespace
+
+clamav:
+  enabled: true
+  name: "clamav"
+  replicas: 3
+  persistence:
+    storageClass: "gp3"
+  image:
+    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
+    tag: "v0.1.1"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 2
+      memory: 4Gi
+    limits:
+      cpu: 4
+      memory: 6Gi
+  service:
+    port: 9000
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 512
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 300
+    MAX_RECURSION: 16
+    MAX_THREADS: 4
+    SCAN_TIMEOUT_MINUTES: 5
+
+yara:
+  enabled: true
+  name: "yara"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/yara-rest"
+    tag: "v0.1.0"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 1
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  service:
+    port: 9001
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 1024
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 300
+    MAX_RECURSION: 0
+    SCAN_TIMEOUT_MINUTES: 5

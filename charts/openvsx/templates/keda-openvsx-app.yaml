@@ -1,0 +1,51 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .Values.name }}-{{ .Values.environment }}-keda
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.name }}-{{ .Values.environment }}
+  minReplicaCount: {{ .Values.autoscaling.minReplicas }}
+  maxReplicaCount: {{ .Values.autoscaling.maxReplicas }}
+  pollingInterval: {{ .Values.autoscaling.pollingInterval }}        # query every 30s, not 15s — reduces noise
+  cooldownPeriod: {{ .Values.autoscaling.cooldownPeriod }}          # wait 10 mins before scaling down — let I/O settle
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: {{ .Values.autoscaling.scaleUp.stabilizationWindowSeconds }}    # sustained pressure for 3 mins before scaling up
+          policies:
+            - type: Pods
+              value: {{ .Values.autoscaling.scaleUp.pods }}                   # add max 2 pods at a time
+              periodSeconds: {{ .Values.autoscaling.scaleUp.periodSeconds }}  # add max 2 pods every 2 mins — gradual
+        scaleDown:
+          stabilizationWindowSeconds: {{ .Values.autoscaling.scaleDown.stabilizationWindowSeconds }}    # hold for 10 mins before scaling down
+          policies:
+            - type: Pods
+              value: {{ .Values.autoscaling.scaleDown.pods }}
+              periodSeconds: {{ .Values.autoscaling.scaleDown.periodSeconds }}             # remove only 1 pod every 3 mins — conservative
+  triggers:
+    - type: prometheus
+      authenticationRef:
+        name: keda-prometheus-trigger-auth
+      metadata:
+        serverAddress: {{ .Values.autoscaling.prometheusUrl }}   # ← add this line
+        authModes: "basic"
+        metricName: jetty_queue_utilization_sustained
+        query: |
+          avg(
+            avg_over_time(
+              (
+                executor_queued_tasks{environment="{{ .Values.environment }}"}
+                /
+                (executor_queued_tasks{environment="{{ .Values.environment }}"} + executor_queue_remaining_tasks{environment="{{ .Values.environment }}"})
+                * 100
+              )[5m:15s]
+            )
+          )
+        threshold: "70"
+{{- end }}

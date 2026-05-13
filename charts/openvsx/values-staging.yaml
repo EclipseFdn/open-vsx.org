@@ -8,12 +8,17 @@ host: staging.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
+autoscaling:
+  enabled: false
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: 6d777ca-570
+
+eks:
+  enabled: false
 
 website:
   jvmArgs: >
