@@ -1,6 +1,6 @@
 {{- if .Values.clamav.enabled }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Values.clamav.name }}-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
@@ -8,6 +8,7 @@ metadata:
     app: {{ .Values.name }}
     environment: {{ .Values.environment }}
 spec:
+  serviceName: {{ .Values.clamav.name }}-{{ .Values.environment }}
   revisionHistoryLimit: 1
   replicas: {{ .Values.clamav.replicas }}
   selector:
@@ -15,8 +16,6 @@ spec:
       app: {{ .Values.name }}
       environment: {{ .Values.environment }}
       component: {{ .Values.clamav.name }}-{{ .Values.environment }}
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -71,9 +70,15 @@ spec:
       volumes:
       - name: run-dir
         emptyDir: {}
-      - name: clamav-db
-        persistentVolumeClaim:
-          claimName: clamav-db
       - name: tmp-scans
         emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: clamav-db
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ .Values.clamav.persistence.storageClass | quote }}
+      resources:
+        requests:
+          storage: {{ .Values.clamav.persistence.size | default "5Gi" }}
 {{- end }}
