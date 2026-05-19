@@ -92,11 +92,11 @@ pipeline {
       }
     }
 
-    stage('Deploy to EKS staging environment') {
+    stage('Deploy to AWS staging environment') {
       when {
         anyOf {
         expression { return env.BRANCH_NAME.startsWith('feature') }
-        branch 'eks-main'
+        branch 'aws-main'
       }
       }
       steps {
@@ -104,6 +104,21 @@ pipeline {
           withKubeConfig([credentialsId: 'ci-bot-eks-staging-token', serverUrl: 'https://5CF0970816FA7A7C340E6BEF8575A8D4.gr7.eu-central-1.eks.amazonaws.com']) {
             sh '''
               ./kubernetes/helm-deploy.sh aws-staging "${IMAGE_TAG}"
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Deploy to AWS production environment') {
+      when {
+        branch 'aws-production'
+      }
+      steps {
+        container('eks') {
+          withKubeConfig([credentialsId: 'ci-bot-eks-production-token', serverUrl: 'https://5CF0970816FA7A7C340E6BEF8575A8D4.gr7.eu-central-1.eks.amazonaws.com']) {
+            sh '''
+              ./kubernetes/helm-deploy.sh aws-production "${IMAGE_TAG}"
             '''
           }
         }

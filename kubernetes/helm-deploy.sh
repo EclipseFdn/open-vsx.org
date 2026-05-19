@@ -23,6 +23,8 @@ release_name_production="production"
 chart_name="openvsx"
 namespace="open-vsx-org"
 namespace_staging="open-vsx-org-staging"
+namespace_aws_production="open-vsx-org-aws-production"
+namespace_aws_staging="open-vsx-org-staging"
 namespace_test="open-vsx-org-test"
 
 environment="${1:-}"
@@ -30,7 +32,7 @@ image_tag="${2:-}"
 
 # check that environment is not empty
 if [[ -z "${environment}" ]]; then
-  printf "ERROR: an environment ('test', 'staging', 'aws-staging' or 'production') must be given.\n"
+  printf "ERROR: an environment ('test', 'staging', 'aws-staging', 'aws-production' or 'production') must be given.\n"
   exit 1
 fi
 
@@ -47,7 +49,11 @@ if [[ "${environment}" == "staging" ]]; then
 elif [[ "${environment}" == "aws-staging" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-aws-staging.yaml"
   release_name="${release_name_staging}"
-  namespace="${namespace_staging}"
+  namespace="${namespace_aws_staging}"
+elif [[ "${environment}" == "aws-production" ]]; then
+  values_file="${ROOT_DIR}/charts/${chart_name}/values-aws-production.yaml"
+  release_name="${release_name_production}"
+  namespace="${namespace_aws_production}"
 elif [[ "${environment}" == "test" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-test.yaml"
   release_name="${release_name_test}"
