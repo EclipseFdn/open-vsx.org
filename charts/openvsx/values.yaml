@@ -6,14 +6,40 @@ platform: &platform okd-c1
 namespace: &namespace open-vsx-org
 host: open-vsx.org
 
+# Toggles all EKS-specific resources (Ingress, ServiceAccount IRSA, ESO, KEDA).
+# OKD-only resources (Route, ServiceMonitor, RedisCluster, redis-cluster-operator,
+# in-chart Alloy ConfigMap, deployment-configuration-*-aws envFrom) render only
+# when this is false.
+eks:
+  enabled: false
+
+# IRSA ServiceAccount — only created on EKS. On OKD pods use the default SA.
+serviceAccount:
+  create: false
+  name: openvsx
+  annotations: {}
+
+# External Secrets Operator — only enabled on EKS (syncs from AWS Secrets Manager).
+externalSecrets:
+  enabled: false
+
+# KEDA ScaledObject for Tomcat-based autoscaling — only enabled on EKS.
+keda:
+  enabled: false
+
 replicaCount: 6
 esReplicaCount: 3
+autoscaling:
+  enabled: false
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: 97e1417-99
+
+eks:
+  enabled: false
 
 website:
   jvmArgs: >
@@ -59,6 +85,7 @@ es:
       cpu: 1
       memory: 8Gi
   storage_class: cephfs-new
+  storage: 1Gi
 
 # redis
 redis:
@@ -87,6 +114,7 @@ redis:
 
 # grafana alloy
 alloy:
+  enabled: true
   alloy:
     configMap:
       create: false
@@ -122,7 +150,7 @@ clamav:
   replicas: 1
   image:
     repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.2"
+    tag: "v0.1.1"
     pullPolicy: Always
   resources:
     requests:
@@ -148,7 +176,7 @@ yara:
   replicas: 1
   image:
     repository: "ghcr.io/eclipsefdn/yara-rest"
-    tag: "v0.1.1"
+    tag: "v0.1.0"
     pullPolicy: Always
   resources:
     requests:

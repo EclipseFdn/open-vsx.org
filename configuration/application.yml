@@ -8,11 +8,8 @@ logging:
     root: "info"
     # avoid log messages like: Received invalid Accept header. Assuming all media types are accepted
     org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
+    # reduce log verbosity for redis connection watchdog
     io.lettuce.core.protocol: "warn"
-    org.eclipse.openvsx.ratelimit: "debug"
-    org.eclipse.openvsx.scanning: "debug"
-    #org.jooq.tools.LoggerListener: "debug"
-    #org.springframework.web.servlet.DispatcherServlet: "debug"
 
 server:
   address: 0.0.0.0
@@ -29,8 +26,8 @@ server:
     min-response-size: 1024
   jetty:
     threads:
-      max: 250
-      max-queue-capacity: 50
+      max: 450
+      max-queue-capacity: 100
     connection-idle-timeout: 65000
 spring:
   application:
@@ -124,18 +121,14 @@ bucket4j:
 
 ovsx:
   access-token:
-    prefix: staging_ovsxat_
-    expiration: P90D
-    notification: P7D
-    send-expired-mail: true
-    max-token-notifications: 100
-    expiration-schedule: '0 */1 * * * *'
-    notification-schedule: '30 */1 * * * *'
+    prefix: ovsxat_
+    expiration: 0
+    notification: 0
   storage:
     cdn:
       enabled: true
       services:
-        aws: https://openvsx-staging.eclipsecontent.org/
+        aws: https://openvsx.eclipsecontent.org/
     migration:
       enabled: false
     primary-service: aws
@@ -185,7 +178,7 @@ ovsx:
     namespace-details-json:
       ttl: PT1H
     database-search:
-      ttl:PT1H
+      ttl: PT1H
     extension-json:
       ttl: PT1H
     latest-extension-version:
@@ -207,15 +200,12 @@ ovsx:
   # dynamic tier-based rate limiting configuration
   rate-limit:
     enabled: true
-    token-prefix: staging_ovsxrl_
+    token-prefix: ovsx_rl_
     # on the trust boundary (fastly edge), "X-Fastly-Real-IP" is set for any external requests
     # on nginx, "X-Real-IP" is set for any external requests, kept as a fallback
     # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
     # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
     ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-    usage-stats:
-      job-schedule: '*/30 * * * * *'
-      daily-job-schedule: '*/30 * * * * *'
     filters:
       - url: '/(api|vscode)/.*'
         http-response-headers:
@@ -299,7 +289,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://clamav-staging:9000/scan"
+          url: "http://clamav-production:9000/scan"
           headers:
             Accept: "application/json"
           body:
@@ -307,7 +297,6 @@ ovsx:
             file-field: "file"
           response:
             format: json
-            error-path: "$.error"
             # Our wrapper returns: { status, threats[], scanned_files, scan_time_ms }
             threats-path: "$.threats[*]"
             threat-mapping:
@@ -341,7 +330,7 @@ ovsx:
 
         start:
           method: POST
-          url: "http://yara-staging:9001/scan"
+          url: "http://yara-production:9001/scan"
           headers:
             Accept: "application/json"
           body:
@@ -349,7 +338,6 @@ ovsx:
             file-field: "file"
           response:
             format: json
-            error-path: "$.error"
             # Matches are returned as an array
             threats-path: "$.matches[*]"
             threat-mapping:
@@ -370,8 +358,8 @@ ovsx:
         required: false
         enforced: true
         async: true        # Asynchronous - POST returns a jobId, then poll until done
-        timeout-minutes: 30
-        max-concurrency: 40
+        timeout-minutes: 20
+        max-concurrency: 10
 
         # Deep-link template for the admin scan dashboard. {jobId} is replaced
         # with the scanner's externalJobId at render time, giving admins a

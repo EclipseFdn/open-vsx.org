@@ -1,0 +1,15 @@
+{{- if .Values.keda.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ .Values.name }}-grafana-cloud-auth
+  namespace: {{ .Values.namespace }}
+spec:
+  secretTargetRef:
+  - parameter: username
+    name: grafana-cloud-secret-production
+    key: PROMETHEUS_USERNAME
+  - parameter: password
+    name: grafana-cloud-secret-production
+    key: PROMETHEUS_PASSWORD
+{{- end }}

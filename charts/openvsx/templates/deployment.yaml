@@ -7,9 +7,16 @@ metadata:
   name: {{ .Values.name }}-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
 spec:
-  progressDeadlineSeconds: 3600
-  revisionHistoryLimit: 1
+  progressDeadlineSeconds: 900
+  revisionHistoryLimit: 3
+  {{- if not .Values.keda.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 25%
   selector:
     matchLabels:
       app: {{ .Values.name }}
@@ -22,16 +29,10 @@ spec:
         environment: {{ .Values.environment }}
         type: website
     spec:
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - preference:
-              matchExpressions:
-              - key: speed
-                operator: NotIn
-                values:
-                - fast
-            weight: 1
+      terminationGracePeriodSeconds: 75
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
       containers:
       - name: {{ .Values.name }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
@@ -60,29 +61,38 @@ spec:
         envFrom:
         - secretRef:
             name: grafana-cloud-secret-{{ .Values.environment }}
+        {{- if not .Values.eks.enabled }}
         - secretRef:
             name: deployment-configuration-{{ .Values.environment }}-aws
+        {{- end }}
         - secretRef:
             name: deployment-configuration-{{ .Values.environment }}-argus
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 25"]
         livenessProbe:
           failureThreshold: 3
           httpGet:
             path: /actuator/health/liveness
             port: http-management
           periodSeconds: 10
+          timeoutSeconds: 5
         readinessProbe:
           failureThreshold: 2
           httpGet:
             path: /actuator/health/readiness
             port: http-management
           periodSeconds: 10
+          timeoutSeconds: 5
         startupProbe:
-          failureThreshold: 360
+          failureThreshold: 30
           httpGet:
             path: /actuator/health/readiness
             port: http-management
           periodSeconds: 10
           initialDelaySeconds: 30
+          timeoutSeconds: 5
       initContainers:
       - command:
         - sh

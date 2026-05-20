@@ -28,9 +28,12 @@ namespace_test="open-vsx-org-test"
 environment="${1:-}"
 image_tag="${2:-}"
 
+# DRY_RUN=1 ./helm-deploy.sh ... → render + server-side validate, do not apply.
+DRY_RUN="${DRY_RUN:-}"
+
 # check that environment is not empty
 if [[ -z "${environment}" ]]; then
-  printf "ERROR: an environment ('test', 'staging' or 'production') must be given.\n"
+  printf "ERROR: an environment ('test', 'staging', 'aws-staging', 'aws-production' or 'production') must be given.\n"
   exit 1
 fi
 
@@ -44,6 +47,10 @@ if [[ "${environment}" == "staging" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-staging.yaml"
   release_name="${release_name_staging}"
   namespace="${namespace_staging}"
+elif [[ "${environment}" == "aws-staging" ]]; then
+  values_file="${ROOT_DIR}/charts/${chart_name}/values-aws-staging.yaml"
+  release_name="${release_name_staging}"
+  namespace="${namespace_staging}"
 elif [[ "${environment}" == "test" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-test.yaml"
   release_name="${release_name_test}"
@@ -51,9 +58,21 @@ elif [[ "${environment}" == "test" ]]; then
 elif [[ "${environment}" == "production" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values.yaml"
   release_name="${release_name_production}"
+elif [[ "${environment}" == "aws-production" ]]; then
+  values_file="${ROOT_DIR}/charts/${chart_name}/values-aws.yaml"
+  release_name="${release_name_production}"
 else
-  printf "ERROR: Unknown environment. Only 'test', 'staging' or 'production' are supported.\n"
+  printf "ERROR: Unknown environment. Only 'test', 'staging', 'aws-staging', 'aws-production' or 'production' are supported.\n"
   exit 1
+fi
+
+# Deployment manifest's Values.environment — aws-* envs use values-aws-*.yaml which set environment=staging/production
+if [[ "${environment}" == "aws-production" ]]; then
+  deployment_env="production"
+elif [[ "${environment}" == "aws-staging" ]]; then
+  deployment_env="staging"
+else
+  deployment_env="${environment}"
 fi
 
 chmod 600 "${KUBECONFIG}"
@@ -66,7 +85,31 @@ mkdir -p "${HELM_CACHE_HOME}"
 mkdir -p "${HELM_CONFIG_HOME}"
 mkdir -p "${HELM_DATA_HOME}"
 
+if [[ -n "${DRY_RUN}" ]]; then
+  printf "==> DRY RUN — render + server-side validate, no changes will be applied\n"
+  helm_mode_flags=(--dry-run=server --debug)
+else
+  helm_mode_flags=(--atomic --timeout 10m)
+fi
+
 helm version
 helm repo add grafana https://grafana.github.io/helm-charts
+helm repo add postgresql-ha https://charts.bitnami.com/bitnami
+helm repo add eks https://aws.github.io/eks-charts
 helm dependency build  "${ROOT_DIR}/charts/openvsx"
-helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" -f "${values_file}" --set image.tag="${image_tag}" --namespace "${namespace}"
+
+printf "==> Running helm upgrade: release='%s' namespace='%s' image_tag='%s'\n" "${release_name}" "${namespace}" "${image_tag}"
+helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" \
+  -f "${values_file}" \
+  --set image.tag="${image_tag}" \
+  --namespace "${namespace}" \
+  --create-namespace \
+  "${helm_mode_flags[@]}"
+
+if [[ -n "${DRY_RUN}" ]]; then
+  printf "==> DRY RUN complete — no rollout to verify, exiting cleanly\n"
+  exit 0
+fi
+
+printf "==> Verifying main app rollout: deployment/open-vsx-org-%s in namespace '%s'\n" "${deployment_env}" "${namespace}"
+kubectl rollout status "deployment/open-vsx-org-${deployment_env}" --namespace "${namespace}" --timeout=5m

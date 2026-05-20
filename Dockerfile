@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=read-only-mode
-ARG SERVER_VERSION_STRING=v1.0.0-dev.rc.0
+ARG SERVER_VERSION=v0.34.5
+ARG SERVER_VERSION_STRING=v0.34.5
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder

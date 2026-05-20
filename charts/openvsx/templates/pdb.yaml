@@ -1,0 +1,37 @@
+{{- if .Values.eks.enabled }}
+# Main app PDB — caps simultaneous pod evictions during Auto Mode node consolidation
+# and 14-day node expiry. maxUnavailable: 25% scales proportionally with KEDA
+# (replicas 6→20), preserving ~75% available capacity at any disruption event.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.name }}-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+spec:
+  maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+      environment: {{ .Values.environment }}
+      type: website
+---
+# Elasticsearch PDB — keeps Raft quorum intact during node rotations.
+# templates/elasticsearch.yaml sets `podDisruptionBudget: {}` on EKS to disable
+# ECK's auto-PDB, so this chart resource is the single source of truth.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: elasticsearch-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: elasticsearch-{{ .Values.environment }}
+{{- end }}
