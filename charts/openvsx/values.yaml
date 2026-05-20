@@ -16,7 +16,7 @@ image:
 
 website:
   jvmArgs: >
-    -Xms4G -Xmx6G
+    -Xms6G -Xmx8G
     -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
