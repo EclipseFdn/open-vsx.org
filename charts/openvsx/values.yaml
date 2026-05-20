@@ -5,7 +5,7 @@ environment: &environment production
 namespace: &namespace open-vsx-org
 host: open-vsx.org
 
-replicaCount: 12
+replicaCount: 16
 esReplicaCount: 3
 
 image:
@@ -16,7 +16,7 @@ image:
 
 website:
   jvmArgs: >
-    -Xms4G -Xmx6G
+    -Xms6G -Xmx8G
     -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
@@ -41,11 +41,11 @@ service:
 
 resources:
   limits:
-    cpu: 5000m
-    memory: 8Gi
+    cpu: 7000m
+    memory: 10Gi
   requests:
     cpu: 3000m
-    memory: 8Gi
+    memory: 12Gi
 
 # elastic search
 es:
