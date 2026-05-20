@@ -42,10 +42,10 @@ service:
 resources:
   limits:
     cpu: 7000m
-    memory: 8Gi
+    memory: 10Gi
   requests:
     cpu: 3000m
-    memory: 8Gi
+    memory: 10Gi
 
 # elastic search
 es:
