@@ -26,7 +26,8 @@ esReplicaCount: 3
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
-  tag: ""
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 97e1417-99
 
 website:
   # MaxDirectMemorySize caps off-heap so the JVM cannot expand past the cgroup limit
