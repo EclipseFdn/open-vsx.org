@@ -5,7 +5,7 @@ environment: &environment production
 namespace: &namespace open-vsx-org
 host: open-vsx.org
 
-replicaCount: 12
+replicaCount: 16
 esReplicaCount: 3
 
 image:
@@ -41,7 +41,7 @@ service:
 
 resources:
   limits:
-    cpu: 5000m
+    cpu: 7000m
     memory: 8Gi
   requests:
     cpu: 3000m
@@ -53,10 +53,10 @@ es:
   resources:
     limits:
       cpu: 4
-      memory: 8Gi
+      memory: 10Gi
     requests:
       cpu: 1
-      memory: 8Gi
+      memory: 10Gi
   storage_class: cephfs-new
 
 # redis
