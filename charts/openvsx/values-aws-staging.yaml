@@ -41,6 +41,7 @@ eks:
   enabled: true  # Switch to false for OKD installations
 
 aws-load-balancer-controller:
+  enabled: true
   resources:
   requests:
     cpu: 100m
@@ -116,6 +117,7 @@ es:
   storage: 1Gi
 
 postgresql-ha:
+  enabled: true
   metrics:
     enabled: true
     image:
