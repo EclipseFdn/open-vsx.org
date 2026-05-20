@@ -7,6 +7,8 @@ host: test.open-vsx.org
 
 replicaCount: 1
 esReplicaCount: 1
+autoscaling:
+  enabled: false
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
@@ -66,6 +68,8 @@ redis:
       cpu: "100m"
   persistence:
     storageGi: 1
+  disablePersistence: true
+  clusterNodeTimeout: 15000
   serviceAccountName: redis-cluster-operator-test
   clusterRoleName: redis-cluster-operator-role-cluster-test
   clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster-test

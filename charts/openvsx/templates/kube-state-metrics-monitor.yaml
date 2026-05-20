@@ -1,0 +1,21 @@
+{{- if .Values.eks.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kube-state-metrics-monitor
+  namespace: open-vsx-org-staging
+  labels:
+    app: open-vsx-org
+    environment: staging
+spec:
+  namespaceSelector:
+    matchNames:
+      - kube-state-metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  endpoints:
+    - path: /metrics
+      interval: 60s
+      targetPort: 8080
+{{- end }}

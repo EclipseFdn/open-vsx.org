@@ -1,3 +1,4 @@
+{{- if not .Values.eks.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -84,3 +85,4 @@ subjects:
   - kind: ServiceAccount
     name: {{ .Values.redis.serviceAccountName }}
     namespace: {{ .Values.namespace }}
+{{- end }}

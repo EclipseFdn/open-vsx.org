@@ -26,8 +26,8 @@ server:
     min-response-size: 1024
   jetty:
     threads:
-      max: 250
-      max-queue-capacity: 50
+      max: 450
+      max-queue-capacity: 100
     connection-idle-timeout: 65000
 spring:
   application:

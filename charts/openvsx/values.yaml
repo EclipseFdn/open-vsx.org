@@ -6,13 +6,32 @@ namespace: &namespace open-vsx-org
 host: open-vsx.org
 
 replicaCount: 16
+
+# IRSA ServiceAccount — only created on EKS. On OKD pods use the default SA.
+serviceAccount:
+  create: false
+  name: openvsx
+  annotations: {}
+
+# External Secrets Operator — only enabled on EKS (syncs from AWS Secrets Manager).
+externalSecrets:
+  enabled: false
+
+# KEDA ScaledObject for Jetty-based autoscaling — only enabled on EKS.
+keda:
+  enabled: false
 esReplicaCount: 3
+autoscaling:
+  enabled: false
 
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: 97e1417-99
+
+eks:
+  enabled: false
 
 website:
   jvmArgs: >
@@ -58,6 +77,7 @@ es:
       cpu: 1
       memory: 8Gi
   storage_class: cephfs-new
+  storage: 1Gi
 
 # redis
 redis:
@@ -86,6 +106,7 @@ redis:
 
 # grafana alloy
 alloy:
+  enabled: true
   alloy:
     configMap:
       create: false

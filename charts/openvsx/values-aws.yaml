@@ -1,0 +1,176 @@
+# EKS (aws-production) values. Self-contained — does not layer on values.yaml.
+# OKD deployments use values.yaml.
+
+name: &name open-vsx-org
+environment: &environment production
+platform: &platform eks
+namespace: &namespace open-vsx-org
+host: open-vsx.org
+
+# Enables EKS-specific resources and suppresses OKD-only ones (Route, ServiceMonitor,
+# RedisCluster CR, redis-cluster-operator, in-chart Alloy ConfigMap, *-aws envFrom).
+eks:
+  enabled: true
+
+# ── Subcharts NOT used in aws-production ────────────────────────────────────────
+# postgresql-ha: prod uses AWS RDS (tf-resources/aws/eu-central-1/rds), not in-cluster Postgres
+# aws-load-balancer-controller: EKS Auto Mode ships an integrated ALB controller — no standalone install
+postgresql-ha:
+  enabled: false
+aws-load-balancer-controller:
+  enabled: false
+
+replicaCount: 3
+esReplicaCount: 3
+
+image:
+  repository: ghcr.io/eclipsefdn/openvsx-website
+  pullPolicy: Always
+  tag: ""
+
+website:
+  # MaxDirectMemorySize caps off-heap so the JVM cannot expand past the cgroup limit
+  # under load (2026-05-19 OKD incident: native+direct growth pushed total past 8Gi -> OOMKill).
+  jvmArgs: >
+    -Xms6G -Xmx8G
+    -XX:MaxDirectMemorySize=512m
+    -XX:+AlwaysPreTouch
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+UseStringDeduplication
+    -XX:+ParallelRefProcEnabled
+    -XX:+DisableExplicitGC
+    -XX:+UnlockExperimentalVMOptions
+    -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
+    -Dlog4j2.formatMsgNoLookups=true
+    -Dlog4j.formatMsgNoLookups=true
+    -Dorg.jooq.no-logo=true
+    -Dorg.jooq.no-tips=true
+    --enable-native-access=ALL-UNNAMED
+
+# ── ServiceAccount (IRSA) — fill from: tf-resources/aws/eu-central-1/iam output openvsx_app_role_arn ──
+serviceAccount:
+  create: true
+  name: openvsx
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-app"
+
+# ── Ingress (ALB/EKS Auto Mode) — fill from TF outputs: vpc→alb_security_group_id, acm→certificate_arn ──
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/security-groups: "sg-04eb53c6c5eed3b52"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840"
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}, {"HTTP": 80}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: >
+      {"Type": "redirect", "RedirectConfig":
+       {"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
+    alb.ingress.kubernetes.io/healthcheck-port: "8081"
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=120,routing.http2.enabled=true,deletion_protection.enabled=true
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30,slow_start.duration_seconds=0
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+resources:
+  # Limit > request (Burstable QoS): 2Gi memory headroom above the 6G heap for thread stacks,
+  # direct buffers, metaspace; CPU limit raised to stop CFS throttling observed during the
+  # 2026-05-19 incident where pods needed 6-9 cores against a 5-core ceiling.
+  limits:
+    cpu: 7000m
+    memory: 12Gi
+  requests:
+    cpu: 3000m
+    memory: 10Gi
+
+# ── Elasticsearch ─────────────────────────────────────────────────────────────
+es:
+  java_opts: -Xms4g -Xmx4g -Dlog4j2.formatMsgNoLookups=true
+  resources:
+    limits:
+      cpu: 4
+      memory: 8Gi
+    requests:
+      cpu: 1
+      memory: 8Gi
+  storage_class: gp3-retain
+  storage: 1Gi
+
+# ── KEDA — Jetty threads/connections via Prometheus (monitoring ns, eks/helm.tf) ──
+# Was Tomcat-based; the app runs Jetty (Spring Boot embedded), so the old queries
+# returned empty and autoscaling never fired. maxReplicas raised after the 2026-05-19
+# incident saturated 12 OKD replicas.
+keda:
+  enabled: true
+  prometheusAddress: https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom
+  minReplicas: 6
+  maxReplicas: 20
+
+# ── External Secrets Operator — ESO + ClusterSecretStore via eks/helm.tf; secrets from TF secrets/ module ──
+externalSecrets:
+  enabled: true
+  clusterSecretStore: aws-secrets-manager
+  refreshInterval: 1h
+
+# ── Grafana Alloy — disabled; monitoring/ TF module manages Alloy cluster-wide with IRSA (OKD nodeSelector won't match EKS) ──
+alloy:
+  enabled: false
+
+# ── ClamAV ───────────────────────────────────────────────────────────────────
+clamav:
+  enabled: true
+  name: "clamav"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
+    tag: "v0.1.1"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 2
+      memory: 4Gi
+    limits:
+      cpu: 4
+      memory: 6Gi
+  service:
+    port: 9000
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 512
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 300
+    MAX_RECURSION: 16
+    MAX_THREADS: 4
+    SCAN_TIMEOUT_MINUTES: 5
+
+# ── YARA ─────────────────────────────────────────────────────────────────────
+yara:
+  enabled: true
+  name: "yara"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/yara-rest"
+    tag: "v0.1.0"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 1
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  service:
+    port: 9001
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 1024
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 300
+    MAX_RECURSION: 0
+    SCAN_TIMEOUT_MINUTES: 5
