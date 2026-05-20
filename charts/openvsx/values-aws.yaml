@@ -111,6 +111,16 @@ keda:
   prometheusAddress: https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom
   minReplicas: 6
   maxReplicas: 20
+  pollingInterval: 30
+  cooldownPeriod: 600
+  scaleUp:
+    stabilizationWindowSeconds: 180
+    pods: 2
+    periodSeconds: 120
+  scaleDown:
+    stabilizationWindowSeconds: 900
+    pods: 1
+    periodSeconds: 180
 
 # ── External Secrets Operator — ESO + ClusterSecretStore via eks/helm.tf; secrets from TF secrets/ module ──
 externalSecrets:
@@ -127,6 +137,8 @@ clamav:
   enabled: true
   name: "clamav"
   replicas: 1
+  persistence:
+    storageClass: "gp3-retain"
   image:
     repository: "ghcr.io/eclipsefdn/clamav-rest-new"
     tag: "v0.1.2"
