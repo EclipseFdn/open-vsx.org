@@ -40,7 +40,7 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.yara.resources | nindent 12 }}
           volumeMounts:
           - name: yara-rules
             mountPath: /rules
