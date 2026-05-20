@@ -1,0 +1,62 @@
+{{- if .Values.keda.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .Values.name }}-{{ .Values.platform }}
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    name: {{ .Values.name }}-{{ .Values.environment }}
+  minReplicaCount: {{ .Values.keda.minReplicas }}
+  maxReplicaCount: {{ .Values.keda.maxReplicas }}
+  pollingInterval: {{ .Values.keda.pollingInterval | default 30 }}
+  cooldownPeriod: {{ .Values.keda.cooldownPeriod | default 600 }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          stabilizationWindowSeconds: {{ .Values.keda.scaleUp.stabilizationWindowSeconds | default 180 }}
+          policies:
+            - type: Pods
+              value: {{ .Values.keda.scaleUp.pods | default 2 }}
+              periodSeconds: {{ .Values.keda.scaleUp.periodSeconds | default 120 }}
+        scaleDown:
+          stabilizationWindowSeconds: {{ .Values.keda.scaleDown.stabilizationWindowSeconds | default 600 }}
+          policies:
+            - type: Pods
+              value: {{ .Values.keda.scaleDown.pods | default 1 }}
+              periodSeconds: {{ .Values.keda.scaleDown.periodSeconds | default 180 }}
+  triggers:
+  # Filter on environment (set by the app via management.metrics.tags) rather than namespace,
+  # which only exists if Alloy injects it at scrape time -> survives scrape-config changes.
+  - type: prometheus
+    metadata:
+      serverAddress: {{ .Values.keda.prometheusAddress }}
+      metricName: jetty_threads_busy_total
+      # 150 = 75% of Jetty's 200-thread max; scale when avg busy threads per replica exceeds this.
+      threshold: "150"
+      query: sum(jetty_threads_busy{environment="{{ .Values.environment }}",application="openvsx-server"})
+      authModes: "basic"
+    authenticationRef:
+      name: {{ .Values.name }}-grafana-cloud-auth
+  - type: prometheus
+    metadata:
+      serverAddress: {{ .Values.keda.prometheusAddress }}
+      metricName: jetty_threads_queued_total
+      # Any sustained queue depth means the thread pool is saturated; scale aggressively.
+      threshold: "20"
+      query: sum(jetty_threads_jobs{environment="{{ .Values.environment }}",application="openvsx-server"})
+      authModes: "basic"
+    authenticationRef:
+      name: {{ .Values.name }}-grafana-cloud-auth
+  - type: prometheus
+    metadata:
+      serverAddress: {{ .Values.keda.prometheusAddress }}
+      metricName: jetty_connections_current_total
+      # Per-replica open-connection ceiling; tuned for Jetty.
+      threshold: "600"
+      query: sum(jetty_connections_current_connections{environment="{{ .Values.environment }}",application="openvsx-server"})
+      authModes: "basic"
+    authenticationRef:
+      name: {{ .Values.name }}-grafana-cloud-auth
+{{- end }}
