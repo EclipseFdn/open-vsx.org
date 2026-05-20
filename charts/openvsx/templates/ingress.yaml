@@ -15,7 +15,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: ssl-redirect
+            name: {{ .Values.ingress.preActionName | default "ssl-redirect" }}
             port:
               name: use-annotation
       - path: /
@@ -33,7 +33,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: ssl-redirect
+            name: {{ .Values.ingress.preActionName | default "ssl-redirect" }}
             port:
               name: use-annotation
       - path: /
