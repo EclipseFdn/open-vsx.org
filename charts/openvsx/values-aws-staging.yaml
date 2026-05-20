@@ -50,6 +50,20 @@ aws-load-balancer-controller:
 
 ingress:
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+  preActionName: forward-cors
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/actions.forward-cors: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"204"}}
+    alb.ingress.kubernetes.io/conditions.forward-cors: >
+      [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60,client_keep_alive.seconds=60
 
 website:
   jvmArgs: >
