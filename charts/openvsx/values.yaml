@@ -45,7 +45,7 @@ resources:
     memory: 10Gi
   requests:
     cpu: 3000m
-    memory: 10Gi
+    memory: 12Gi
 
 # elastic search
 es:
@@ -53,10 +53,10 @@ es:
   resources:
     limits:
       cpu: 4
-      memory: 10Gi
+      memory: 8Gi
     requests:
       cpu: 1
-      memory: 10Gi
+      memory: 8Gi
   storage_class: cephfs-new
 
 # redis
