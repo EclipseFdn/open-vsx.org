@@ -1,3 +1,4 @@
+{{- if not .Values.eks.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -19,3 +20,4 @@ spec:
     - port: management
       path: /actuator/prometheus
       interval: 60s
+{{- end }}

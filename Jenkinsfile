@@ -154,6 +154,27 @@ pipeline {
         }
       }
     }
+
+    stage('Deploy aws-production') {
+      when {
+        branch 'aws-production'
+      }
+      steps {
+        container('eks') {
+          withCredentials([
+            string(credentialsId: 'jenkins-openvsx-aws-key-id',     variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'jenkins-openvsx-aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+          ]) {
+            sh '''
+              set -e
+              export AWS_DEFAULT_REGION=eu-central-1
+              aws eks update-kubeconfig --name eks-production-openvsx --region eu-central-1
+              ./kubernetes/helm-deploy.sh aws-production "${IMAGE_TAG}"
+            '''
+          }
+        }
+      }
+    }
   }
 
   post {

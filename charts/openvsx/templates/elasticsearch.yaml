@@ -7,6 +7,12 @@ metadata:
   name: elasticsearch-{{ .Values.environment }}
   namespace: {{ .Values.namespace }}
 spec:
+  {{- if .Values.eks.enabled }}
+  # Disable ECK's auto-created PDB so templates/pdb.yaml is the single source of truth.
+  # An empty object explicitly tells the ECK operator "do not manage a PDB for me."
+  # On OKD this stays unset → ECK creates its default PDB (maxUnavailable: 1).
+  podDisruptionBudget: {}
+  {{- end }}
   nodeSets:
   - name: default
     count: {{ .Values.esReplicaCount }}
@@ -18,7 +24,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: {{ .Values.es.storage }}
         storageClassName: {{ .Values.es.storage_class }}
     config:
       node.roles:
@@ -32,15 +38,6 @@ spec:
           environment: {{ .Values.environment }}
       spec:
         affinity:
-          nodeAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - preference:
-                matchExpressions:
-                - key: speed
-                  operator: NotIn
-                  values:
-                  - fast
-              weight: 1
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
