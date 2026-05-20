@@ -8,6 +8,13 @@ host: staging.open-vsx.org
 
 replicaCount: 6
 esReplicaCount: 3
+
+# Enables templates/hpa-postgresql.yaml — HPA on the in-cluster postgresql-ha
+# StatefulSet (3..9 replicas, CPU 60%). aws-staging has postgresql-ha; aws-production
+# uses RDS so this stays unset there.
+autoscaling:
+  enabled: true
+
 keda:
   enabled: true
   minReplicas: 12
