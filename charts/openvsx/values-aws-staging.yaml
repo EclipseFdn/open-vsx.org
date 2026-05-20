@@ -106,6 +106,7 @@ es:
       cpu: 1
       memory: 8Gi
   storage_class: gp3
+  storage: 1Gi
 
 postgresql-ha:
   metrics:
