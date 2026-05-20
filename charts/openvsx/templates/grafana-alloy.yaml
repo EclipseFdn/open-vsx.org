@@ -57,6 +57,10 @@ data:
 
     {{- end }}
     prometheus.remote_write "default" {
+      external_labels = {
+        cluster = sys.env("CLUSTER_NAME"),
+        __replica__ = sys.env("POD_NAME"),
+      }
       endpoint {
         name = "hosted-prometheus"
         url = sys.env("PROMETHEUS_URL")

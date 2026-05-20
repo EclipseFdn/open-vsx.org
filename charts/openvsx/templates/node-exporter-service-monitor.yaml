@@ -1,0 +1,21 @@
+{{- if .Values.eks.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: node-exporter-monitor
+  namespace: open-vsx-org-staging
+  labels:
+    app: open-vsx-org
+    environment: staging
+spec:
+  namespaceSelector:
+    matchNames:
+      - prometheus-node-exporter
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-node-exporter
+  endpoints:
+    - path: /metrics
+      interval: 60s
+      targetPort: 9100
+{{- end }}
