@@ -136,7 +136,7 @@ alloy:
 clamav:
   enabled: true
   name: "clamav"
-  replicas: 1
+  replicas: 3
   persistence:
     storageClass: "gp3-retain"
   image:
