@@ -40,6 +40,14 @@ image:
 eks:
   enabled: true  # Switch to false for OKD installations
 
+# kube-state-metrics + node-exporter are deployed by EKS Observability (enabled
+# in the AWS console for eks-staging). The two platform ServiceMonitors below
+# point the in-chart Alloy at those services. eks-production has EKS Observability
+# disabled, so values-aws.yaml sets this to false (when/if that file is introduced).
+serviceMonitors:
+  platformMetrics:
+    enabled: true
+
 aws-load-balancer-controller:
   enabled: true
   resources:
