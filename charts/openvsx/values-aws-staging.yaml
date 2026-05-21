@@ -10,7 +10,7 @@ replicaCount: 6
 esReplicaCount: 3
 autoscaling:
   enabled: true
-  minReplicas: 12
+  minReplicas: 4
   maxReplicas: 18
   prometheusUrl: "https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom"
   pollingInterval: 30
@@ -53,7 +53,7 @@ ingress:
 
 website:
   jvmArgs: >
-    -Xms4G -Xmx6G
+    -Xms6G -Xmx8G
     -XX:+AlwaysPreTouch
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+UseStringDeduplication
@@ -70,11 +70,11 @@ website:
 
 resources:
   limits:
-    cpu: 5000m
-    memory: 8Gi
+    cpu: 7000m
+    memory: 12Gi
   requests:
     cpu: 3000m
-    memory: 8Gi
+    memory: 10Gi
 
 # elastic search
 es:
