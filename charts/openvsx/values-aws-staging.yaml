@@ -8,6 +8,13 @@ host: staging.open-vsx.org
 
 replicaCount: 6
 esReplicaCount: 3
+
+# Enables templates/hpa-postgresql.yaml — HPA on the in-cluster postgresql-ha
+# StatefulSet (3..9 replicas, CPU 60%). aws-staging has postgresql-ha; aws-production
+# uses RDS so this stays unset there.
+autoscaling:
+  enabled: true
+
 keda:
   enabled: true
   minReplicas: 12
@@ -34,6 +41,7 @@ eks:
   enabled: true  # Switch to false for OKD installations
 
 aws-load-balancer-controller:
+  enabled: true
   resources:
   requests:
     cpu: 100m
@@ -50,6 +58,26 @@ aws-load-balancer-controller:
 
 ingress:
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+  preActions:
+    - forward-cors
+    - ssl-redirect
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: >
+      {"Type": "redirect", "RedirectConfig":
+       {"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}
+    alb.ingress.kubernetes.io/actions.forward-cors: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"204"}}
+    alb.ingress.kubernetes.io/conditions.forward-cors: >
+      [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
+    alb.ingress.kubernetes.io/healthcheck-port: "8081"
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60,routing.http2.enabled=true,deletion_protection.enabled=true,client_keep_alive.seconds=60
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30,slow_start.duration_seconds=0
 
 website:
   jvmArgs: >
@@ -93,8 +121,10 @@ es:
       cpu: 1
       memory: 8Gi
   storage_class: gp3
+  storage: 1Gi
 
 postgresql-ha:
+  enabled: true
   metrics:
     enabled: true
     image:
@@ -245,7 +275,7 @@ clamav:
     storageClass: "gp3"
   image:
     repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.1"
+    tag: "v0.1.2"
     pullPolicy: Always
   resources:
     requests:
@@ -271,7 +301,7 @@ yara:
   replicas: 1
   image:
     repository: "ghcr.io/eclipsefdn/yara-rest"
-    tag: "v0.1.0"
+    tag: "v0.1.1"
     pullPolicy: Always
   resources:
     requests:
