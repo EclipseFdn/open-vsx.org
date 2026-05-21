@@ -29,7 +29,7 @@ server:
   jetty:
     threads:
       max: 450
-      max-queue-capacity: 100
+      max-queue-capacity: 50
     connection-idle-timeout: 65000
 spring:
   application:
