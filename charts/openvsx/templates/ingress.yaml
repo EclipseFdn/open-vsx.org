@@ -1,4 +1,5 @@
 {{- if .Values.eks.enabled }}
+{{- $preActions := .Values.ingress.preActions | default (list "ssl-redirect") }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -7,17 +8,20 @@ metadata:
   annotations:
     {{- toYaml .Values.ingress.annotations | nindent 4 }}
 spec:
+  ingressClassName: {{ .Values.ingress.className | default "alb" }}
   rules:
   - host: {{ .Values.host }}
     http:
       paths:
+      {{- range $action := $preActions }}
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: ssl-redirect
+            name: {{ $action }}
             port:
               name: use-annotation
+      {{- end }}
       - path: /
         pathType: Prefix
         backend:
@@ -29,13 +33,15 @@ spec:
   - host: www.{{ .Values.host }}
     http:
       paths:
+      {{- range $action := $preActions }}
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: ssl-redirect
+            name: {{ $action }}
             port:
               name: use-annotation
+      {{- end }}
       - path: /
         pathType: Prefix
         backend:

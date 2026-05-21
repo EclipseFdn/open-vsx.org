@@ -1,4 +1,4 @@
-{{- if not .Values.eks.enabled }}
+{{- if not (and .Values.eks.enabled (eq .Values.environment "production")) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

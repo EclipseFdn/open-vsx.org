@@ -26,7 +26,8 @@ esReplicaCount: 3
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
-  tag: ""
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 97e1417-99
 
 website:
   # MaxDirectMemorySize caps off-heap so the JVM cannot expand past the cgroup limit
@@ -57,8 +58,10 @@ serviceAccount:
 
 # ── Ingress (ALB/EKS Auto Mode) — fill from TF outputs: vpc→alb_security_group_id, acm→certificate_arn ──
 ingress:
+  preActions:
+    - forward-cors
+    - ssl-redirect
   annotations:
-    kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/security-groups: "sg-04eb53c6c5eed3b52"
@@ -68,9 +71,13 @@ ingress:
     alb.ingress.kubernetes.io/actions.ssl-redirect: >
       {"Type": "redirect", "RedirectConfig":
        {"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}
+    alb.ingress.kubernetes.io/actions.forward-cors: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"204"}}
+    alb.ingress.kubernetes.io/conditions.forward-cors: >
+      [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
     alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
     alb.ingress.kubernetes.io/healthcheck-port: "8081"
-    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=120,routing.http2.enabled=true,deletion_protection.enabled=true
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60,routing.http2.enabled=true,deletion_protection.enabled=true,client_keep_alive.seconds=60
     alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30,slow_start.duration_seconds=0
 
 service:
@@ -111,6 +118,16 @@ keda:
   prometheusAddress: https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom
   minReplicas: 6
   maxReplicas: 20
+  pollingInterval: 30
+  cooldownPeriod: 600
+  scaleUp:
+    stabilizationWindowSeconds: 180
+    pods: 2
+    periodSeconds: 120
+  scaleDown:
+    stabilizationWindowSeconds: 900
+    pods: 1
+    periodSeconds: 180
 
 # ── External Secrets Operator — ESO + ClusterSecretStore via eks/helm.tf; secrets from TF secrets/ module ──
 externalSecrets:
@@ -126,10 +143,12 @@ alloy:
 clamav:
   enabled: true
   name: "clamav"
-  replicas: 1
+  replicas: 3
+  persistence:
+    storageClass: "gp3-retain"
   image:
     repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.1"
+    tag: "v0.1.2"
     pullPolicy: Always
   resources:
     requests:
@@ -156,7 +175,7 @@ yara:
   replicas: 1
   image:
     repository: "ghcr.io/eclipsefdn/yara-rest"
-    tag: "v0.1.0"
+    tag: "v0.1.1"
     pullPolicy: Always
   resources:
     requests:

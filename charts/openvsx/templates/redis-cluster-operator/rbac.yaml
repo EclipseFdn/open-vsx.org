@@ -1,4 +1,4 @@
-{{- if not .Values.eks.enabled }}
+{{- if not (and .Values.eks.enabled (eq .Values.environment "production")) }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
