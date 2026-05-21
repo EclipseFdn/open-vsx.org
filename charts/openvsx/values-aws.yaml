@@ -12,6 +12,14 @@ host: open-vsx.org
 eks:
   enabled: true
 
+# eks-production has EKS Observability disabled — no kube-state-metrics or
+# prometheus-node-exporter installed on the cluster. KSM is deployed by the
+# monitoring Terraform module (tf-resources/aws/eu-central-1/monitoring) and
+# scraped by Alloy natively; the chart-emitted platform ServiceMonitors stay off.
+serviceMonitors:
+  platformMetrics:
+    enabled: false
+
 # ── Subcharts NOT used in aws-production ────────────────────────────────────────
 # postgresql-ha: prod uses AWS RDS (tf-resources/aws/eu-central-1/rds), not in-cluster Postgres
 # aws-load-balancer-controller: EKS Auto Mode ships an integrated ALB controller — no standalone install
