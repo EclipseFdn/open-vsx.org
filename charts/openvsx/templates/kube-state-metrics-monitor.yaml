@@ -1,12 +1,12 @@
-{{- if .Values.eks.enabled }}
+{{- if and .Values.eks.enabled .Values.serviceMonitors.platformMetrics.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-state-metrics-monitor
-  namespace: open-vsx-org-staging
+  namespace: {{ .Values.namespace }}
   labels:
-    app: open-vsx-org
-    environment: staging
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
 spec:
   namespaceSelector:
     matchNames:

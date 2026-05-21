@@ -57,6 +57,71 @@ data:
     }
 
     {{- end }}
+
+    // ── KEDA operator (scaler errors, scaling events) ───────────────────────
+    discovery.kubernetes "keda_operator_endpoints" {
+      role = "endpoints"
+      namespaces {
+        names = ["keda"]
+      }
+      selectors {
+        role  = "endpoints"
+        label = "app=keda-operator"
+      }
+    }
+
+    discovery.relabel "keda_operator" {
+      targets = discovery.kubernetes.keda_operator_endpoints.targets
+      rule {
+        source_labels = ["__meta_kubernetes_endpoint_port_name"]
+        regex         = "metricsservice|metrics|http-metrics"
+        action        = "keep"
+      }
+    }
+
+    prometheus.scrape "keda_operator" {
+      targets         = discovery.relabel.keda_operator.output
+      forward_to      = [prometheus.remote_write.default.receiver]
+      scrape_interval = "60s"
+    }
+
+    // ── ECK (Elastic Cloud on Kubernetes) operator ──────────────────────────
+    discovery.kubernetes "eck_operator_endpoints" {
+      role = "endpoints"
+      namespaces {
+        names = ["elastic-system"]
+      }
+      selectors {
+        role  = "endpoints"
+        label = "control-plane=elastic-operator"
+      }
+    }
+
+    discovery.relabel "eck_operator" {
+      targets = discovery.kubernetes.eck_operator_endpoints.targets
+      rule {
+        source_labels = ["__meta_kubernetes_endpoint_port_name"]
+        regex         = "metrics|http-metrics"
+        action        = "keep"
+      }
+    }
+
+    prometheus.scrape "eck_operator" {
+      targets         = discovery.relabel.eck_operator.output
+      forward_to      = [prometheus.remote_write.default.receiver]
+      scrape_interval = "60s"
+    }
+
+    // ── Alloy self-metrics (scrape errors, queue depth, remote_write health) ──
+    prometheus.scrape "alloy_self" {
+      targets = [{
+        __address__ = "127.0.0.1:12345",
+        job         = "alloy",
+      }]
+      forward_to      = [prometheus.remote_write.default.receiver]
+      scrape_interval = "60s"
+    }
+
     prometheus.remote_write "default" {
       external_labels = {
         cluster = sys.env("CLUSTER_NAME"),
