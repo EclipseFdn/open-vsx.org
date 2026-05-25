@@ -75,6 +75,7 @@ else
   deployment_env="${environment}"
 fi
 
+KUBECONFIG="${KUBECONFIG:-${HOME}/.kube/config}"
 chmod 600 "${KUBECONFIG}"
 
 export HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
