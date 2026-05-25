@@ -85,7 +85,9 @@ ingress:
       [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
     alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
     alb.ingress.kubernetes.io/healthcheck-port: "8081"
-    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60,routing.http2.enabled=true,deletion_protection.enabled=true,client_keep_alive.seconds=60
+    # idle_timeout raised from 60s to 300s to match nginx proxy_read_timeout/proxy_send_timeout.
+    # Slow VSIX uploads (up to 250MB) need the longer window once nginx is out of the path.
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=300,routing.http2.enabled=true,deletion_protection.enabled=true,client_keep_alive.seconds=60
     alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30,slow_start.duration_seconds=0
 
 service:
