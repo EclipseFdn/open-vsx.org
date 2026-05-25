@@ -166,12 +166,8 @@ export default function createPageSettings(
         <InfoIcon fontSize='large' />
       </Box>
       <Typography variant='body1'>
-        Open VSX is growing! To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers
-        that govern usage. Learn more{' '}
-        <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>
-          here
-        </Link>
-        .
+        Open VSX will be in read only mode from 10:00AM EST - 12:00AM EST on Friday May 29th. Publishing and related
+        activities will be disabled during this time.
       </Typography>
     </Box>
   );
@@ -262,7 +258,7 @@ export default function createPageSettings(
           color: 'info'
         },
         cookie: {
-          key: 'Rate-Limit-Announcement',
+          key: 'AWS-Migration',
           value: 'closed',
           path: '/'
         }
