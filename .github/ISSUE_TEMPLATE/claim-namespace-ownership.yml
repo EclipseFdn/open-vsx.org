@@ -2,8 +2,6 @@ name: Claim namespace ownership
 description: Request exclusive publishing rights to an Open VSX namespace
 title: "Claiming namespace [name]"
 labels: ["namespace", "operations"]
-assignees:
-  - kineticsquid
 body:
   - type: markdown
     attributes:
