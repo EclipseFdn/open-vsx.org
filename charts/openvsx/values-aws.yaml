@@ -144,6 +144,10 @@ externalSecrets:
   enabled: true
   clusterSecretStore: aws-secrets-manager
   refreshInterval: 1h
+  # TODO(cutover): revert to "fastlyopenvsxorg" after EKS cutover validation completes.
+  fastlyLogsBucket: "openvsxorgstagingdx"
+  # TODO(cutover): revert to false after EKS cutover validation — otherwise ES rebuilds on every pod restart.
+  elasticsearchClearOnStart: true
 
 # ── Grafana Alloy — disabled; monitoring/ TF module manages Alloy cluster-wide with IRSA (OKD nodeSelector won't match EKS) ──
 alloy:
