@@ -60,6 +60,7 @@ pipeline {
       """,
       returnStdout: true
     )
+   BRANCH_NAME = "${env.BRANCH_NAME ?: 'aws-production'}"
   }
 
   options {
