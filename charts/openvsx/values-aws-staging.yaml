@@ -7,7 +7,7 @@ namespace: &namespace open-vsx-org-staging
 host: staging.open-vsx.org
 
 replicaCount: 6
-esReplicaCount: 1
+esReplicaCount: 3
 autoscaling:
   enabled: true
   minReplicas: 1
