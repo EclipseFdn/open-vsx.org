@@ -297,6 +297,7 @@ ovsx:
             file-field: "file"
           response:
             format: json
+            error-path: "$.error"
             # Our wrapper returns: { status, threats[], scanned_files, scan_time_ms }
             threats-path: "$.threats[*]"
             threat-mapping:
@@ -338,6 +339,7 @@ ovsx:
             file-field: "file"
           response:
             format: json
+            error-path: "$.error"
             # Matches are returned as an array
             threats-path: "$.matches[*]"
             threat-mapping:
