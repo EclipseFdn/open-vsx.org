@@ -175,7 +175,7 @@ redis:
       "karpenter.sh/do-not-disrupt": "true"
       "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
   name: redis
-  replicas: 3
+  replicas: 6
   image:
     repository: redis
     tag: "7.2.10"
