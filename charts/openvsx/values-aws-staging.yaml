@@ -7,11 +7,11 @@ namespace: &namespace open-vsx-org-staging
 host: staging.open-vsx.org
 
 replicaCount: 6
-esReplicaCount: 3
+esReplicaCount: 1
 autoscaling:
   enabled: true
-  minReplicas: 4
-  maxReplicas: 18
+  minReplicas: 1
+  maxReplicas: 6
   prometheusUrl: "https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom"
   pollingInterval: 30
   cooldownPeriod: 600
@@ -175,7 +175,7 @@ redis:
       "karpenter.sh/do-not-disrupt": "true"
       "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
   name: redis
-  replicas: 6
+  replicas: 3
   image:
     repository: redis
     tag: "7.2.10"
@@ -240,7 +240,7 @@ alloy:
 clamav:
   enabled: true
   name: "clamav"
-  replicas: 3
+  replicas: 1
   persistence:
     storageClass: "gp3"
   image:
