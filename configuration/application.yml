@@ -28,12 +28,19 @@ server:
     threads:
       max: 450
       max-queue-capacity: 50
-    connection-idle-timeout: 65000
+    # Must exceed the ALB idle_timeout (values-aws.yaml: 300s) so the ALB never
+    # tries to reuse a Jetty-closed connection — otherwise the client sees 502s.
+    connection-idle-timeout: 310000
 spring:
   application:
     name: openvsx-server
   config:
     import: file:${DEPLOYMENT_CONFIG}
+  servlet:
+    multipart:
+      # Matches nginx client_max_body_size 250m.
+      max-file-size: 250MB
+      max-request-size: 250MB
   datasource:
     hikari:
       maximum-pool-size: 30
@@ -297,6 +304,7 @@ ovsx:
             file-field: "file"
           response:
             format: json
+            error-path: "$.error"
             # Our wrapper returns: { status, threats[], scanned_files, scan_time_ms }
             threats-path: "$.threats[*]"
             threat-mapping:
@@ -338,6 +346,7 @@ ovsx:
             file-field: "file"
           response:
             format: json
+            error-path: "$.error"
             # Matches are returned as an array
             threats-path: "$.matches[*]"
             threat-mapping:

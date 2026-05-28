@@ -90,7 +90,13 @@ if [[ -n "${DRY_RUN}" ]]; then
   printf "==> DRY RUN — render + server-side validate, no changes will be applied\n"
   helm_mode_flags=(--dry-run=server --debug)
 else
-  helm_mode_flags=(--atomic --timeout 10m)
+  # Helm-version-aware flags:
+  helm_major=$(helm version --template '{{.Version}}' | sed -E 's/^v?([0-9]+).*/\1/')
+  if (( helm_major >= 4 )); then
+    helm_mode_flags=(--rollback-on-failure --timeout 15m --force-conflicts)
+  else
+    helm_mode_flags=(--atomic --timeout 15m)
+  fi
 fi
 
 helm version
