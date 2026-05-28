@@ -146,6 +146,8 @@ externalSecrets:
   refreshInterval: 1h
   # TODO(cutover): revert to "fastlyopenvsxorg" after EKS cutover validation completes.
   fastlyLogsBucket: "openvsxorgstagingdx"
+  # TODO(cutover): revert to "openvsxorg" after EKS cutover validation completes.
+  storageBucket: "openvsxorgstaging"
   # TODO(cutover): revert to false after EKS cutover validation — otherwise ES rebuilds on every pod restart.
   elasticsearchClearOnStart: true
 
