@@ -148,11 +148,11 @@ yara:
     pullPolicy: Always
   resources:
     requests:
-      cpu: 1
-      memory: 1Gi
-    limits:
       cpu: 2
       memory: 2Gi
+    limits:
+      cpu: 4
+      memory: 4Gi
   service:
     port: 9001
   env:
