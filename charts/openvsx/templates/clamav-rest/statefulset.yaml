@@ -24,10 +24,22 @@ spec:
         component: {{ .Values.clamav.name }}-{{ .Values.environment }}
     spec:
       terminationGracePeriodSeconds: 10
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: "Always"
       containers:
         - name: {{ .Values.clamav.name }}-{{ .Values.environment }}
           image: "{{ .Values.clamav.image.repository }}:{{ .Values.clamav.image.tag }}"
           imagePullPolicy: {{ .Values.clamav.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: {{ .Values.clamav.service.port }}
