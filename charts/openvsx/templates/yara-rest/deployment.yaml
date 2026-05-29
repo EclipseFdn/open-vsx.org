@@ -25,6 +25,9 @@ spec:
         component: {{ .Values.yara.name }}-{{ .Values.environment }}
     spec:
       terminationGracePeriodSeconds: 10
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: "Always"
       containers:
         - name: {{ .Values.yara.name }}-{{ .Values.environment }}
           image: "{{ .Values.yara.image.repository }}:{{ .Values.yara.image.tag }}"
@@ -35,8 +38,6 @@ spec:
             runAsNonRoot: true
             runAsUser: 1001
             runAsGroup: 1001
-            fsGroup: 1001
-            fsGroupChangePolicy: "Always"
             capabilities:
               drop:
                 - ALL
