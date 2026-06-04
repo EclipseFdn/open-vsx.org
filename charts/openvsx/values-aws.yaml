@@ -132,7 +132,9 @@ keda:
   prometheusAddress: https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom
   clusterName: eks-production-openvsx
   minReplicas: 8
-  maxReplicas: 20
+  # 15 caps fleet Hikari pools at 450 of RDS max_connections=500 (30/pod, pinned
+  # open). Raise only after shrinking the pool size.
+  maxReplicas: 15
   pollingInterval: 30
   cooldownPeriod: 600
   thresholdBusyRatio: "0.15"
