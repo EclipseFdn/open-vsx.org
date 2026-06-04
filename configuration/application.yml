@@ -10,8 +10,6 @@ logging:
     org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
     # reduce log verbosity for redis connection watchdog
     io.lettuce.core.protocol: "warn"
-    org.eclipse.openvsx.ratelimit: "debug"
-    org.eclipse.openvsx.scanning: "debug"
 
 server:
   address: 0.0.0.0
