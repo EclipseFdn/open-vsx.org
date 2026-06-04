@@ -120,13 +120,10 @@ es:
   storage: 1Gi
 
 # ── KEDA — Jetty busy-thread ratio (Grafana Cloud) + CPU safety net (metrics-server) ──
-# Was Tomcat-based; the app runs Jetty (Spring Boot embedded), so the old queries
-# returned empty and autoscaling never fired. maxReplicas raised after the 2026-05-19
-# incident saturated 12 OKD replicas.
-# Threshold 0.15 from post-cutover baseline (2026-05-29..06-04): steady avg ratio
-# 0.011-0.03, worst hour 0.08 — old 0.75 was unreachable. minReplicas 8 makes the
-# 2026-05-29 manual bump permanent. clusterName pins the query to EKS series only
-# (pre-cutover the unpinned selector matched OKD prod pods too).
+# Threshold is derived from the observed production baseline: well above steady-state
+# noise, low enough to fire before thread saturation. clusterName pins the query to
+# this cluster's series so co-labeled metrics from other clusters can't skew the
+# average. The CPU trigger scales via metrics-server, independent of Grafana Cloud.
 keda:
   enabled: true
   prometheusAddress: https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom
