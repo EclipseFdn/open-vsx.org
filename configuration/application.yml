@@ -27,7 +27,7 @@ server:
   jetty:
     threads:
       max: 450
-      max-queue-capacity: 50
+      max-queue-capacity: 500
     # Must exceed the ALB idle_timeout (values-aws.yaml: 300s) so the ALB never
     # tries to reuse a Jetty-closed connection — otherwise the client sees 502s.
     connection-idle-timeout: 310000
