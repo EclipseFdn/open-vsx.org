@@ -17,6 +17,7 @@ autoscaling:
 
 keda:
   enabled: true
+  clusterName: eks-staging
   minReplicas: 12
   maxReplicas: 18
   prometheusAddress: "https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom"
