@@ -27,11 +27,12 @@ spec:
               value: {{ .Values.keda.scaleDown.pods | default 1 }}
               periodSeconds: {{ .Values.keda.scaleDown.periodSeconds | default 180 }}
   triggers:
-  # Single signal: avg pod busy/max ratio, smoothed over 5m. Self-normalizing
-  # across jetty.threads.max changes — threshold stays valid at any cap.
-  # Filter on the environment label (set by management.metrics.tags) so this
-  # survives Alloy scrape-config changes that may or may not inject namespace.
+  # Avg pod busy/max ratio — self-normalizing across jetty.threads.max changes.
+  # metricType Value: the ratio query never exceeds 1.0, so AverageValue semantics
+  # (desired = ceil(value/threshold)) cap demand at ceil(1/threshold) pods at any load.
+  # Value semantics scale proportionally: desired = current * value/threshold.
   - type: prometheus
+    metricType: Value
     metadata:
       serverAddress: {{ .Values.keda.prometheusAddress }}
       metricName: jetty_threads_busy_ratio
@@ -40,13 +41,21 @@ spec:
         avg(
           avg_over_time(
             (
-              jetty_threads_busy{environment="{{ .Values.environment }}",application="openvsx-server"}
+              jetty_threads_busy{environment="{{ .Values.environment }}",application="openvsx-server"{{- if .Values.keda.clusterName }},cluster="{{ .Values.keda.clusterName }}"{{- end }}}
               /
-              jetty_threads_config_max{environment="{{ .Values.environment }}",application="openvsx-server"}
-            )[5m:15s]
+              jetty_threads_config_max{environment="{{ .Values.environment }}",application="openvsx-server"{{- if .Values.keda.clusterName }},cluster="{{ .Values.keda.clusterName }}"{{- end }}}
+            )[{{ .Values.keda.smoothingWindow | default "5m" }}:30s]
           )
         )
       authModes: "basic"
     authenticationRef:
       name: {{ .Values.name }}-grafana-cloud-auth
+{{- if .Values.keda.cpuUtilization }}
+  # In-cluster safety net via metrics-server — keeps scale-up functional when the
+  # Grafana Cloud round-trip (app -> Alloy -> Grafana Cloud -> KEDA) is down.
+  - type: cpu
+    metricType: Utilization
+    metadata:
+      value: "{{ .Values.keda.cpuUtilization }}"
+{{- end }}
 {{- end }}

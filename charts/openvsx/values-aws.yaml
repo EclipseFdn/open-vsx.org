@@ -119,21 +119,28 @@ es:
   storage_class: gp3-retain
   storage: 1Gi
 
-# ── KEDA — Jetty threads/connections via Prometheus (monitoring ns, eks/helm.tf) ──
-# Was Tomcat-based; the app runs Jetty (Spring Boot embedded), so the old queries
-# returned empty and autoscaling never fired. maxReplicas raised after the 2026-05-19
-# incident saturated 12 OKD replicas.
+# ── KEDA — Jetty busy-thread ratio (Grafana Cloud) + CPU safety net (metrics-server) ──
+# Threshold is derived from the observed production baseline: well above steady-state
+# noise, low enough to fire before thread saturation. clusterName pins the query to
+# this cluster's series so co-labeled metrics from other clusters can't skew the
+# average. The CPU trigger scales via metrics-server, independent of Grafana Cloud.
 keda:
   enabled: true
   prometheusAddress: https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom
-  minReplicas: 6
-  maxReplicas: 20
+  clusterName: eks-production-openvsx
+  minReplicas: 8
+  # 15 caps fleet Hikari pools at 450 of RDS max_connections=500 (30/pod, pinned
+  # open). Raise only after shrinking the pool size.
+  maxReplicas: 15
   pollingInterval: 30
   cooldownPeriod: 600
+  thresholdBusyRatio: "0.15"
+  smoothingWindow: 3m
+  cpuUtilization: 70
   scaleUp:
-    stabilizationWindowSeconds: 180
-    pods: 2
-    periodSeconds: 120
+    stabilizationWindowSeconds: 60
+    pods: 4
+    periodSeconds: 60
   scaleDown:
     stabilizationWindowSeconds: 900
     pods: 1
