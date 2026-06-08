@@ -33,6 +33,15 @@ image:
 eks:
   enabled: false
 
+# Platform ServiceMonitors (node-exporter, kube-state-metrics) — EKS-only, off by default.
+serviceMonitors:
+  platformMetrics:
+    enabled: false
+
+# EKS-only subchart — OKD has no ALB. Off by default; enabled explicitly on EKS staging.
+aws-load-balancer-controller:
+  enabled: false
+
 website:
   jvmArgs: >
     -Xms6G -Xmx8G
