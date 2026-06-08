@@ -109,6 +109,9 @@ resources:
 # ── Elasticsearch ─────────────────────────────────────────────────────────────
 es:
   java_opts: -Xms4g -Xmx4g -Dlog4j2.formatMsgNoLookups=true
+  # Stop Karpenter (Auto Mode) from draining the ES pod's node during consolidation
+  podAnnotations:
+    karpenter.sh/do-not-disrupt: "true"
   resources:
     limits:
       cpu: 4

@@ -79,12 +79,9 @@ resources:
 
 # elastic search
 es:
-  commonAnnotations:
+  podAnnotations:
     "karpenter.sh/do-not-disrupt": "true"
     "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
-  pdb:
-    create: true
-    minAvailable: 1
   java_opts: -Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true
   resources:
     limits:
