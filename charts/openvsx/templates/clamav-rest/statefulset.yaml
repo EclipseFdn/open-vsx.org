@@ -77,8 +77,10 @@ spec:
       name: clamav-db
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ .Values.clamav.persistence.storageClass | quote }}
+      {{- with (default dict .Values.clamav.persistence).storageClass }}
+      storageClassName: {{ . | quote }}
+      {{- end }}
       resources:
         requests:
-          storage: {{ .Values.clamav.persistence.size | default "5Gi" }}
+          storage: {{ (default dict .Values.clamav.persistence).size | default "5Gi" }}
 {{- end }}

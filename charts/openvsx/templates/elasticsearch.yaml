@@ -36,6 +36,10 @@ spec:
         labels:
           app: {{ .Values.name }}
           environment: {{ .Values.environment }}
+        {{- with .Values.es.podAnnotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
       spec:
         affinity:
           podAntiAffinity:
