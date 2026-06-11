@@ -96,7 +96,7 @@ pipeline {
       when {
         anyOf {
         expression { return env.BRANCH_NAME.startsWith('feature') }
-        branch 'eks-main'
+        branch 'aws-main'
       }
       }
       steps {
