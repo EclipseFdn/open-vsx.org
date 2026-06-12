@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=v1.0.0
-ARG SERVER_VERSION_STRING=v1.0.0-aws
+ARG SERVER_VERSION=v1.0.1
+ARG SERVER_VERSION_STRING=v1.0.1-aws
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
