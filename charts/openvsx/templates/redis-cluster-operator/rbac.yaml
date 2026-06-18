@@ -1,4 +1,5 @@
-{{- if not (and .Values.eks.enabled (eq .Values.environment "production")) }}
+{{- /* redis-cluster-operator RBAC only on OKD. Both EKS envs use ElastiCache. */}}
+{{- if not .Values.eks.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:

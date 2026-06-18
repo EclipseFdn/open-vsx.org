@@ -17,7 +17,7 @@ autoscaling:
 
 keda:
   enabled: true
-  clusterName: eks-staging
+  clusterName: eks-staging-openvsx
   minReplicas: 1
   maxReplicas: 4
   thresholdBusyRatio: "0.5"
@@ -42,29 +42,39 @@ image:
 eks:
   enabled: true  # Switch to false for OKD installations
 
-# kube-state-metrics + node-exporter are deployed by EKS Observability (enabled
-# in the AWS console for eks-staging). The two platform ServiceMonitors below
-# point the in-chart Alloy at those services. eks-production has EKS Observability
-# disabled, so values-aws.yaml sets this to false (when/if that file is introduced).
+# ── ServiceAccount (IRSA) — replaces the manual `default` SA + static AWS keys ──
+serviceAccount:
+  create: true
+  name: openvsx
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-app-staging"
+
+# ── External Secrets Operator — composes deployment-configuration-staging from SM ──
+externalSecrets:
+  enabled: true
+  clusterSecretStore: aws-secrets-manager
+  refreshInterval: 1h
+  fastlyLogsBucket: "fastlyopenvsxorgstaging"
+  storageBucket: "openvsxorgstaging"
+  elasticsearchClearOnStart: true
+  # In-cluster Postgres (no RDS in staging)
+  inClusterPostgres: true
+  postgresHost: "staging-postgresql-ha-postgresql"
+  postgresDb: "openvsx-staging"
+  postgresUsername: "postgres"
+
+# Injects SPRING_DATASOURCE_PASSWORD from the Bitnami-generated postgresql-ha secret.
+inClusterPostgres:
+  passwordSecret:
+    name: "staging-postgresql-ha-postgresql"
+    key: "password"
+
 serviceMonitors:
   platformMetrics:
     enabled: true
 
 aws-load-balancer-controller:
-  enabled: true
-  resources:
-  requests:
-    cpu: 100m
-    memory: 128Mi
-  limits:
-    cpu: 200m
-    memory: 256Mi
-  clusterName: eks-staging
-  region: eu-central-1
-  vpcId: vpc-0285cbfe9bfb7e4fd
-  serviceAccount:
-    create: false
-    name: aws-load-balancer-controller-staging
+  enabled: false
 
 ingress:
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
@@ -195,84 +205,9 @@ postgresql-ha:
   pgpool:
     replicaCount: 0
 
-# redis
-redis:
-  master:
-    pdb:
-      create: true
-      minAvailable: 1
-    podAnnotations:
-      "karpenter.sh/do-not-disrupt": "true"
-      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
-  replica:
-    pdb:
-      create: true
-      minAvailable: 1
-    podAnnotations:
-      "karpenter.sh/do-not-disrupt": "true"
-      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
-  name: redis
-  replicas: 6
-  image:
-    repository: redis
-    tag: "7.2.10"
-    pullPolicy: IfNotPresent
-  maxmemory: "896mb"
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1536Mi"
-      cpu: "500m"
-  persistence:
-    storageGi: 5
-    storageClass: "gp3"
-  serviceAccountName: redis-cluster-operator
-  clusterRoleName: redis-cluster-operator-role-cluster
-  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster
-  roleName: redis-cluster-operator-role
-  roleBinding: redis-cluster-operator-role-binding
-
 # grafana alloy
 alloy:
-  alloy:
-    clustering:
-      enabled: true
-    configMap:
-      create: false
-      name: "grafana-alloy-configmap-staging"
-      key: "config.river"
-    envFrom:
-      - secretRef:
-          name: grafana-cloud-secret-staging
-      - secretRef:
-          name: redis-secret-staging
-    extraEnv:
-    - name: CLUSTER_NAME
-      value: "eks-staging"
-    - name: POD_NAME
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.name
-    extraPorts:
-      - name: zipkin
-        port: 9411
-        targetPort: 9411
-      - name: loki
-        port: 3100
-        targetPort: 3100
-  crds:
-    create: true
-  controller:
-    type: "daemonset"
-    podLabels:
-      app: *name
-      environment: *environment
-    nodeSelector:
-      openvsx-production-alloy: null
-  fullnameOverride: grafana-alloy-staging
-  namespaceOverride: *namespace
+  enabled: false
 
 clamav:
   enabled: true
