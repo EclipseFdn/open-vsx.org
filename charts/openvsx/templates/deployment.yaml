@@ -62,6 +62,16 @@ spec:
               name: {{ .Values.inClusterPostgres.passwordSecret.name }}
               key: {{ .Values.inClusterPostgres.passwordSecret.key }}
         {{- end }}
+        {{- if .Values.externalSecrets.elasticsearchPasswordFromEck }}
+        # In-cluster ECK Elasticsearch: read the elastic password straight from the ECK-managed
+        # secret (the source of truth), overriding ovsx.elasticsearch.password from configuration.yml.
+        # No SM round-trip / bootstrap script; self-heals if ECK rotates the password.
+        - name: OVSX_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-{{ .Values.environment }}-es-elastic-user
+              key: elastic
+        {{- end }}
         volumeMounts:
         - name: deployment-configuration
           mountPath: /run/secrets/open-vsx.org/deployment

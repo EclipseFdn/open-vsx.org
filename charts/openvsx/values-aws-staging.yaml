@@ -57,6 +57,9 @@ externalSecrets:
   fastlyLogsBucket: "fastlyopenvsxorgstaging"
   storageBucket: "openvsxorgstaging"
   elasticsearchClearOnStart: true
+  # Read the ES elastic password straight from the ECK secret (deployment.yaml) instead of SM/ESO —
+  # app comes up green on first deploy, no bootstrap script, self-heals on ECK password rotation.
+  elasticsearchPasswordFromEck: true
   # In-cluster Postgres (no RDS in staging)
   inClusterPostgres: true
   postgresHost: "staging-postgresql-ha-postgresql"
