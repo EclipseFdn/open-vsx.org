@@ -1,4 +1,4 @@
-{{- if not (and .Values.eks.enabled (eq .Values.environment "production")) }}
+{{- if .Values.alloy.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

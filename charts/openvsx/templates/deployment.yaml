@@ -53,6 +53,15 @@ spec:
           value: {{ .Values.environment }}
         - name: JVM_ARGS
           value: {{ .Values.website.jvmArgs }}
+        {{- if .Values.externalSecrets.inClusterPostgres }}
+        # In-cluster postgresql-ha: password is chart-generated, injected here and
+        # overrides spring.datasource.password from the ESO-composed configuration.yml.
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.inClusterPostgres.passwordSecret.name }}
+              key: {{ .Values.inClusterPostgres.passwordSecret.key }}
+        {{- end }}
         volumeMounts:
         - name: deployment-configuration
           mountPath: /run/secrets/open-vsx.org/deployment
