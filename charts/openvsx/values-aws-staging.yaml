@@ -168,6 +168,9 @@ postgresql-ha:
         app: open-vsx-org
         environment: staging
   postgresql:
+    # Pinned to SM via ESO (templates/external-secrets.yaml) — stops the --atomic
+    # uninstall password-regeneration loop. Keys: password, repmgr-password.
+    existingSecret: staging-postgresql-ha-postgresql
     image:
       repository: bitnamilegacy/postgresql-repmgr
       tag: 17.6.0-debian-12-r2
@@ -211,6 +214,9 @@ postgresql-ha:
       "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
   pgpool:
     replicaCount: 0
+    # sr-check-password is mounted on the postgresql pods even at replicaCount 0; pin it too.
+    # Keys: admin-password, sr-check-password.
+    existingSecret: staging-postgresql-ha-pgpool
 
 # grafana alloy
 alloy:
