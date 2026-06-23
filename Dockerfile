@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=afb40d0
-ARG SERVER_VERSION_STRING=v1.0.2-aws-rc.0
+ARG SERVER_VERSION=fix-xss
+ARG SERVER_VERSION_STRING=v1.0.2-aws-rc.1
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
