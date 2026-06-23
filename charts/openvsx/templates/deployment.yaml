@@ -51,6 +51,12 @@ spec:
           value: /run/secrets/open-vsx.org/deployment/configuration.yml
         - name: ENVNAME
           value: {{ .Values.environment }}
+        {{- if .Values.eks.enabled }}
+        # EKS: route Loki4jAppender push through cluster-wide Alloy in monitoring ns
+        # (chart Alloy is disabled — see values-aws.yaml). Overrides LOKI_URL from envFrom.
+        - name: LOKI_URL
+          value: "http://grafana-alloy.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+        {{- end }}
         - name: JVM_ARGS
           value: {{ .Values.website.jvmArgs }}
         {{- if .Values.externalSecrets.inClusterPostgres }}
