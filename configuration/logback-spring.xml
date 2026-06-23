@@ -7,7 +7,11 @@
         <verbose>true</verbose>
         <batchMaxBytes>65536</batchMaxBytes>
         <http>
-            <url>http://grafana-alloy-${ENVNAME}:3100/loki/api/v1/push</url>
+            <url>${LOKI_URL}</url>
+            <auth>
+                <username>${LOKI_USERNAME}</username>
+                <password>${LOKI_PASSWORD}</password>
+            </auth>
             <requestTimeoutMs>15000</requestTimeoutMs>
         </http>
         <format>
