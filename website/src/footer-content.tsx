@@ -17,6 +17,8 @@ import { Link as RouteLink } from 'react-router-dom';
 import { Theme } from '@mui/material/styles/createTheme';
 import useTheme from '@mui/material/styles/useTheme';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import XIcon from '@mui/icons-material/X';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -59,7 +61,7 @@ const MainFooter = ({ isSmallDisplay, isLargeDisplay, expanded, toggleExpanded }
   const itemSpacing = 2.5;
   return (
     <Box display='flex' justifyContent='space-between' alignItems='center'>
-      {isSmallDisplay ? null : repositoryLink()}
+      {isSmallDisplay ? null : social()}
       {isLargeDisplay ? (
         <Box display='flex'>
           <Box>{ossAccess()}</Box>
@@ -132,11 +134,18 @@ const FooterContent: FunctionComponent<{ expanded: boolean }> = ({ expanded }) =
   }
 };
 
-const repositoryLink = () => (
-  <Link target='_blank' href='https://github.com/eclipse-openvsx/openvsx' sx={[styles.link, styles.repositoryLink]}>
-    <GitHubIcon />
-    &nbsp;eclipse-openvsx/openvsx
-  </Link>
+const social = () => (
+  <Box display='flex' alignItems='center' gap={1}>
+    <Link target='_blank' href='https://github.com/eclipse-openvsx/openvsx' sx={[styles.link, styles.repositoryLink]}>
+      <GitHubIcon titleAccess='Open VSX on GitHub' />
+    </Link>
+    <Link target='_blank' href='https://www.linkedin.com/company/open-vsx/' sx={[styles.link, { display: 'flex', alignItems: 'center' }]} title='Open VSX LinkedIn'>
+      <LinkedInIcon />
+    </Link>
+    <Link target='_blank' href='https://x.com/openvsx' sx={[styles.link, { display: 'flex', alignItems: 'center' }]} title='Open VSX X (Twitter)'>
+      <XIcon />
+    </Link>
+  </Box>
 );
 
 const ossAccess = () => (
