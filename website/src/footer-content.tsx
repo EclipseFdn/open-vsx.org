@@ -58,21 +58,20 @@ interface MainFooterProps {
 }
 
 const MainFooter = ({ isSmallDisplay, isLargeDisplay, expanded, toggleExpanded }: MainFooterProps) => {
-  const itemSpacing = 2.5;
   return (
-    <Box display='flex' justifyContent='space-between' alignItems='center'>
-      {isSmallDisplay ? null : social()}
+    <Box display='flex' justifyContent='space-between' alignItems='center' gap='1rem' fontSize='0.8rem'>
+      {social()}
       {isLargeDisplay ? (
-        <Box display='flex'>
+        <Box display='flex' gap='1rem'>
           <Box>{ossAccess()}</Box>
-          <Box ml={itemSpacing}>{privacyPolicy()}</Box>
-          <Box ml={itemSpacing}>{securityPolicy()}</Box>
-          <Box ml={itemSpacing}>{termsOfUse()}</Box>
-          <Box ml={itemSpacing}>{compliance()}</Box>
-          <Box ml={itemSpacing}>{legalResources(false)}</Box>
-          <Box ml={itemSpacing}>{manageCookies()}</Box>
-          <Box ml={itemSpacing}>{copyrightText()}</Box>
-          <Box ml={itemSpacing}>{rightsReservedText()}</Box>
+          <Box>{privacyPolicy()}</Box>
+          <Box>{securityPolicy()}</Box>
+          <Box>{termsOfUse()}</Box>
+          <Box>{compliance()}</Box>
+          <Box>{legalResources(false)}</Box>
+          <Box>{manageCookies()}</Box>
+          <Box>{copyrightText()}</Box>
+          <Box>{rightsReservedText()}</Box>
         </Box>
       ) : (
         <>
@@ -139,10 +138,18 @@ const social = () => (
     <Link target='_blank' href='https://github.com/eclipse-openvsx/openvsx' sx={[styles.link, styles.repositoryLink]}>
       <GitHubIcon titleAccess='Open VSX on GitHub' />
     </Link>
-    <Link target='_blank' href='https://www.linkedin.com/company/open-vsx/' sx={[styles.link, { display: 'flex', alignItems: 'center' }]} title='Open VSX LinkedIn'>
+    <Link
+      target='_blank'
+      href='https://www.linkedin.com/company/open-vsx/'
+      sx={[styles.link, { display: 'flex', alignItems: 'center' }]}
+      title='Open VSX LinkedIn'>
       <LinkedInIcon />
     </Link>
-    <Link target='_blank' href='https://x.com/openvsx' sx={[styles.link, { display: 'flex', alignItems: 'center' }]} title='Open VSX X (Twitter)'>
+    <Link
+      target='_blank'
+      href='https://x.com/openvsx'
+      sx={[styles.link, { display: 'flex', alignItems: 'center' }]}
+      title='Open VSX X (Twitter)'>
       <XIcon />
     </Link>
   </Box>
