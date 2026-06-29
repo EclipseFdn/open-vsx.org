@@ -85,6 +85,8 @@ resources:
 
 # elastic search
 es:
+  # Default ES version for all envs; override per-env. Prod stays 8.18.8 until its own snapshot-gated 8.19->9.2 upgrade.
+  version: "8.18.8"
   java_opts: -Xms4g -Xmx4g -Dlog4j2.formatMsgNoLookups=true
   resources:
     limits:
