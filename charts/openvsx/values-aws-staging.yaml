@@ -129,6 +129,8 @@ resources:
 
 # elastic search
 es:
+  # Spring Boot 4 bundles the 9.x ES Java client, which cannot talk to an 8.x server.
+  version: "9.2.8"
   podAnnotations:
     "karpenter.sh/do-not-disrupt": "true"
     "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
@@ -141,7 +143,7 @@ es:
       cpu: 1
       memory: 8Gi
   storage_class: gp3
-  storage: 1Gi
+  storage: 4Gi
 
 postgresql-ha:
   enabled: true
