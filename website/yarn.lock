@@ -1565,6 +1565,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.101.2":
+  version: 5.101.2
+  resolution: "@tanstack/query-core@npm:5.101.2"
+  checksum: 10/567af5e3c21628745a08c1a5054d838597bc620dcbbeabe20cdd6ccffdcca85a8d38128f6e80829b6e04d10f79ca793a7dd8fddc8a3d6bef10c2d580ae214c7d
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.101.2":
+  version: 5.101.2
+  resolution: "@tanstack/query-devtools@npm:5.101.2"
+  checksum: 10/74a7f77648d7f76066bf3edb04b16a678bc1170fc99bfe379c3c459dd7b1de183f0b47e38f13d6e8099246f3146f84e03fe62f5aab1e983fb23ec4d18dedd587
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^5.101.0":
+  version: 5.101.2
+  resolution: "@tanstack/react-query-devtools@npm:5.101.2"
+  dependencies:
+    "@tanstack/query-devtools": "npm:5.101.2"
+  peerDependencies:
+    "@tanstack/react-query": ^5.101.2
+    react: ^18 || ^19
+  checksum: 10/6aa7e72c902f7e64fe91b1d96436f01ff9d5d9959b32d66ec64223a0ab3ff2d0aa02a474b8b14c0e09dd8f4afd88a0f8de5837e9d89d514cb74f01a15f48ece5
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.101.0":
+  version: 5.101.2
+  resolution: "@tanstack/react-query@npm:5.101.2"
+  dependencies:
+    "@tanstack/query-core": "npm:5.101.2"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10/0837c176b6afb01e3632010bbd8bdfeee7f46c4a25a50ed2ba9ddddce11c34431161d80dd8e53a2f55190c2313bbfb22a84a77308e6ccf29877b4818de68c4b3
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.20.5":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
@@ -4533,7 +4570,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "npm:1.0.2"
+    openvsx-webui: "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=upgrade-spring-boot-4"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -4557,9 +4594,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:1.0.2":
-  version: 1.0.2
-  resolution: "openvsx-webui@npm:1.0.2"
+"openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=upgrade-spring-boot-4":
+  version: 1.1.0-dev.0
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=ff7cd0599512ed8e873555a7f50723d64d99c004"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -4571,6 +4608,8 @@ __metadata:
     "@mui/x-charts": "npm:^8.28.2"
     "@mui/x-data-grid": "npm:^8.28.2"
     "@mui/x-date-pickers": "npm:^8.27.2"
+    "@tanstack/react-query": "npm:^5.101.0"
+    "@tanstack/react-query-devtools": "npm:^5.101.0"
     clipboard-copy: "npm:^4.0.1"
     clsx: "npm:^1.2.1"
     dompurify: "npm:^3.0.4"
@@ -4589,7 +4628,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.4"
     react-router-dom: "npm:^6.30.4"
-  checksum: 10/e20c13a94e527cb12f4a07d3a44b8deb648f111d313626364a9668ac222e726afd8ea43e6e183bf6c6a0ffa9ec2c4ccefa16b64ceea2320b6ce14674d080f504
+  checksum: 10/9c6188d10639b25153b8a6aecd9c195dce68b038f4e20c96ad759a9b2372bace14b0c4de7cae0dcafa07324df098b5dbec48b89a8418dc5ba2f350061ac8674d
   languageName: node
   linkType: hard
 
