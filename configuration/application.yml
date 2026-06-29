@@ -15,11 +15,6 @@ server:
   address: 0.0.0.0
   port: 8080
   shutdown: graceful
-  error:
-    path: /server-error
-    whitelabel:
-      enabled: false
-    include-stacktrace: never
   compression:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
@@ -29,6 +24,7 @@ server:
       max: 450
       max-queue-capacity: 500
     connection-idle-timeout: 65000
+
 spring:
   application:
     name: openvsx-server
@@ -42,11 +38,6 @@ spring:
     baseline-on-migrate: false
   jpa:
     open-in-view: false
-  resources:
-    cache:
-      cachecontrol:
-        max-age: 4h
-        cache-public: true
   session:
     store-type: jdbc
   lifecycle:
@@ -62,6 +53,20 @@ spring:
           eclipse:
             issuer-uri: https://auth.eclipse.org/auth/realms/community
             user-name-attribute: preferred_username
+  thymeleaf:
+    check-template-location: false
+  web:
+    error:
+      path: /server-error
+      include-stacktrace: never
+      whitelabel:
+        enabled: false
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 4h
+          cache-public: true
+
 management:
   server:
     port: 8081
@@ -90,6 +95,7 @@ management:
   tracing:
     sampling:
       probability: 0.01
+
 springdoc:
   model-and-view-allowed: true
   swagger-ui:
@@ -99,6 +105,7 @@ springdoc:
     urlsPrimaryName: Registry API
     supportedSubmitMethods:
       - get
+
 org:
   jobrunr:
     job-scheduler:
