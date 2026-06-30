@@ -4570,7 +4570,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=upgrade-spring-boot-4"
+    openvsx-webui: "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -4594,9 +4594,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=upgrade-spring-boot-4":
+"openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
   version: 1.1.0-dev.0
-  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=ff7cd0599512ed8e873555a7f50723d64d99c004"
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=0c593d73deb38199f948f38ae8a94b3801a3c9b7"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -4628,7 +4628,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.4"
     react-router-dom: "npm:^6.30.4"
-  checksum: 10/9c6188d10639b25153b8a6aecd9c195dce68b038f4e20c96ad759a9b2372bace14b0c4de7cae0dcafa07324df098b5dbec48b89a8418dc5ba2f350061ac8674d
+  checksum: 10/9d97a501f54063785b866e529126e4c71b1deee6f34554098df5f92299ef00d758ea9bf82eed0f199bf067eb8ae51602b19c30451025fe4205321bd856146441
   languageName: node
   linkType: hard
 

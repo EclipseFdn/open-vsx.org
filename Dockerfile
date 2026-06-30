@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=upgrade-spring-boot-4
-ARG SERVER_VERSION_STRING=spring-boot-4
+ARG SERVER_VERSION=0c593d7
+ARG SERVER_VERSION_STRING=v1.1.0-dev.0
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
