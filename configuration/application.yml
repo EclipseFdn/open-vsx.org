@@ -106,7 +106,6 @@ springdoc:
     supportedSubmitMethods:
       - get
 
-
 jobrunr:
   job-scheduler:
     enabled: true
