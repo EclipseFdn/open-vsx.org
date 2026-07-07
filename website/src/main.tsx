@@ -31,19 +31,7 @@ const App: FunctionComponent = () => {
     serverUrl = `${location.protocol}//${serverHost}`;
   }
   const service = new ExtensionRegistryService(serverUrl);
-
-  const getServerVersion = async (): Promise<string> => {
-    const abortController = new AbortController();
-    try {
-      const result = await service.getRegistryVersion(abortController);
-      return result.version;
-    } catch {
-      console.error('Could not determine server version');
-      return 'unknown';
-    }
-  };
-
-  const pageSettings = createPageSettings(theme, prefersDarkScheme, getServerVersion());
+  const pageSettings = createPageSettings(theme, prefersDarkScheme);
 
   return (
     <HelmetProvider>

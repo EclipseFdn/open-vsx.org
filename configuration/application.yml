@@ -149,6 +149,7 @@ ovsx:
       allowed-versions: "1,1.0,1.1"
   publishing:
     require-license: true
+    max-content-size: 262144000 # 250MB
   redis:
     enabled: true
   elasticsearch:

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
+import { FunctionComponent, ReactNode, Suspense, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
@@ -124,22 +124,19 @@ const NamespaceHeadTags: FunctionComponent<{ namespaceDetails?: NamespaceDetails
   return <HeadTags title={title} url={url} description={description} />;
 };
 
-export default function createPageSettings(
-  theme: Theme,
-  prefersDarkMode: boolean,
-  serverVersionPromise: Promise<string>
-): PageSettings {
+export default function createPageSettings(theme: Theme, prefersDarkMode: boolean): PageSettings {
   //---------- SERVER VERSION
-  const ServerVersion = lazy(async () => {
-    const version = await serverVersionPromise;
-    return {
-      default: () => (
-        <Typography variant='body2' sx={{ alignSelf: 'flex-start', fontSize: '0.8rem' }}>
-          {version}
-        </Typography>
-      )
-    };
-  });
+  const ServerVersion: FunctionComponent = () => {
+    const { version } = useContext(MainContext);
+    if (!version) {
+      return <div>Loading version...</div>;
+    }
+    return (
+      <Typography variant='body2' sx={{ alignSelf: 'flex-start', fontSize: '0.8rem' }}>
+        {version.version}
+      </Typography>
+    );
+  };
 
   //---------- MAIN LOGO / TOOLBAR
   const toolbarContent: FunctionComponent = () => {
