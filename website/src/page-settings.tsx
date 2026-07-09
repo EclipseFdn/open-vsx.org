@@ -155,7 +155,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
           // A bare anchor leaks the browser's link color into the wordmark; color:inherit
           // lets the logo follow the navbar's content color, which is tinted on extension bands.
           style={{ display: 'flex', color: 'inherit' }}>
-          <OpenVSXLogo width='auto' height='40px' marginTop='8px' />
+          <OpenVSXLogo width='auto' height='2.5rem' />
         </RouteLink>
         {user?.role === 'admin' && (
           <Suspense>
