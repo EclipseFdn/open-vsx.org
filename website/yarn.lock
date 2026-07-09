@@ -794,6 +794,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource-variable/geist-mono@npm:^5.2.8":
+  version: 5.2.8
+  resolution: "@fontsource-variable/geist-mono@npm:5.2.8"
+  checksum: 10/82c5afc603c0a20f115115490c5b2853fc4fb43af793fef811e71011700fa952d4d4bb382983138352ebca5c1c8381b07902350cbd3f70adee53eac088f83776
+  languageName: node
+  linkType: hard
+
+"@fontsource-variable/geist@npm:^5.2.9":
+  version: 5.2.9
+  resolution: "@fontsource-variable/geist@npm:5.2.9"
+  checksum: 10/cd249dc1e60f96277b9b33f6c4626385d1337a6d3c40b659bdf49e95eabff8a38083d2c579446bdbf77a104906a9b2ba15ad98e2177accdad192dc97d06bb980
+  languageName: node
+  linkType: hard
+
+"@fontsource/roboto@npm:^5.2.10":
+  version: 5.2.10
+  resolution: "@fontsource/roboto@npm:5.2.10"
+  checksum: 10/2fc9e9db66cfab68ff45b573cc2bf20fe8d7e962f09b6edd32d53681fdcd7bdedd65440012683491785583383a585bdbfb67903171159bf4c3520f2f0d26d92a
+  languageName: node
+  linkType: hard
+
 "@gar/promise-retry@npm:^1.0.0":
   version: 1.0.2
   resolution: "@gar/promise-retry@npm:1.0.2"
@@ -4570,7 +4591,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main"
+    openvsx-webui: "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/redesing"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -4594,12 +4615,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
+"openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/redesing":
   version: 1.1.0-dev.0
-  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=4690adc3efa2c6b92d4bc251f15dc510b100ec0c"
+  resolution: "openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=e642ddd410b7a25ce3e8a4228de3dc42a9161662"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
+    "@fontsource-variable/geist": "npm:^5.2.9"
+    "@fontsource-variable/geist-mono": "npm:^5.2.8"
+    "@fontsource/roboto": "npm:^5.2.10"
     "@mdit/plugin-alert": "npm:^0.22.3"
     "@mui/base": "npm:^5.0.0-beta.9"
     "@mui/icons-material": "npm:^5.15.14"
@@ -4628,7 +4652,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.4"
     react-router-dom: "npm:^6.30.4"
-  checksum: 10/d3e16f0483c570b8caf8099dd55f7d6a1531c55f65ee5e1af04dbdb7d4c5554113da88ce84e8887b733e2fc3b328c0aae51a53900a4f593f266e421eed91f788
+  checksum: 10/6dfb0fb15bac5ddf514fa572d1c9445e60983a9ff965fdf462277f1251a8f9caa19b66f05f88b32cbf551b952f8a3376d962e206697b4f415767e9522e37efe5
   languageName: node
   linkType: hard
 

@@ -16,17 +16,24 @@ import { Theme } from '@mui/material/styles/createTheme';
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { Helmet, HelmetTags } from 'react-helmet-async';
 import { Link as RouteLink, Route, useParams } from 'react-router-dom';
-import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
+import { PageSettings, Extension, NamespaceDetails, OpenVsxMark } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-routes';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
-import InfoIcon from '@mui/icons-material/Info';
 import OpenVSXLogo from './openvsx-registry-logo';
-import footerContent from './footer-content';
 import { Document } from './document';
 import About from './about';
 import Adopters from './adopters';
 import Members from './members';
 import { MainContext } from 'openvsx-webui/lib/context';
+import CallSplitIcon from '@mui/icons-material/CallSplit';
+import GroupsIcon from '@mui/icons-material/Groups';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import XIcon from '@mui/icons-material/X';
+
+const WIKI_URL = 'https://github.com/EclipseFdn/open-vsx.org/wiki';
+const REPO_URL = 'https://github.com/eclipse-openvsx/openvsx';
 
 //---------- HEAD TAGS
 const HeadTags: FunctionComponent<{
@@ -144,8 +151,13 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
 
     return (
       <>
-        <RouteLink to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
-          <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
+        <RouteLink
+          to={ExtensionListRoutes.MAIN}
+          aria-label={`Home - Open VSX Registry`}
+          // A bare anchor leaks the browser's link color into the wordmark; color:inherit
+          // lets the logo follow the navbar's content color, which is tinted on extension bands.
+          style={{ display: 'flex', color: 'inherit' }}>
+          <OpenVSXLogo width='auto' height='40px' marginTop='8px' />
         </RouteLink>
         {user?.role === 'admin' && (
           <Suspense>
@@ -158,26 +170,66 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
 
   //---------- ANNOUNCEMENT BANNER
   const bannerContent: FunctionComponent = () => (
-    <Box display='flex' alignItems='center' pt={1} pb={1}>
-      <Box mr={2}>
-        <InfoIcon fontSize='large' />
-      </Box>
-      <Typography variant='body1'>
-        Open VSX is growing! To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers
-        that govern usage. Learn more{' '}
-        <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>
-          here
-        </Link>
-        .
-      </Typography>
-    </Box>
+    <>
+      <Box component='span' sx={{ fontWeight: 700 }}>
+        Open VSX is growing.
+      </Box>{' '}
+      <Box component='span' sx={{ color: 'text.secondary' }}>
+        To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers that govern usage.
+      </Box>{' '}
+      <Link href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>Learn more →</Link>
+    </>
   );
 
   //---------- SEARCH HEADER
   const searchHeader: FunctionComponent = () => (
-    <Typography variant='h4' sx={{ mb: 2, fontWeight: 'fontWeightLight', letterSpacing: 4, textAlign: 'center' }}>
-      Extensions for VS Code Compatible Editors
-    </Typography>
+    <Box textAlign='center' sx={{ mb: 3, maxWidth: '43.75rem', mx: 'auto' }}>
+      <Box
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          px: '0.8125rem',
+          py: '0.375rem',
+          borderRadius: '999px',
+          bgcolor: 'accentSoft',
+          color: 'secondary.light',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          mb: 3
+        }}>
+        <Box
+          component='span'
+          sx={{
+            width: 7,
+            height: 7,
+            borderRadius: '50%',
+            bgcolor: 'secondary.main',
+            display: 'inline-block',
+            flexShrink: 0
+          }}
+        />
+        Open-source registry for VS Code–compatible editors
+      </Box>
+      <Typography
+        component='h1'
+        sx={{
+          fontSize: { xs: '2.2rem', sm: '3rem', md: '3.375rem' },
+          lineHeight: 1.04,
+          letterSpacing: '-0.035em',
+          fontWeight: 800,
+          mb: 2
+        }}>
+        Find the right extension,
+        <br />
+        for any editor.
+      </Typography>
+      <Typography
+        sx={{ fontSize: '1.125rem', color: 'text.secondary', maxWidth: '35rem', mx: 'auto', lineHeight: 1.5 }}>
+        Browse community-published extensions. <br />
+        Free, open, and vendor-neutral.
+      </Typography>
+    </Box>
   );
 
   //---------- DOWNLOAD TERMS
@@ -243,6 +295,109 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     );
   };
 
+  //---------- HOME
+  const home: PageSettings['elements']['home'] = {
+    popularSearches: ['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java'],
+    involvement: {
+      heading: 'Get Involved',
+      cards: [
+        {
+          icon: <CallSplitIcon />,
+          title: 'Contribute',
+          description: 'Open VSX is fully open source. Help build the registry the ecosystem depends on.',
+          href: REPO_URL,
+          label: 'View on GitHub →'
+        },
+        {
+          icon: <GroupsIcon />,
+          title: 'Join the Working Group',
+          description: 'Shape the future of an open, vendor-neutral marketplace for extensions.',
+          href: '/members',
+          label: 'Learn more →'
+        },
+
+        {
+          icon: <MenuBookIcon />,
+          title: 'Read the docs',
+          description: 'Learn how to publish, claim namespaces, and consume extensions via the API.',
+          href: WIKI_URL,
+          label: 'View documentation →'
+        }
+      ]
+    }
+  };
+
+  //---------- FOOTER
+  const footer: PageSettings['elements']['footer'] = {
+    brand: {
+      logo: <OpenVsxMark />,
+      name: 'Open VSX Registry',
+      description: 'An open-source, vendor-neutral registry for VS Code–compatible extensions.'
+    },
+    columns: [
+      {
+        heading: 'Resources',
+        links: [
+          { label: 'Documentation', href: WIKI_URL, external: true },
+          { label: 'Status', href: 'https://status.open-vsx.org/', external: true },
+          { label: 'Commercial Usage', href: 'https://managed.open-vsx.org/', external: true },
+          { label: 'Report a Vulnerability', href: 'https://researcher-recognition.open-vsx.org', external: true },
+          { label: 'Sponsor', href: 'https://www.eclipse.org/donate/openvsx/', external: true }
+        ]
+      },
+      {
+        heading: 'Community',
+        links: [
+          { label: 'About This Service', href: '/about' },
+          { label: 'Members', href: '/members' },
+          { label: 'Adopters', href: '/adopters' }
+        ]
+      },
+      {
+        heading: 'Legal',
+        links: [
+          { label: 'OSS Access', href: 'https://managed.open-vsx.org/contact', external: true },
+          { label: 'Privacy Policy', href: 'https://www.eclipse.org/legal/privacy/', external: true },
+          { label: 'Terms of Use', href: '/terms-of-use' },
+          { label: 'Security Policy', href: '/security/' },
+          { label: 'Compliance', href: 'https://www.eclipse.org/legal/compliance/', external: true },
+          { label: 'Legal Resources', href: 'http://www.eclipse.org/legal/', external: true }
+        ]
+      }
+    ],
+    social: [
+      { title: 'Open VSX on GitHub', href: REPO_URL, icon: <GitHubIcon sx={{ fontSize: '1rem' }} /> },
+      {
+        title: 'Open VSX on LinkedIn',
+        href: 'https://www.linkedin.com/company/open-vsx/',
+        icon: <LinkedInIcon sx={{ fontSize: '1rem' }} />
+      },
+      { title: 'Open VSX on X (Twitter)', href: 'https://x.com/openvsx', icon: <XIcon sx={{ fontSize: '1rem' }} /> }
+    ],
+    copyright: (
+      <>
+        Copyright &copy;{' '}
+        <Link href='https://www.eclipse.org' color='inherit' underline='hover'>
+          Eclipse Foundation, AISBL.
+        </Link>{' '}
+        All Rights Reserved.
+      </>
+    ),
+    extra: (
+      <Box
+        component='span'
+        className='toolbar-manage-cookies'
+        sx={{
+          cursor: 'pointer',
+          fontSize: '0.75rem',
+          color: 'text.disabled',
+          '&:hover': { color: 'secondary.light' }
+        }}>
+        Manage Cookies
+      </Box>
+    )
+  };
+
   return {
     pageTitle: 'Open VSX Registry',
     themeType: prefersDarkMode ? 'dark' : 'light',
@@ -258,8 +413,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         content: bannerContent,
         props: {
           dismissButton: {
-            show: true,
-            label: 'Got It'
+            show: true
           },
           color: 'info'
         },
@@ -269,12 +423,8 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
           path: '/'
         }
       },
-      footer: {
-        content: footerContent,
-        props: {
-          footerHeight: 45
-        }
-      },
+      footer,
+      home,
       searchHeader,
       downloadTerms,
       additionalRoutes,
