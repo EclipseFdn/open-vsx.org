@@ -24,10 +24,8 @@ import { Document } from './document';
 import About from './about';
 import Adopters from './adopters';
 import Members from './members';
+import { Home } from './home';
 import { MainContext } from 'openvsx-webui/lib/context';
-import CallSplitIcon from '@mui/icons-material/CallSplit';
-import GroupsIcon from '@mui/icons-material/Groups';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import XIcon from '@mui/icons-material/X';
@@ -181,57 +179,6 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     </>
   );
 
-  //---------- SEARCH HEADER
-  const searchHeader: FunctionComponent = () => (
-    <Box textAlign='center' sx={{ mb: 3, maxWidth: '43.75rem', mx: 'auto' }}>
-      <Box
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          px: '0.8125rem',
-          py: '0.375rem',
-          borderRadius: '999px',
-          bgcolor: 'accentSoft',
-          color: 'secondary.light',
-          fontSize: '0.75rem',
-          fontWeight: 600,
-          mb: 3
-        }}>
-        <Box
-          component='span'
-          sx={{
-            width: 7,
-            height: 7,
-            borderRadius: '50%',
-            bgcolor: 'secondary.main',
-            display: 'inline-block',
-            flexShrink: 0
-          }}
-        />
-        Open-source registry for VS Code–compatible editors
-      </Box>
-      <Typography
-        component='h1'
-        sx={{
-          fontSize: { xs: '2.2rem', sm: '3rem', md: '3.375rem' },
-          lineHeight: 1.04,
-          letterSpacing: '-0.035em',
-          fontWeight: 800,
-          mb: 2
-        }}>
-        Find the right extension,
-        <br />
-        for any editor.
-      </Typography>
-      <Typography
-        sx={{ fontSize: '1.125rem', color: 'text.secondary', maxWidth: '35rem', mx: 'auto', lineHeight: 1.5 }}>
-        Browse community-published extensions. <br />
-        Free, open, and vendor-neutral.
-      </Typography>
-    </Box>
-  );
-
   //---------- DOWNLOAD TERMS
   const downloadTerms: FunctionComponent = () => (
     <Box mt={1}>
@@ -293,38 +240,6 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         )}
       </>
     );
-  };
-
-  //---------- HOME
-  const home: PageSettings['elements']['home'] = {
-    popularSearches: ['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java'],
-    involvement: {
-      heading: 'Get Involved',
-      cards: [
-        {
-          icon: <CallSplitIcon />,
-          title: 'Contribute',
-          description: 'Open VSX is fully open source. Help build the registry the ecosystem depends on.',
-          href: REPO_URL,
-          label: 'View on GitHub →'
-        },
-        {
-          icon: <GroupsIcon />,
-          title: 'Join the Working Group',
-          description: 'Shape the future of an open, vendor-neutral marketplace for extensions.',
-          href: '/members',
-          label: 'Learn more →'
-        },
-
-        {
-          icon: <MenuBookIcon />,
-          title: 'Read the docs',
-          description: 'Learn how to publish, claim namespaces, and consume extensions via the API.',
-          href: WIKI_URL,
-          label: 'View documentation →'
-        }
-      ]
-    }
   };
 
   //---------- FOOTER
@@ -424,8 +339,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
         }
       },
       footer,
-      home,
-      searchHeader,
+      home: Home,
       downloadTerms,
       additionalRoutes,
       reportAbuse,
