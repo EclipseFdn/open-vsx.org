@@ -14,7 +14,7 @@
 import { FunctionComponent } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { HeroSearch, CuratedSections, GetInvolved } from 'openvsx-webui';
+import { HeroSearch, CuratedSections, GetInvolved, BrowseCategories } from 'openvsx-webui';
 import CallSplitIcon from '@mui/icons-material/CallSplit';
 import GroupsIcon from '@mui/icons-material/Groups';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -80,6 +80,7 @@ export const Home: FunctionComponent = () => (
       searchHeader={SearchHeader}
       popularSearches={['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java']}
     />
+    <BrowseCategories />
     <CuratedSections
       sections={[
         { title: 'Featured', subtitle: 'Top picks ranked by relevance', sortBy: 'relevance' },
