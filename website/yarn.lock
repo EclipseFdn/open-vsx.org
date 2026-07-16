@@ -4085,13 +4085,13 @@ __metadata:
   linkType: hard
 
 "js-yaml@npm:^4.1.1":
-  version: 4.2.0
-  resolution: "js-yaml@npm:4.2.0"
+  version: 4.3.0
+  resolution: "js-yaml@npm:4.3.0"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.js
-  checksum: 10/51de2067a2b44b07ba5206132e56005f8b568ff279bb4d2f645068958c56fa4827d40a6841c983234671fa0a134bf094d0b0717873c2a3d319185297af145a6d
+  checksum: 10/2bcec3a8118d7f744badeb04e14366578d234a736f353d41fe35d2305e4ce2409a8e041d277f07cd6bbc8aaa12128d650a68ce43247072519bede20962d2126f
   languageName: node
   linkType: hard
 
@@ -4591,7 +4591,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/redesing"
+    openvsx-webui: "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -4615,9 +4615,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/redesing":
+"openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
   version: 1.1.0-dev.0
-  resolution: "openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=ee3674cb8d014df4e451492303c3417a38431d45"
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=9a2403bb0e99aec76f46ebac413e816a01d19a85"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -4652,7 +4652,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.4"
     react-router-dom: "npm:^6.30.4"
-  checksum: 10/42272a1636f0f54b0b40c1b841faf8f26ae94d1d460402a1e284b0e8c2f24f5c19c76712babf8ac0d10ba87229f3639c918eeab1685bc7aa64015a82ff1d1445
+  checksum: 10/0c22a0273409afe9a9c45486d80812efcdf02bbd8e85c826b1b7a76595b9d4b9bfee8d9d7f327a521ef98356adaf1354a30986ac03942e441a14b700d5766da1
   languageName: node
   linkType: hard
 
