@@ -24,34 +24,7 @@ const REPO_URL = 'https://github.com/eclipse-openvsx/openvsx';
 
 // Hero copy rendered above the search field (badge, headline, tagline).
 const SearchHeader: FunctionComponent = () => (
-  <Box textAlign='center' sx={{ mb: 3, maxWidth: '43.75rem', mx: 'auto' }}>
-    <Box
-      sx={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        px: '0.8125rem',
-        py: '0.375rem',
-        borderRadius: '999px',
-        bgcolor: 'accentSoft',
-        color: 'secondary.light',
-        fontSize: '0.75rem',
-        fontWeight: 600,
-        mb: 3
-      }}>
-      <Box
-        component='span'
-        sx={{
-          width: 7,
-          height: 7,
-          borderRadius: '50%',
-          bgcolor: 'secondary.main',
-          display: 'inline-block',
-          flexShrink: 0
-        }}
-      />
-      Open-source registry for VS Code–compatible editors
-    </Box>
+  <Box textAlign='center' sx={{ mb: 3, mx: 'auto' }}>
     <Typography
       component='h1'
       sx={{
@@ -61,13 +34,10 @@ const SearchHeader: FunctionComponent = () => (
         fontWeight: 800,
         mb: 2
       }}>
-      Find the right extension,
-      <br />
-      for any editor.
+      Extensions for modern developer tools.
     </Typography>
-    <Typography sx={{ fontSize: '1.125rem', color: 'text.secondary', maxWidth: '35rem', mx: 'auto', lineHeight: 1.5 }}>
-      Browse community-published extensions. <br />
-      Free, open, and vendor-neutral.
+    <Typography sx={{ fontSize: '1.125rem', color: 'text.secondary', mx: 'auto', lineHeight: 1.5 }}>
+      Discover extensions for VS Code-compatible editors, AI coding tools, cloud IDEs, and developer platforms.
     </Typography>
   </Box>
 );
