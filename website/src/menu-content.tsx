@@ -136,7 +136,8 @@ export const MobileMenuContent: FunctionComponent = () => {
 // and props `MenuList` injects onto its trigger `MenuItem`, so the trigger takes
 // part in the parent menu's keyboard navigation like any other item. `onClose`
 // closes the parent menu; clicking any child closes the whole chain.
-const SubMenuItem = forwardRef<HTMLLIElement, PropsWithChildren<{ label: string; onClose: () => void }>>(
+type SubMenuItemProps = PropsWithChildren<{ label: string; onClose: () => void }>;
+const SubMenuItem = forwardRef<HTMLLIElement, SubMenuItemProps>(
   ({ label, onClose, children, ...menuListProps }, ref) => {
     const [open, setOpen] = useState(false);
     const anchor = useRef<HTMLLIElement | null>(null);
