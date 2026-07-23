@@ -14,7 +14,7 @@
 import { FunctionComponent } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { HeroSearch, CuratedSections, GetInvolved, BrowseCategories } from 'openvsx-webui';
+import { HeroSearch, CuratedSections, GetInvolved, BrowseCategories, PageContainer, SectionStack } from 'openvsx-webui';
 import CallSplitIcon from '@mui/icons-material/CallSplit';
 import GroupsIcon from '@mui/icons-material/Groups';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -45,48 +45,50 @@ const SearchHeader: FunctionComponent = () => (
 // The home page, composed from the library's exported sections. Each section
 // boxes itself, so no width-constraining wrapper here.
 export const Home: FunctionComponent = () => (
-  <>
-    <HeroSearch
-      searchHeader={SearchHeader}
-      popularSearches={['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java']}
-    />
-    <BrowseCategories />
-    <CuratedSections
-      sections={[
-        { title: 'Featured', subtitle: 'Top picks ranked by relevance', sortBy: 'relevance' },
-        {
-          title: 'Most downloaded',
-          subtitle: 'The extensions developers rely on every day',
-          sortBy: 'downloadCount'
-        },
-        { title: 'Recently updated', subtitle: 'Fresh releases from publishers this week', sortBy: 'timestamp' }
-      ]}
-    />
-    <GetInvolved
-      heading='Get Involved'
-      cards={[
-        {
-          icon: <CallSplitIcon />,
-          title: 'Contribute',
-          description: 'Open VSX is fully open source. Help build the registry the ecosystem depends on.',
-          href: REPO_URL,
-          label: 'View on GitHub →'
-        },
-        {
-          icon: <GroupsIcon />,
-          title: 'Join the Working Group',
-          description: 'Shape the future of an open, vendor-neutral marketplace for extensions.',
-          href: '/members',
-          label: 'Learn more →'
-        },
-        {
-          icon: <MenuBookIcon />,
-          title: 'Read the docs',
-          description: 'Learn how to publish, claim namespaces, and consume extensions via the API.',
-          href: WIKI_URL,
-          label: 'View documentation →'
-        }
-      ]}
-    />
-  </>
+  <PageContainer fluid component='main' sx={{ animation: 'fadeIn .25s ease' }}>
+    <SectionStack>
+      <HeroSearch
+        searchHeader={SearchHeader}
+        popularSearches={['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java']}
+      />
+      <CuratedSections
+        sections={[
+          { title: 'Featured', subtitle: 'Top picks ranked by relevance', sortBy: 'relevance' },
+          {
+            title: 'Most downloaded',
+            subtitle: 'The extensions developers rely on every day',
+            sortBy: 'downloadCount'
+          },
+          { title: 'Recently updated', subtitle: 'Fresh releases from publishers this week', sortBy: 'timestamp' }
+        ]}
+      />
+      <BrowseCategories />
+      <GetInvolved
+        heading='Get Involved'
+        cards={[
+          {
+            icon: <CallSplitIcon />,
+            title: 'Contribute',
+            description: 'Open VSX is fully open source. Help build the registry the ecosystem depends on.',
+            href: REPO_URL,
+            label: 'View on GitHub →'
+          },
+          {
+            icon: <GroupsIcon />,
+            title: 'Join the Working Group',
+            description: 'Shape the future of an open, vendor-neutral marketplace for extensions.',
+            href: '/members',
+            label: 'Learn more →'
+          },
+          {
+            icon: <MenuBookIcon />,
+            title: 'Read the docs',
+            description: 'Learn how to publish, claim namespaces, and consume extensions via the API.',
+            href: WIKI_URL,
+            label: 'View documentation →'
+          }
+        ]}
+      />
+    </SectionStack>
+  </PageContainer>
 );
