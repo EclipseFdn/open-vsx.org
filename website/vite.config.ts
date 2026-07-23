@@ -16,9 +16,14 @@ export default defineConfig(() => ({
     port: 3000
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, './src') },
+      // @mui/icons-material's deep imports (e.g. '@mui/icons-material/Menu') resolve to
+      // CJS files that Rolldown's dep optimizer/bundler unwraps incorrectly, yielding the
+      // module's exports object instead of the icon component (React error #130). The
+      // 'esm/' subpath ships genuine ESM sources that don't hit that interop path.
+      { find: /^@mui\/icons-material\/(?!esm\/|utils\/)(.+)$/, replacement: '@mui/icons-material/esm/$1' }
+    ]
   },
   publicDir: 'static',
   build: {
