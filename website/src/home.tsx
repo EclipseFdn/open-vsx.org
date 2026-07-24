@@ -14,7 +14,15 @@
 import { FunctionComponent } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { HeroSearch, CuratedSections, GetInvolved, BrowseCategories, PageContainer, SectionStack } from 'openvsx-webui';
+import {
+  HeroSearch,
+  CuratedSections,
+  GetInvolved,
+  BrowseCategories,
+  PageContainer,
+  SectionStack,
+  SectionSeparator
+} from 'openvsx-webui';
 import CallSplitIcon from '@mui/icons-material/CallSplit';
 import GroupsIcon from '@mui/icons-material/Groups';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -24,19 +32,19 @@ const REPO_URL = 'https://github.com/eclipse-openvsx/openvsx';
 
 // Hero copy rendered above the search field (badge, headline, tagline).
 const SearchHeader: FunctionComponent = () => (
-  <Box textAlign='center' sx={{ mb: 3, mx: 'auto' }}>
+  <Box textAlign='center' sx={{ mb: 2, mx: 'auto' }}>
     <Typography
       component='h1'
       sx={{
-        fontSize: { xs: '2.2rem', sm: '3rem', md: '3.375rem' },
-        lineHeight: 1.04,
-        letterSpacing: '-0.035em',
-        fontWeight: 800,
-        mb: 2
+        fontSize: { xs: '1.875rem', sm: '2.5rem', md: '2.875rem' },
+        lineHeight: 1.1,
+        letterSpacing: '-0.02em',
+        fontWeight: 600,
+        mb: 1.5
       }}>
       Extensions for modern developer tools.
     </Typography>
-    <Typography sx={{ fontSize: '1.125rem', color: 'text.secondary', mx: 'auto', lineHeight: 1.5 }}>
+    <Typography sx={{ fontSize: '1.125rem', color: 'text.secondary', maxWidth: '35rem', mx: 'auto', lineHeight: 1.5 }}>
       Discover extensions for VS Code-compatible editors, AI coding tools, cloud IDEs, and developer platforms.
     </Typography>
   </Box>
@@ -51,6 +59,7 @@ export const Home: FunctionComponent = () => (
         searchHeader={SearchHeader}
         popularSearches={['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java']}
       />
+      <SectionSeparator />
       <CuratedSections
         sections={[
           { title: 'Featured', subtitle: 'Top picks ranked by relevance', sortBy: 'relevance' },

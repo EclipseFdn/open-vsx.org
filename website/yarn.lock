@@ -3924,7 +3924,7 @@ __metadata:
 
 "openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/updating-theme-exploration":
   version: 1.1.0-dev.0
-  resolution: "openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=91ca6e574bc69fab3474b4ba49eb14785d531b64"
+  resolution: "openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=7b7ce01902b11829ac76177ef46ba144ab5b2c23"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -3959,7 +3959,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.4"
     react-router-dom: "npm:^6.30.4"
-  checksum: 10/b6ea51c371500310e3b092d239a23ab584cc4aac9c7f33ca831c7a2c7d21b42c3d1875b24347cc603edbb2a827ad434f0d1c7e31582108c243c1a4e01f5902a4
+  checksum: 10/e2908cbf9aff70248fc3a1ac8a8bd320be9434a6070f4777a6fe099cf301ee100f419119d03b67be54e742fcbf69906a8a3338ec32ab46516b631f387f312754
   languageName: node
   linkType: hard
 
