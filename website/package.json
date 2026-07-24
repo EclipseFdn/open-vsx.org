@@ -10,7 +10,7 @@
   },
   "type": "module",
   "dependencies": {
-    "openvsx-webui": "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/fix-inconsistent-margins"
+    "openvsx-webui": "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/updating-theme-exploration"
   },
   "resolutions": {
     "qs": "^6.14.1"

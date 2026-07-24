@@ -3898,7 +3898,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/fix-inconsistent-margins"
+    openvsx-webui: "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/updating-theme-exploration"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -3922,9 +3922,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/fix-inconsistent-margins":
+"openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/updating-theme-exploration":
   version: 1.1.0-dev.0
-  resolution: "openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=bfdddfdcce2c19861bbec69cf2b376b5013cba03"
+  resolution: "openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=91ca6e574bc69fab3474b4ba49eb14785d531b64"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -3959,7 +3959,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^6.30.4"
     react-router-dom: "npm:^6.30.4"
-  checksum: 10/68d5fe122c169fcbd7fdef5fd19ae525f3ce0a45e45807a73328bf6a86b58d30840a9421c46cdf88530b441d8c56c8898ef340265dad8842155cbb72035ec91b
+  checksum: 10/b6ea51c371500310e3b092d239a23ab584cc4aac9c7f33ca831c7a2c7d21b42c3d1875b24347cc603edbb2a827ad434f0d1c7e31582108c243c1a4e01f5902a4
   languageName: node
   linkType: hard
 
