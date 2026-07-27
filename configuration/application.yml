@@ -235,6 +235,7 @@ ovsx:
 
   trusted-publishing:
     enabled: true
+    audience: 'https://staging.open-vsx.org'
 
   # General scanning support
   scanning:
