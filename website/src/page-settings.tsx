@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles/createTheme';
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { Helmet, HelmetTags } from 'react-helmet-async';
-import { Link as RouteLink, Route, useParams } from 'react-router-dom';
+import { Link as RouteLink, Route, useParams } from 'react-router';
 import { PageSettings, Extension, NamespaceDetails, OpenVsxMark } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-routes';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';

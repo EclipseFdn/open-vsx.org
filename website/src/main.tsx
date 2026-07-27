@@ -18,7 +18,7 @@ import '@fontsource/roboto/700.css';
 import { createRoot } from 'react-dom/client';
 import { FunctionComponent, useMemo } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Main, ExtensionRegistryService } from 'openvsx-webui';
