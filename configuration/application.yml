@@ -233,6 +233,9 @@ ovsx:
         "contact": "infrastructure@eclipse-foundation.org"
       }
 
+  trusted-publishing:
+    enabled: true
+
   # General scanning support
   scanning:
     enabled: true
