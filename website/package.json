@@ -10,7 +10,7 @@
   },
   "type": "module",
   "dependencies": {
-    "openvsx-webui": "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&head=gnugomez/main/upgrade-react-router"
+    "openvsx-webui": "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=trusted-publishing"
   },
   "resolutions": {
     "qs": "^6.14.1"

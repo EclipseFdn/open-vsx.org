@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=1e8f4f6
-ARG SERVER_VERSION_STRING=v1.1.0-dev.3
+ARG SERVER_VERSION=trusted-publishing
+ARG SERVER_VERSION_STRING=v1.1.0-trusted-publishing
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
