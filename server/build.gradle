@@ -18,6 +18,16 @@ dependencies {
     // build (settings.gradle) substitutes the included server project.
     implementation 'org.eclipse.openvsx:openvsx-server'
 
+    // What this module's own sources compile against. No versions: the server
+    // library publishes its effective managed versions as dependency constraints.
+    implementation "org.springframework.boot:spring-boot-starter-webmvc"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.security:spring-security-oauth2-client"
+    implementation "org.apache.commons:commons-lang3"
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "tools.jackson.core:jackson-databind"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui"
+
     // Mirrors the server's tomcat -> jetty replacement; component module rules are
     // project-local upstream and do not propagate to consumers.
     modules {
@@ -25,6 +35,14 @@ dependencies {
             replacedBy("org.springframework.boot:spring-boot-starter-jetty")
         }
     }
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
+    testImplementation "org.springframework.boot:spring-boot-testcontainers"
+    testImplementation "org.testcontainers:testcontainers-junit-jupiter"
+    testImplementation "org.testcontainers:testcontainers-postgresql"
+    testImplementation "io.micrometer:micrometer-core"
+    testImplementation "org.jobrunr:jobrunr-spring-boot-4-starter"
 }
 
 // The server's io.spring.dependency-management plugin resolves its graph with
@@ -45,6 +63,11 @@ configurations.configureEach {
         force 'org.mockito:mockito-core:5.20.0'
         force 'org.mockito:mockito-junit-jupiter:5.20.0'
     }
+}
+
+test {
+    jvmArgs = ['--enable-native-access=ALL-UNNAMED', '-Xmx2048m']
+    useJUnitPlatform()
 }
 
 // Same developer entry point as upstream's `./gradlew runServer`: runs the registry

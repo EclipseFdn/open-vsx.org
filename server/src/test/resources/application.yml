@@ -1,0 +1,50 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+
+  security:
+      oauth2:
+        client:
+          registration:
+            github:
+              client-id: dummy-client-id
+              client-secret: dummy-client-secret
+
+bucket4j:
+  enabled: false
+
+jobrunr:
+  job-scheduler:
+    enabled: true
+  background-job-server:
+    enabled: false
+    worker-count: 1
+  dashboard:
+    enabled: false
+  database:
+    type: sql
+  miscellaneous:
+    allow-anonymous-data-usage: false
+
+ovsx:
+  elasticsearch:
+    enabled: false
+  databasesearch:
+    enabled: true
+  storage:
+    local:
+      directory: /tmp
+  # same keys and values as the open-vsx.org deployment configuration
+  eclipse:
+    base-url: https://api.eclipse.org/
+    publisher-agreement:
+      version: 1.1
+      allowed-versions: "1,1.0,1.1"
