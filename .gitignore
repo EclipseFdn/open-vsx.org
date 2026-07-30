@@ -3,3 +3,6 @@
 
 .helm
 charts/openvsx/charts
+.gradle
+build/
+bin/

@@ -1,0 +1,98 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+}
+
+group = 'org.eclipsefdn.openvsx'
+
+java {
+    sourceCompatibility = gradle.ext.javaVersion
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // The upstream registry server, consumed as a library. No version: the composite
+    // build (settings.gradle) substitutes the included server project.
+    implementation 'org.eclipse.openvsx:openvsx-server'
+
+    // Mirrors the server's tomcat -> jetty replacement; component module rules are
+    // project-local upstream and do not propagate to consumers.
+    modules {
+        module("org.springframework.boot:spring-boot-starter-tomcat") {
+            replacedBy("org.springframework.boot:spring-boot-starter-jetty")
+        }
+    }
+}
+
+// The server's io.spring.dependency-management plugin resolves its graph with
+// Maven-like semantics: managed and declared versions beat newer transitive
+// requests. That does not travel to consumers, where Gradle picks the highest
+// requested version. Force the few modules where the two disagree so this build
+// resolves exactly what the upstream bootJar ships (the two ranges are upstream's
+// CVE floors). Verified by diffing BOOT-INF/lib against an upstream bootJar; see
+// NOTES.md. The mockito/byte-buddy entries only matter on the test classpaths
+// (upstream's tests force-downgrade them the same way).
+configurations.configureEach {
+    resolutionStrategy {
+        force 'com.google.code.gson:gson:2.13.2'
+        force 'com.fasterxml.woodstox:woodstox-core:6.4.0'
+        force 'org.apache.commons:commons-compress:[1.26.0,2.0)'
+        force 'org.eclipse.parsson:parsson:[1.1.8,2.0)'
+        force 'net.bytebuddy:byte-buddy:1.17.8'
+        force 'org.mockito:mockito-core:5.20.0'
+        force 'org.mockito:mockito-junit-jupiter:5.20.0'
+    }
+}
+
+// Same developer entry point as upstream's `./gradlew runServer`: runs the registry
+// on the host JVM with upstream's dev configuration (src/dev/resources), plus this
+// module's beans. Expects the dev services from upstream's docker-compose.yml
+// (postgres), exactly like the upstream task does.
+tasks.register('runServer', JavaExec) {
+    jvmArgs = [
+        '-Dorg.jooq.no-logo=true',
+        '-Dorg.jooq.no-tips=true',
+        '--enable-native-access=ALL-UNNAMED' // due to https://github.com/netty/netty/issues/15161
+    ]
+    classpath = sourceSets.main.runtimeClasspath + files(new File(gradle.ext.openvsxServerDir, 'src/dev/resources'))
+    mainClass = 'org.eclipse.openvsx.RegistryApplication'
+
+    // Upstream's one-time dev bootstrap: the dev profile includes the gitignored
+    // application-ovsx.properties, which developers generate in their checkout.
+    // Generate it on first run so a fresh submodule works out of the box.
+    doFirst {
+        def serverDir = gradle.ext.openvsxServerDir as File
+        if (!new File(serverDir, 'src/dev/resources/application-ovsx.properties').exists()) {
+            def generate = new ProcessBuilder('bash', 'scripts/generate-properties.sh')
+                    .directory(serverDir)
+                    .inheritIO()
+                    .start()
+            if (generate.waitFor() != 0) {
+                throw new GradleException("${serverDir}/scripts/generate-properties.sh failed")
+            }
+        }
+    }
+}
+
+springBoot {
+    // The application class is upstream's; this module only layers deployment-specific
+    // beans on top via auto-configuration. Do not add a second @SpringBootApplication.
+    mainClass = 'org.eclipse.openvsx.RegistryApplication'
+}
+
+bootJar {
+    // Keep the artifact name the Docker image entrypoint expects.
+    archiveFileName = 'openvsx-server.jar'
+
+    // bootJar hoists this module's META-INF resources to the jar root, but the
+    // image entrypoint launches with -cp BOOT-INF/classes:BOOT-INF/lib/* (no jar
+    // root on the classpath), which would silently drop the auto-configuration
+    // registration. Keep a copy under BOOT-INF/classes.
+    from(sourceSets.main.resources) {
+        include 'META-INF/spring/**'
+        into 'BOOT-INF/classes'
+    }
+}

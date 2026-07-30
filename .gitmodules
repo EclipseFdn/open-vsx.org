@@ -1,0 +1,4 @@
+[submodule "server/upstream"]
+	path = server/upstream
+	url = https://github.com/gnugomez/openvsx.git
+	branch = poc/eclipse-extraction

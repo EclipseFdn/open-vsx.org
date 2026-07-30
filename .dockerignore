@@ -1,0 +1,7 @@
+.git
+server/.gradle
+server/build
+server/bin
+server/upstream
+website/node_modules
+website/dist

@@ -1,0 +1,36 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            // Keep the Spring Boot plugin in lockstep with the upstream server build.
+            // The version is derived below from the server's version catalog.
+            if (requested.id.id == 'org.springframework.boot') {
+                useVersion(gradle.ext.springBootVersion)
+            }
+        }
+    }
+}
+
+rootProject.name = 'open-vsx-org'
+
+// The upstream server, consumed as a library through a Gradle composite build:
+// the 'upstream' submodule by default, or any checkout via -PopenvsxServerPath.
+def serverDir = file(providers.gradleProperty('openvsxServerPath').getOrElse('upstream/server'))
+if (!new File(serverDir, 'gradle/libs.versions.toml').exists()) {
+    throw new GradleException("No openvsx server build at ${serverDir}. Run" +
+            " 'git submodule update --init' or pass -PopenvsxServerPath=<path-to-openvsx>/server.")
+}
+
+// Also used by the runServer task (dev configuration).
+gradle.ext.openvsxServerDir = serverDir
+
+// The Spring Boot and Java versions are derived from the upstream version catalog,
+// never declared here.
+def tomlText = new File(serverDir, 'gradle/libs.versions.toml').text
+gradle.ext.springBootVersion = (tomlText =~ /(?m)^spring-boot\s*=\s*"([^"]+)"/).collect { it[1] }.first()
+gradle.ext.javaVersion = (tomlText =~ /(?m)^java\s*=\s*"([^"]+)"/).collect { it[1] }.first()
+
+includeBuild(serverDir)
