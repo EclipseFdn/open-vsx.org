@@ -247,7 +247,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     brand: {
       logo: <OpenVsxMark />,
       name: 'Open VSX Registry',
-      description: 'An open-source, vendor-neutral registry for VS Code–compatible extensions.'
+      description: 'An open source, vendor-neutral registry for VS Code–compatible extensions.'
     },
     columns: [
       {
