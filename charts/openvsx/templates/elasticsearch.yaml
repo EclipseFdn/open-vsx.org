@@ -57,4 +57,4 @@ spec:
           name: elasticsearch
           resources:
           {{- toYaml .Values.es.resources | nindent 12 }}
-  version: 8.18.8
+  version: {{ .Values.es.version }}

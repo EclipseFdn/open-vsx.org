@@ -23,5 +23,6 @@ repos:
       name: eslint & prettier
       entry: bash -c 'cd website && yarn lint' --
       language: system
+      require_serial: true
       files: ^website/
       types: [file]

@@ -8,25 +8,30 @@
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
 
-import { FunctionComponent, ReactNode, Suspense, lazy, useContext } from 'react';
+import { FunctionComponent, ReactNode, Suspense, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles/createTheme';
 import { SxProps } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { Helmet, HelmetTags } from 'react-helmet-async';
-import { Link as RouteLink, Route, useParams } from 'react-router-dom';
-import { PageSettings, Extension, NamespaceDetails } from 'openvsx-webui';
+import { Link as RouteLink, Route, useParams } from 'react-router';
+import { PageSettings, Extension, NamespaceDetails, OpenVsxMark } from 'openvsx-webui';
 import { ExtensionListRoutes } from 'openvsx-webui/lib/pages/extension-list/extension-list-routes';
 import { DefaultMenuContent, MobileMenuContent } from './menu-content';
-import InfoIcon from '@mui/icons-material/Info';
 import OpenVSXLogo from './openvsx-registry-logo';
-import footerContent from './footer-content';
 import { Document } from './document';
 import About from './about';
 import Adopters from './adopters';
 import Members from './members';
+import { Home } from './home';
 import { MainContext } from 'openvsx-webui/lib/context';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import XIcon from '@mui/icons-material/X';
+
+const WIKI_URL = 'https://github.com/EclipseFdn/open-vsx.org/wiki';
+const REPO_URL = 'https://github.com/eclipse-openvsx/openvsx';
 
 //---------- HEAD TAGS
 const HeadTags: FunctionComponent<{
@@ -124,22 +129,19 @@ const NamespaceHeadTags: FunctionComponent<{ namespaceDetails?: NamespaceDetails
   return <HeadTags title={title} url={url} description={description} />;
 };
 
-export default function createPageSettings(
-  theme: Theme,
-  prefersDarkMode: boolean,
-  serverVersionPromise: Promise<string>
-): PageSettings {
+export default function createPageSettings(theme: Theme, prefersDarkMode: boolean): PageSettings {
   //---------- SERVER VERSION
-  const ServerVersion = lazy(async () => {
-    const version = await serverVersionPromise;
-    return {
-      default: () => (
-        <Typography variant='body2' sx={{ alignSelf: 'flex-start', fontSize: '0.8rem' }}>
-          {version}
-        </Typography>
-      )
-    };
-  });
+  const ServerVersion: FunctionComponent = () => {
+    const { version } = useContext(MainContext);
+    if (!version) {
+      return <div>Loading version...</div>;
+    }
+    return (
+      <Typography variant='body2' sx={{ alignSelf: 'flex-start', fontSize: '0.8rem' }}>
+        {version.version}
+      </Typography>
+    );
+  };
 
   //---------- MAIN LOGO / TOOLBAR
   const toolbarContent: FunctionComponent = () => {
@@ -147,8 +149,13 @@ export default function createPageSettings(
 
     return (
       <>
-        <RouteLink to={ExtensionListRoutes.MAIN} aria-label={`Home - Open VSX Registry`}>
-          <OpenVSXLogo width='auto' height='40px' marginTop='8px' prefersDarkMode={prefersDarkMode} />
+        <RouteLink
+          to={ExtensionListRoutes.MAIN}
+          aria-label={`Home - Open VSX Registry`}
+          // A bare anchor leaks the browser's link color into the wordmark; color:inherit
+          // lets the logo follow the navbar's content color, which is tinted on extension bands.
+          style={{ display: 'flex', color: 'inherit' }}>
+          <OpenVSXLogo width='auto' height='2.5rem' />
         </RouteLink>
         {user?.role === 'admin' && (
           <Suspense>
@@ -161,26 +168,15 @@ export default function createPageSettings(
 
   //---------- ANNOUNCEMENT BANNER
   const bannerContent: FunctionComponent = () => (
-    <Box display='flex' alignItems='center' pt={1} pb={1}>
-      <Box mr={2}>
-        <InfoIcon fontSize='large' />
-      </Box>
-      <Typography variant='body1'>
-        Open VSX is growing! To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers
-        that govern usage. Learn more{' '}
-        <Link color='secondary' underline='hover' href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>
-          here
-        </Link>
-        .
-      </Typography>
-    </Box>
-  );
-
-  //---------- SEARCH HEADER
-  const searchHeader: FunctionComponent = () => (
-    <Typography variant='h4' sx={{ mb: 2, fontWeight: 'fontWeightLight', letterSpacing: 4, textAlign: 'center' }}>
-      Extensions for VS Code Compatible Editors
-    </Typography>
+    <>
+      <Box component='span' sx={{ fontWeight: 700 }}>
+        Open VSX is growing.
+      </Box>{' '}
+      <Box component='span' sx={{ color: 'text.secondary' }}>
+        To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers that govern usage.
+      </Box>{' '}
+      <Link href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>Learn more →</Link>
+    </>
   );
 
   //---------- DOWNLOAD TERMS
@@ -228,17 +224,93 @@ export default function createPageSettings(
   //---------- CLAIM NAMESPACE LINK
   const claimNamespace: FunctionComponent<{ extension: Extension; sx: SxProps<Theme> }> = ({ sx, extension }) => {
     const title = `Claiming namespace \`${extension.namespace}\``;
+
     return (
-      <Link
-        href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?template=claim-namespace-ownership.yml&namespace=${encodeURIComponent(extension.namespace)}&title=${encodeURIComponent(title)}`}
-        target='_blank'
-        variant='body2'
-        color='secondary'
-        underline='hover'
-        sx={sx}>
-        Claim Ownership
-      </Link>
+      <>
+        {!extension.verified && (
+          <Link
+            href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?template=claim-namespace-ownership.yml&namespace=${encodeURIComponent(extension.namespace)}&title=${encodeURIComponent(title)}`}
+            target='_blank'
+            variant='body2'
+            color='secondary'
+            underline='hover'
+            sx={sx}>
+            Claim Ownership
+          </Link>
+        )}
+      </>
     );
+  };
+
+  //---------- FOOTER
+  const footer: PageSettings['elements']['footer'] = {
+    brand: {
+      logo: <OpenVsxMark />,
+      name: 'Open VSX Registry',
+      description: 'An open source, vendor-neutral registry for VS Code–compatible extensions.'
+    },
+    columns: [
+      {
+        heading: 'Resources',
+        links: [
+          { label: 'Documentation', href: WIKI_URL, external: true },
+          { label: 'Status', href: 'https://status.open-vsx.org/', external: true },
+          { label: 'Commercial Usage', href: 'https://managed.open-vsx.org/', external: true },
+          { label: 'Report a Vulnerability', href: 'https://researcher-recognition.open-vsx.org', external: true },
+          { label: 'Sponsor', href: 'https://www.eclipse.org/donate/openvsx/', external: true }
+        ]
+      },
+      {
+        heading: 'Community',
+        links: [
+          { label: 'About This Service', href: '/about' },
+          { label: 'Members', href: '/members' },
+          { label: 'Adopters', href: '/adopters' }
+        ]
+      },
+      {
+        heading: 'Legal',
+        links: [
+          { label: 'OSS Access', href: 'https://managed.open-vsx.org/contact', external: true },
+          { label: 'Privacy Policy', href: 'https://www.eclipse.org/legal/privacy/', external: true },
+          { label: 'Terms of Use', href: '/terms-of-use' },
+          { label: 'Security Policy', href: '/security/' },
+          { label: 'Compliance', href: 'https://www.eclipse.org/legal/compliance/', external: true },
+          { label: 'Legal Resources', href: 'http://www.eclipse.org/legal/', external: true }
+        ]
+      }
+    ],
+    social: [
+      { title: 'Open VSX on GitHub', href: REPO_URL, icon: <GitHubIcon sx={{ fontSize: '1rem' }} /> },
+      {
+        title: 'Open VSX on LinkedIn',
+        href: 'https://www.linkedin.com/company/open-vsx/',
+        icon: <LinkedInIcon sx={{ fontSize: '1rem' }} />
+      },
+      { title: 'Open VSX on X (Twitter)', href: 'https://x.com/openvsx', icon: <XIcon sx={{ fontSize: '1rem' }} /> }
+    ],
+    copyright: (
+      <>
+        Copyright &copy;{' '}
+        <Link href='https://www.eclipse.org' color='inherit' underline='hover'>
+          Eclipse Foundation, AISBL.
+        </Link>{' '}
+        All Rights Reserved.
+      </>
+    ),
+    extra: (
+      <Box
+        component='span'
+        className='toolbar-manage-cookies'
+        sx={{
+          cursor: 'pointer',
+          fontSize: '0.75rem',
+          color: 'text.disabled',
+          '&:hover': { color: 'secondary.light' }
+        }}>
+        Manage Cookies
+      </Box>
+    )
   };
 
   return {
@@ -256,8 +328,7 @@ export default function createPageSettings(
         content: bannerContent,
         props: {
           dismissButton: {
-            show: true,
-            label: 'Got It'
+            show: true
           },
           color: 'info'
         },
@@ -267,13 +338,8 @@ export default function createPageSettings(
           path: '/'
         }
       },
-      footer: {
-        content: footerContent,
-        props: {
-          footerHeight: 45
-        }
-      },
-      searchHeader,
+      footer,
+      home: Home,
       downloadTerms,
       additionalRoutes,
       reportAbuse,

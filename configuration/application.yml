@@ -15,11 +15,6 @@ server:
   address: 0.0.0.0
   port: 8080
   shutdown: graceful
-  error:
-    path: /server-error
-    whitelabel:
-      enabled: false
-    include-stacktrace: never
   compression:
     enabled: true
     mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
@@ -36,11 +31,6 @@ spring:
     name: openvsx-server
   config:
     import: file:${DEPLOYMENT_CONFIG}
-  servlet:
-    multipart:
-      # Matches nginx client_max_body_size 250m.
-      max-file-size: 250MB
-      max-request-size: 250MB
   datasource:
     hikari:
       maximum-pool-size: 30
@@ -49,16 +39,8 @@ spring:
     baseline-on-migrate: false
   jpa:
     open-in-view: false
-  resources:
-    cache:
-      cachecontrol:
-        max-age: 4h
-        cache-public: true
   session:
     store-type: jdbc
-  thymeleaf:
-    # disable thymeleaf view resolution, do not change lightly
-    enabled: false
   lifecycle:
     timeout-per-shutdown-phase: 10s
   security:
@@ -72,6 +54,20 @@ spring:
           eclipse:
             issuer-uri: https://auth.eclipse.org/auth/realms/community
             user-name-attribute: preferred_username
+  thymeleaf:
+    check-template-location: false
+  web:
+    error:
+      path: /server-error
+      include-stacktrace: never
+      whitelabel:
+        enabled: false
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 4h
+          cache-public: true
+
 management:
   server:
     port: 8081
@@ -100,6 +96,7 @@ management:
   tracing:
     sampling:
       probability: 0.01
+
 springdoc:
   model-and-view-allowed: true
   swagger-ui:
@@ -109,19 +106,19 @@ springdoc:
     urlsPrimaryName: Registry API
     supportedSubmitMethods:
       - get
-org:
-  jobrunr:
-    job-scheduler:
-      enabled: true
-    background-job-server:
-      enabled: true
-      worker-count: 2
-    dashboard:
-      enabled: false
-    database:
-      type: sql
-    miscellaneous:
-      allow-anonymous-data-usage: false
+
+jobrunr:
+  job-scheduler:
+    enabled: true
+  background-job-server:
+    enabled: true
+    worker-count: 2
+  dashboard:
+    enabled: false
+  database:
+    type: sql
+  miscellaneous:
+    allow-anonymous-data-usage: false
 
 bucket4j:
   enabled: false
@@ -140,7 +137,7 @@ ovsx:
       enabled: false
     primary-service: aws
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
+    frontendRoutes: "/extension/**,/namespace/**,/search,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
     additional-routes: "/.well-known/**"
   eclipse:
     base-url: https://api.eclipse.org/
@@ -149,6 +146,7 @@ ovsx:
       allowed-versions: "1,1.0,1.1"
   publishing:
     require-license: true
+    max-content-size: 262144000 # 250MB
   redis:
     enabled: true
   elasticsearch:

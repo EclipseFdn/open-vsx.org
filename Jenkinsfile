@@ -152,7 +152,7 @@ pipeline {
               set -e
               export AWS_DEFAULT_REGION=eu-central-1
               export KUBECONFIG="${HOME}/.kube/config"
-              aws eks update-kubeconfig --name eks-staging --region eu-central-1
+              aws eks update-kubeconfig --name eks-staging-openvsx --region eu-central-1
               ./kubernetes/helm-deploy.sh aws-staging "${IMAGE_TAG}"
             '''
           }
@@ -173,7 +173,6 @@ pipeline {
             sh '''
               set -e
               export AWS_DEFAULT_REGION=eu-central-1
-              export KUBECONFIG="${HOME}/.kube/config"
               aws eks update-kubeconfig --name eks-production-openvsx --region eu-central-1
               ./kubernetes/helm-deploy.sh aws-production "${IMAGE_TAG}"
             '''

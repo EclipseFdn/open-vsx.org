@@ -8,11 +8,19 @@ host: staging.open-vsx.org
 
 replicaCount: 6
 esReplicaCount: 3
+
+# Enables templates/hpa-postgresql.yaml — HPA on the in-cluster postgresql-ha
+# StatefulSet (3..9 replicas, CPU 60%). aws-staging has postgresql-ha; aws-production
+# uses RDS so this stays unset there.
+autoscaling:
+  enabled: true
+
 keda:
   enabled: true
-  clusterName: eks-staging
-  minReplicas: 12
-  maxReplicas: 18
+  clusterName: eks-staging-openvsx
+  minReplicas: 2
+  maxReplicas: 4
+  thresholdBusyRatio: "0.5"
   prometheusAddress: "https://prometheus-prod-32-prod-ca-east-0.grafana.net/api/prom"
   pollingInterval: 30
   cooldownPeriod: 600
@@ -34,24 +42,65 @@ image:
 eks:
   enabled: true  # Switch to false for OKD installations
 
-aws-load-balancer-controller:
+# ── ServiceAccount (IRSA) — replaces the manual `default` SA + static AWS keys ──
+serviceAccount:
+  create: true
+  name: openvsx
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-app-staging"
+
+# ── External Secrets Operator — composes deployment-configuration-staging from SM ──
+externalSecrets:
   enabled: true
-  resources:
-  requests:
-    cpu: 100m
-    memory: 128Mi
-  limits:
-    cpu: 200m
-    memory: 256Mi
-  clusterName: eks-staging
-  region: eu-central-1
-  vpcId: vpc-0285cbfe9bfb7e4fd
-  serviceAccount:
-    create: false
-    name: aws-load-balancer-controller-staging
+  clusterSecretStore: aws-secrets-manager
+  refreshInterval: 1h
+  fastlyLogsBucket: "fastlyopenvsxorgstaging"
+  storageBucket: "openvsxorgstaging"
+  elasticsearchClearOnStart: true
+  # Read the ES elastic password straight from the ECK secret (deployment.yaml) instead of SM/ESO —
+  # app comes up green on first deploy, no bootstrap script, self-heals on ECK password rotation.
+  elasticsearchPasswordFromEck: true
+  # In-cluster Postgres (no RDS in staging)
+  inClusterPostgres: true
+  postgresHost: "staging-postgresql-ha-postgresql"
+  postgresDb: "openvsx-staging"
+  postgresUsername: "postgres"
+
+# Injects SPRING_DATASOURCE_PASSWORD from the Bitnami-generated postgresql-ha secret.
+inClusterPostgres:
+  passwordSecret:
+    name: "staging-postgresql-ha-postgresql"
+    key: "password"
+
+serviceMonitors:
+  platformMetrics:
+    enabled: true
+
+aws-load-balancer-controller:
+  enabled: false
 
 ingress:
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+  preActions:
+    - forward-cors
+    - ssl-redirect
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: >
+      {"Type": "redirect", "RedirectConfig":
+       {"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}
+    alb.ingress.kubernetes.io/actions.forward-cors: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"204"}}
+    alb.ingress.kubernetes.io/conditions.forward-cors: >
+      [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
+    alb.ingress.kubernetes.io/healthcheck-port: "8081"
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60,routing.http2.enabled=true,deletion_protection.enabled=true,client_keep_alive.seconds=60
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30,slow_start.duration_seconds=0
 
 website:
   jvmArgs: >
@@ -80,6 +129,8 @@ resources:
 
 # elastic search
 es:
+  # Spring Boot 4 bundles the 9.x ES Java client, which cannot talk to an 8.x server.
+  version: "9.2.8"
   podAnnotations:
     "karpenter.sh/do-not-disrupt": "true"
     "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
@@ -92,8 +143,17 @@ es:
       cpu: 1
       memory: 8Gi
   storage_class: gp3
+  storage: 4Gi
 
 postgresql-ha:
+  enabled: true
+  # Root init container pre-creates /bitnami/postgresql/conf owned by 1001 before the conf.d submount.
+  # On fresh volumes fsGroup misses that kubelet-created parent dir → postgres permission-denied crashloop.
+  volumePermissions:
+    enabled: true
+    image:
+      repository: bitnamilegacy/os-shell  # public bitnami/os-shell is retired
+      tag: 12-debian-12-r51
   metrics:
     enabled: true
     image:
@@ -113,6 +173,9 @@ postgresql-ha:
         app: open-vsx-org
         environment: staging
   postgresql:
+    # Pinned to SM via ESO (templates/external-secrets.yaml) — stops the --atomic
+    # uninstall password-regeneration loop. Keys: password, repmgr-password.
+    existingSecret: staging-postgresql-ha-postgresql
     image:
       repository: bitnamilegacy/postgresql-repmgr
       tag: 17.6.0-debian-12-r2
@@ -156,85 +219,13 @@ postgresql-ha:
       "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
   pgpool:
     replicaCount: 0
-
-# redis
-redis:
-  master:
-    pdb:
-      create: true
-      minAvailable: 1
-    podAnnotations:
-      "karpenter.sh/do-not-disrupt": "true"
-      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
-  replica:
-    pdb:
-      create: true
-      minAvailable: 1
-    podAnnotations:
-      "karpenter.sh/do-not-disrupt": "true"
-      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
-  name: redis
-  replicas: 6
-  image:
-    repository: redis
-    tag: "7.2.10"
-    pullPolicy: IfNotPresent
-  maxmemory: "896mb"
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1536Mi"
-      cpu: "500m"
-  persistence:
-    storageGi: 5
-    storageClass: "gp3"
-  serviceAccountName: redis-cluster-operator
-  clusterRoleName: redis-cluster-operator-role-cluster
-  clusterRoleBindingName:  redis-cluster-operator-role-binding-cluster
-  roleName: redis-cluster-operator-role
-  roleBinding: redis-cluster-operator-role-binding
+    # sr-check-password is mounted on the postgresql pods even at replicaCount 0; pin it too.
+    # Keys: admin-password, sr-check-password.
+    existingSecret: staging-postgresql-ha-pgpool
 
 # grafana alloy
 alloy:
-  alloy:
-    clustering:
-      enabled: true
-    configMap:
-      create: false
-      name: "grafana-alloy-configmap-staging"
-      key: "config.river"
-    envFrom:
-      - secretRef:
-          name: grafana-cloud-secret-staging
-      - secretRef:
-          name: redis-secret-staging
-    extraEnv:
-    - name: CLUSTER_NAME
-      value: "eks-staging"
-    - name: POD_NAME
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.name
-    extraPorts:
-      - name: zipkin
-        port: 9411
-        targetPort: 9411
-      - name: loki
-        port: 3100
-        targetPort: 3100
-  crds:
-    create: true
-  controller:
-    type: "daemonset"
-    podLabels:
-      app: *name
-      environment: *environment
-    nodeSelector:
-      openvsx-production-alloy: null
-  fullnameOverride: grafana-alloy-staging
-  namespaceOverride: *namespace
+  enabled: false
 
 clamav:
   enabled: true

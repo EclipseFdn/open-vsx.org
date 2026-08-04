@@ -51,13 +51,32 @@ spec:
           value: /run/secrets/open-vsx.org/deployment/configuration.yml
         - name: ENVNAME
           value: {{ .Values.environment }}
-        - name: JVM_ARGS
-          value: {{ .Values.website.jvmArgs }}
         {{- if .Values.eks.enabled }}
         # EKS: route Loki4jAppender push through cluster-wide Alloy in monitoring ns
         # (chart Alloy is disabled — see values-aws.yaml). Overrides LOKI_URL from envFrom.
         - name: LOKI_URL
           value: "http://grafana-alloy.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+        {{- end }}
+        - name: JVM_ARGS
+          value: {{ .Values.website.jvmArgs }}
+        {{- if .Values.externalSecrets.inClusterPostgres }}
+        # In-cluster postgresql-ha: password is chart-generated, injected here and
+        # overrides spring.datasource.password from the ESO-composed configuration.yml.
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.inClusterPostgres.passwordSecret.name }}
+              key: {{ .Values.inClusterPostgres.passwordSecret.key }}
+        {{- end }}
+        {{- if .Values.externalSecrets.elasticsearchPasswordFromEck }}
+        # In-cluster ECK Elasticsearch: read the elastic password straight from the ECK-managed
+        # secret (the source of truth), overriding ovsx.elasticsearch.password from configuration.yml.
+        # No SM round-trip / bootstrap script; self-heals if ECK rotates the password.
+        - name: OVSX_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-{{ .Values.environment }}-es-elastic-user
+              key: elastic
         {{- end }}
         volumeMounts:
         - name: deployment-configuration

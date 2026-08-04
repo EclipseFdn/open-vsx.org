@@ -2,6 +2,7 @@
 
 name: &name open-vsx-org
 environment: &environment staging
+platform: &platform okd-c1
 namespace: &namespace open-vsx-org-staging
 host: staging.open-vsx.org
 

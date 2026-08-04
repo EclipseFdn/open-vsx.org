@@ -2,10 +2,16 @@
 
 name: &name open-vsx-org
 environment: &environment production
+platform: &platform okd-c1
 namespace: &namespace open-vsx-org
 host: open-vsx.org
 
-replicaCount: 16
+# Toggles all EKS-specific resources (Ingress, ServiceAccount IRSA, ESO, KEDA).
+# OKD-only resources (Route, ServiceMonitor, RedisCluster, redis-cluster-operator,
+# in-chart Alloy ConfigMap, deployment-configuration-*-aws envFrom) render only
+# when this is false.
+eks:
+  enabled: false
 
 # IRSA ServiceAccount — only created on EKS. On OKD pods use the default SA.
 serviceAccount:
@@ -17,9 +23,11 @@ serviceAccount:
 externalSecrets:
   enabled: false
 
-# KEDA ScaledObject for Jetty-based autoscaling — only enabled on EKS.
+# KEDA ScaledObject for Tomcat-based autoscaling — only enabled on EKS.
 keda:
   enabled: false
+
+replicaCount: 6
 esReplicaCount: 3
 autoscaling:
   enabled: false
@@ -77,6 +85,8 @@ resources:
 
 # elastic search
 es:
+  # Spring Boot 4 bundles the 9.x ES Java client, which cannot talk to an 8.x server.
+  version: "9.2.8"
   java_opts: -Xms4g -Xmx4g -Dlog4j2.formatMsgNoLookups=true
   resources:
     limits:
@@ -130,6 +140,9 @@ alloy:
       - name: zipkin
         port: 9411
         targetPort: 9411
+      - name: loki
+        port: 3100
+        targetPort: 3100
   crds:
     create: true
   controller:
