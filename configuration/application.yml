@@ -280,8 +280,8 @@ ovsx:
         type: "CLAMAV_REST"
         required: true
         async: false
-        max-concurrency: 4
-        timeout-minutes: 5
+        max-concurrency: 5
+        timeout-minutes: 10
 
         # Per-scanner HTTP client configuration
         # ClamAV needs longer timeouts for large files

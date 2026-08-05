@@ -191,7 +191,7 @@ clamav:
     MAX_SINGLE_FILE_MB: 512
     MAX_RECURSION: 16
     MAX_THREADS: 10
-    SCAN_TIMEOUT_MINUTES: 5
+    SCAN_TIMEOUT_MINUTES: 10
 
 # ── YARA ─────────────────────────────────────────────────────────────────────
 yara:
