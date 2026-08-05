@@ -239,6 +239,7 @@ export const DefaultMenuContent: FunctionComponent = () => {
       </MenuLink>
       <ResourcesTrigger
         ref={resourcesAnchor}
+        type='button'
         onClick={() => setResourcesOpen(true)}
         aria-haspopup='menu'
         aria-expanded={resourcesOpen}
