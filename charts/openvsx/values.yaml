@@ -29,6 +29,10 @@ keda:
 
 replicaCount: 6
 esReplicaCount: 3
+
+# preStop pause before SIGTERM. OKD routes via HAProxy; no ALB deregistration to outlast.
+preStopDelaySeconds: 25
+
 autoscaling:
   enabled: false
 

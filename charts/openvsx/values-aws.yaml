@@ -31,6 +31,9 @@ aws-load-balancer-controller:
 replicaCount: 3
 esReplicaCount: 3
 
+# Must exceed the ALB deregistration_delay of 30s set in ingress annotations below.
+preStopDelaySeconds: 35
+
 image:
   repository: ghcr.io/eclipsefdn/openvsx-website
   pullPolicy: Always
