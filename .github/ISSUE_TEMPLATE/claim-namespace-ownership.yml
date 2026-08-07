@@ -1,0 +1,123 @@
+name: Claim namespace ownership
+description: Request exclusive publishing rights to an Open VSX namespace
+title: "Claiming namespace [name]"
+labels: ["namespace", "operations"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Our objective with the **Open VSX** Namespace approval process is to provide an open and transparent process
+        and set of records (issues) to document requests, processing and approval of **Open VSX** namespace ownership.
+
+        A further goal is ensure the publishers and extensions are legitimate, do not misrepresent themselves and do
+        not introduce confusion between extensions published on the VS Code Marketplace and the **Open VSX** Registry.
+
+        To those ends, please do the following:
+        1. Enter the namespace you're looking to claim.
+        2. Place a checkmark to indicate that the namespace is not currently owned. (verify by a search on [open-vsx.org](https://open-vsx.org))
+        2. Place a checkmark to indicate that you have at least 12 months of public GitHub history.
+        3. Consider the four options for validating your namespace claim, starting with option 1. Place
+        a checkmark on the option that best fits your situation.
+        4. Under the option you have selected, place a checkmark on the entry you will use to validate your
+        claim.
+        5. If you are required to provide additional information such as a commit URl or domain name, please provide
+        that in the "Claim Evidence" section at the bottom. If you fail to do so, your request will not be approved.
+  - type: input
+    id: namespace
+    attributes:
+      label: Namespace
+    validations:
+      required: true
+  - type: checkboxes
+    id: ownership
+    attributes:
+      label: Ownership
+      options:
+        - label: The namespace is not currently owned on Open VSX (verify by a search on [open-vsx.org](https://open-vsx.org))
+          required: false
+  - type: checkboxes
+    id: account-age
+    attributes:
+      label: Account Age
+      options:
+        - label: The GitHub ID making this request has at least 12 months of public history
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        ***
+        ### Option 1
+  - type: checkboxes
+    id: option-1
+    attributes:
+      label: VS Code Publisher with Repo
+      options:
+        - label: The namespace is also a publisher account on the VS Code Marketplace (check by browsing https://marketplace.visualstudio.com/publishers/{publisher}) and has an extension published there with a repo specified in its package.json file.
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        __Chose one of the following:__
+        - [ ] The extension repo, public or private, is owned by the GitHub ID making this request (same org)
+        - [ ] Otherwise, provide the URL of a commit in the extension's public repo by the GitHub ID making this request
+  - type: markdown
+    attributes:
+      value: |
+        ***
+        ### Option 2
+  - type: checkboxes
+    id: option-2
+    attributes:
+      label: VS Code Publisher without Repo
+      options:
+        - label: The namespace is also a publisher account on the VS Code Marketplace and does not have published extensions or has published extensions with no GitHub repos.
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        __Chose one of the following:__
+        - [ ] Provide Open VSX administrator ID (`9f9ebf84-37d2-648b-bef8-8af4132d803a`) temporary reader access to the VS Code Marketplace Publisher Account. (Be sure to revoke the reader permission once request has closed)
+        - [ ] If the namespace matches your domain name, define a TXT record in your DNS, listing the URL to this issue and provide the domain/subdomain of the TXT record
+        - [ ] If the namespace matches your domain name, send an email to [openvsx@eclipse-foundation.org](mailto:openvsx@eclipse-foundation.org) from an email account with a domain name that matches the namespace and provide the
+        domain/subdomain of the email account.
+  - type: markdown
+    attributes:
+      value: |
+        ***
+        ### Option 3
+  - type: checkboxes
+    id: option-3
+    attributes:
+      label: Not a VS Code Marketplace Publisher
+      options:
+        - label: The namespace is not a publisher account on the VS Code Marketplace
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        __Chose one of the following:__
+        - [ ] The namespace matches the GitHub ID making this request
+        - [ ] If the namespace matches your domain name, define a TXT record in your DNS, listing the URL to this issue and provide the domain/subdomain of the TXT record
+        - [ ] If the namespace matches your domain name, send an email to [openvsx@eclipse-foundation.org](mailto:openvsx@eclipse-foundation.org) from an email account with a domain name that matches the namespace and provide the
+        domain/subdomain of the email account.
+  - type: markdown
+    attributes:
+      value: |
+        ***
+        ### Option 4
+  - type: checkboxes
+    id: option-4
+    attributes:
+      label: All Other Cases
+      options:
+        - label: You are unable to provide the inputs required in the three options above. This option will take the longest to process.
+          required: false
+  - type: markdown
+    attributes:
+      value: |
+        ***
+  - type: textarea
+    attributes:
+      label: Claim evidence
+      value: |
+        Provide the requested information (commit URL or domain/subdomain) or a justification for granting ownership of the namespace.

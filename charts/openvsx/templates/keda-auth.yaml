@@ -7,9 +7,9 @@ metadata:
 spec:
   secretTargetRef:
   - parameter: username
-    name: grafana-cloud-secret-production
+    name: grafana-cloud-secret-{{ .Values.environment }}
     key: PROMETHEUS_USERNAME
   - parameter: password
-    name: grafana-cloud-secret-production
+    name: grafana-cloud-secret-{{ .Values.environment }}
     key: PROMETHEUS_PASSWORD
 {{- end }}

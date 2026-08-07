@@ -108,6 +108,8 @@ resources:
 
 # ── Elasticsearch ─────────────────────────────────────────────────────────────
 es:
+  # Spring Boot 4 bundles the 9.x ES Java client, which cannot talk to an 8.x server.
+  version: "9.2.8"
   java_opts: -Xms4g -Xmx4g -Dlog4j2.formatMsgNoLookups=true
   # Stop Karpenter (Auto Mode) from draining the ES pod's node during consolidation
   podAnnotations:
@@ -189,7 +191,7 @@ clamav:
     MAX_SINGLE_FILE_MB: 512
     MAX_RECURSION: 16
     MAX_THREADS: 10
-    SCAN_TIMEOUT_MINUTES: 5
+    SCAN_TIMEOUT_MINUTES: 10
 
 # ── YARA ─────────────────────────────────────────────────────────────────────
 yara:

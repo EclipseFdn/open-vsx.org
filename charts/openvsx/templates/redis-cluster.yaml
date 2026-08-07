@@ -1,4 +1,5 @@
-{{- if not (and .Values.eks.enabled (eq .Values.environment "production")) }}
+{{- /* In-cluster Redis (operator + CR) only on OKD. Both EKS envs use ElastiCache. */}}
+{{- if not .Values.eks.enabled }}
 apiVersion: open-vsx.org/v1
 kind: RedisCluster
 metadata:
