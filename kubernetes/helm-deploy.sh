@@ -90,12 +90,16 @@ if [[ -n "${DRY_RUN}" ]]; then
   printf "==> DRY RUN — render + server-side validate, no changes will be applied\n"
   helm_mode_flags=(--dry-run=server --debug)
 else
-  # Helm-version-aware flags:
+  # No auto-rollback: the chart owns an ECK Elasticsearch, and ECK rejects version
+  # downgrades, so a rollback can never succeed — it only leaves the release failed.
+  # Safety comes from the Deployment's maxUnavailable=0: old pods serve until new ones are Ready.
+  # Timeout must stay below the Jenkinsfile job timeout so Helm fails cleanly instead of
+  # being killed mid-operation and leaving the release locked in pending-upgrade.
   helm_major=$(helm version --template '{{.Version}}' | sed -E 's/^v?([0-9]+).*/\1/')
   if (( helm_major >= 4 )); then
-    helm_mode_flags=(--rollback-on-failure --timeout 15m --force-conflicts)
+    helm_mode_flags=(--wait --timeout 25m --force-conflicts)
   else
-    helm_mode_flags=(--atomic --timeout 15m)
+    helm_mode_flags=(--wait --timeout 25m)
   fi
 fi
 
