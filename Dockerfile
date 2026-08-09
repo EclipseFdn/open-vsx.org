@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=632534e
-ARG SERVER_VERSION_STRING=v1.1.1-rc.0
+ARG SERVER_VERSION=v1.1.1
+ARG SERVER_VERSION_STRING=v1.1.1
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
@@ -27,7 +27,7 @@ RUN cd website \
   && yarn build
 
 # Main image derived from openvsx-server
-FROM ghcr.io/eclipse-openvsx/openvsx-server-snapshot:${SERVER_VERSION}
+FROM ghcr.io/eclipse-openvsx/openvsx-server:${SERVER_VERSION}
 ARG SERVER_VERSION
 ARG SERVER_VERSION_STRING
 
