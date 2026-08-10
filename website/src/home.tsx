@@ -30,22 +30,46 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 const WIKI_URL = 'https://github.com/EclipseFdn/open-vsx.org/wiki';
 const REPO_URL = 'https://github.com/eclipse-openvsx/openvsx';
 
-// Hero copy rendered above the search field (badge, headline, tagline).
+// Hero copy rendered above the search field (gradient headline, tagline).
 const SearchHeader: FunctionComponent = () => (
-  <Box textAlign='center' sx={{ mb: 2, mx: 'auto' }}>
+  <Box
+    textAlign="center"
+    className="animate-fade-in-up"
+    sx={{ mb: 2, mx: 'auto', maxWidth: '48rem', position: 'relative' }}
+  >
+    {/* Hero Headline with Gradient Typography */}
     <Typography
-      component='h1'
-      sx={{
-        fontSize: { xs: '1.875rem', sm: '2.5rem', md: '2.875rem' },
-        lineHeight: 1.1,
-        letterSpacing: '-0.02em',
-        fontWeight: 600,
-        mb: 1.5
-      }}>
+      component="h1"
+      sx={(theme) => ({
+        fontSize: { xs: '2.25rem', sm: '3.25rem', md: '3.75rem' },
+        lineHeight: 1.08,
+        letterSpacing: '-0.03em',
+        fontWeight: 800,
+        mb: 2,
+        background:
+          theme.palette.mode === 'dark'
+            ? 'linear-gradient(135deg, #ffffff 0%, #e9dcfc 40%, #c084fc 70%, #a855f7 100%)'
+            : 'linear-gradient(135deg, #1c1330 0%, #4c1d95 40%, #6d28d9 75%, #8b5cf6 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent'
+      })}
+    >
       Extensions for modern developer tools.
     </Typography>
-    <Typography sx={{ fontSize: '1.125rem', color: 'text.secondary', maxWidth: '35rem', mx: 'auto', lineHeight: 1.5 }}>
-      Discover extensions for VS Code-compatible editors, AI coding tools, cloud IDEs, and developer platforms.
+
+    {/* Subtitle */}
+    <Typography
+      sx={(theme) => ({
+        fontSize: { xs: '1rem', sm: '1.2rem' },
+        color: theme.palette.text.secondary,
+        maxWidth: '38rem',
+        mx: 'auto',
+        lineHeight: 1.6,
+        fontWeight: 400,
+        mb: 1
+      })}
+    >
+      Discover, publish, and manage extensions for VS Code-compatible editors, AI coding tools, cloud IDEs, and developer platforms.
     </Typography>
   </Box>
 );
@@ -53,12 +77,27 @@ const SearchHeader: FunctionComponent = () => (
 // The home page, composed from the library's exported sections. Each section
 // boxes itself, so no width-constraining wrapper here.
 export const Home: FunctionComponent = () => (
-  <PageContainer fluid component='main' sx={{ animation: 'fadeIn .25s ease' }}>
+  <PageContainer fluid component="main" sx={{ animation: 'fadeIn .35s ease' }}>
     <SectionStack>
-      <HeroSearch
-        searchHeader={SearchHeader}
-        popularSearches={['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java']}
-      />
+      <Box
+        sx={(theme) => ({
+          position: 'relative',
+          pt: { xs: 2, md: 4 },
+          pb: { xs: 2, md: 4 },
+          px: { xs: 1, sm: 2 },
+          borderRadius: 4,
+          background:
+            theme.palette.mode === 'dark'
+              ? 'radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.15) 0%, rgba(124, 58, 237, 0.05) 50%, transparent 80%)'
+              : 'radial-gradient(ellipse at 50% 0%, rgba(139, 92, 246, 0.1) 0%, rgba(109, 40, 217, 0.03) 50%, transparent 80%)'
+        })}
+      >
+        <HeroSearch
+          searchHeader={SearchHeader}
+          popularSearches={['python', 'git', 'docker', 'prettier', 'eslint', 'rust', 'java', 'typescript']}
+        />
+      </Box>
+
       <SectionSeparator />
       <CuratedSections
         sections={[
@@ -73,7 +112,7 @@ export const Home: FunctionComponent = () => (
       />
       <BrowseCategories />
       <GetInvolved
-        heading='Get Involved'
+        heading="Get Involved"
         cards={[
           {
             icon: <CallSplitIcon />,

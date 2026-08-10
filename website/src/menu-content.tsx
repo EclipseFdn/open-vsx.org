@@ -15,7 +15,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-import { styled, alpha } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { Link as RouteLink, useNavigate } from 'react-router';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -37,6 +37,10 @@ import { KbdKey } from 'openvsx-webui/lib/components/kbd-key';
 import { useShortcut } from 'openvsx-webui/lib/hooks/use-shortcut';
 import { LoginComponent } from 'openvsx-webui/lib/default/login';
 import { UserAvatar } from 'openvsx-webui/lib/pages/user/avatar';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useThemeMode } from './theme-context';
+import { ThemeToggleButton } from './components/theme-toggle-button';
 
 // Shared decorator that appends an up-right arrow to mark a link as external.
 const ExternalLinkLabel: FunctionComponent<PropsWithChildren> = ({ children }) => (
@@ -50,8 +54,16 @@ const ExternalLinkLabel: FunctionComponent<PropsWithChildren> = ({ children }) =
 
 export const MobileMenuContent: FunctionComponent = () => {
   const { user, loginProviders } = useContext(MainContext);
+  const { mode, toggleTheme } = useThemeMode();
+  const isDark = mode === 'dark';
   return (
     <>
+      <MenuItem onClick={toggleTheme}>
+        <MenuItemText>
+          {isDark ? <LightModeIcon sx={itemIcon} /> : <DarkModeIcon sx={itemIcon} />}
+          {isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        </MenuItemText>
+      </MenuItem>
       {loginProviders &&
         (user ? (
           <MobileUserAvatar />
@@ -212,7 +224,13 @@ const ResourcesTrigger = styled('button')(({ theme }) => ({
   gap: '0.25rem',
   background: 'none',
   border: 'none',
-  cursor: 'pointer'
+  cursor: 'pointer',
+  borderRadius: '6px',
+  padding: '0.375rem 0.625rem',
+  transition: 'all 0.2s ease',
+  '&:hover': {
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(168, 85, 247, 0.14)' : 'rgba(139, 92, 246, 0.09)'
+  }
 }));
 
 // All secondary navigation lives under a single "Resources" dropdown so the
@@ -305,24 +323,40 @@ export const DefaultMenuContent: FunctionComponent = () => {
           <MenuItemText>About</MenuItemText>
         </MenuItem>
       </Menu>
+      <ThemeToggleButton sx={{ mx: 0.5 }} />
       {loginProviders && (
         <>
           <Button
-            variant='text'
+            variant='contained'
             color='secondary'
             component={RouteLink}
             to={UserSettingsRoutes.EXTENSIONS}
             sx={(theme) => ({
-              mx: 0.5,
+              mx: 0.75,
               px: 2.25,
-              py: 1,
+              py: 0.75,
               fontWeight: 600,
               fontSize: '0.8125rem',
-              borderRadius: `${theme.shape.borderRadius}px`,
+              borderRadius: '9999px',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.4375rem',
-              '&:hover': { backgroundColor: alpha(theme.palette.secondary.main, 0.08) }
+              background:
+                theme.palette.mode === 'dark'
+                  ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)'
+                  : 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+              color: '#ffffff',
+              boxShadow:
+                theme.palette.mode === 'dark'
+                  ? '0 4px 14px rgba(168, 85, 247, 0.4)'
+                  : '0 4px 12px rgba(139, 92, 246, 0.3)',
+              '&:hover': {
+                boxShadow:
+                  theme.palette.mode === 'dark'
+                    ? '0 6px 20px rgba(168, 85, 247, 0.6)'
+                    : '0 6px 18px rgba(139, 92, 246, 0.45)',
+                transform: 'translateY(-1px)'
+              }
             })}>
             Publish
             <KbdKey>p</KbdKey>

@@ -129,7 +129,7 @@ const NamespaceHeadTags: FunctionComponent<{ namespaceDetails?: NamespaceDetails
   return <HeadTags title={title} url={url} description={description} />;
 };
 
-export default function createPageSettings(theme: Theme, prefersDarkMode: boolean): PageSettings {
+export default function createPageSettings(theme: Theme, isDarkMode: boolean): PageSettings {
   //---------- SERVER VERSION
   const ServerVersion: FunctionComponent = () => {
     const { version } = useContext(MainContext);
@@ -315,7 +315,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
 
   return {
     pageTitle: 'Open VSX Registry',
-    themeType: prefersDarkMode ? 'dark' : 'light',
+    themeType: isDarkMode ? 'dark' : 'light',
     publisherAgreement: {
       name: 'Eclipse Foundation Open VSX',
       email: 'openvsx@eclipse-foundation.org'

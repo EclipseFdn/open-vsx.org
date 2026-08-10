@@ -2,9 +2,22 @@
 <html lang="en">
 
 <head>
-    <title>Open VSX Registry</title>
+    <title>Open VSX Registry — Extensions for Modern Developers</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem('openvsx-theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var mode = saved === 'light' || saved === 'dark' ? saved : (prefersDark ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', mode);
+                document.documentElement.style.colorScheme = mode;
+            } catch (e) {}
+        })();
+    </script>
 
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -17,22 +30,130 @@
     <link rel="stylesheet" type="text/css"
         href="https://www.eclipse.org/eclipse.org-common/themes/solstice/public/stylesheets/vendor/cookieconsent/cookieconsent.min.css" />
     <script
-        src="https://www.eclipse.org/eclipse.org-common/themes/solstice/public/javascript/vendor/cookieconsent/default.min.js" type="">
+        src="https://www.eclipse.org/eclipse.org-common/themes/solstice/public/javascript/vendor/cookieconsent/default.min.js">
     </script>
     <style>
+        :root {
+            --bg-dark: #000000;
+            --bg-light: #fcfbfe;
+            --thumb-dark: #3b2856;
+            --thumb-light: #c5b4e3;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        html[data-theme='dark'] body {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+        }
+
+        html[data-theme='light'] body {
+            background-color: var(--bg-light);
+            color: #1c1330;
+        }
+
+        /* 60FPS Hardware-Accelerated Smooth Rendering */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Geist', 'Roboto', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.35s ease, color 0.35s ease;
+            overflow-x: hidden;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header, main, footer, nav {
+            transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+        }
+
+        /* Targeted Card & Interactive Element Transitions (No Layout Thrashing) */
+        a, button, .MuiButton-root {
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .MuiPaper-root, .MuiCard-root {
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform;
+        }
+
+        .MuiPaper-root:hover, .MuiCard-root:hover {
+            transform: translateY(-2px);
+        }
+
+        ::selection {
+            background: rgba(168, 85, 247, 0.35);
+            color: inherit;
+        }
+
+        /* View Transition Theme Crossfade Animation */
+        ::view-transition-old(root) {
+            animation: themeFadeOut 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        ::view-transition-new(root) {
+            animation: themeFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes themeFadeOut {
+            from { opacity: 1; filter: blur(0px); }
+            to { opacity: 0; filter: blur(3px); }
+        }
+
+        @keyframes themeFadeIn {
+            from { opacity: 0; filter: blur(3px); }
+            to { opacity: 1; filter: blur(0px); }
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Custom Scrollbars */
+        html {
+            scrollbar-color: var(--thumb-dark) transparent;
+        }
+
+        html[data-theme='light'] {
+            scrollbar-color: var(--thumb-light) transparent;
+        }
+
+        @supports not (scrollbar-color: auto) {
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #3b2856;
+                border-radius: 4px;
+            }
+            html[data-theme='light'] ::-webkit-scrollbar-thumb {
+                background: #c5b4e3;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #a855f7;
+            }
+        }
+
         a.cc-btn.cc-allow {
-            background-color: #c160ef;
+            background-color: #8b5cf6;
         }
         a.cc-btn.cc-allow:hover, a.cc-btn.cc-allow:focus {
-            background-color: #444;
+            background-color: #6d28d9;
         }
         .cc-revoke {
             display: none !important;
-        }
-        @media (prefers-color-scheme: dark) {
-          body {
-            background-color: #121212;
-          }
         }
     </style>
 </head>
