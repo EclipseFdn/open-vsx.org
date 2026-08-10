@@ -34,18 +34,26 @@ const App: FunctionComponent = () => {
   const prefersDarkScheme = useMediaQuery('(prefers-color-scheme: dark)');
 
   const [mode, setModeState] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem(THEME_STORAGE_KEY);
-    if (saved === 'light' || saved === 'dark') {
-      return saved;
+    try {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY);
+      if (saved === 'light' || saved === 'dark') {
+        return saved;
+      }
+    } catch {
+      // Ignore storage access errors and fall back to system preference.
     }
     return prefersDarkScheme ? 'dark' : 'light';
   });
 
   // Keep system preference in sync if no saved preference exists
   useEffect(() => {
-    const saved = localStorage.getItem(THEME_STORAGE_KEY);
-    if (!saved) {
-      setModeState(prefersDarkScheme ? 'dark' : 'light');
+    try {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY);
+      if (!saved) {
+        setModeState(prefersDarkScheme ? 'dark' : 'light');
+      }
+    } catch {
+      // Ignore storage access errors.
     }
   }, [prefersDarkScheme]);
 
@@ -58,7 +66,11 @@ const App: FunctionComponent = () => {
   const updateMode = useCallback((newMode: ThemeMode) => {
     const applyMode = () => {
       setModeState(newMode);
-      localStorage.setItem(THEME_STORAGE_KEY, newMode);
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, newMode);
+      } catch {
+        // Ignore storage write errors; theme can still be applied for this session.
+      }
       document.documentElement.setAttribute('data-theme', newMode);
       document.documentElement.style.colorScheme = newMode;
     };
