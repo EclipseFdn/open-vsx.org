@@ -93,9 +93,11 @@ spec:
         - secretRef:
             name: deployment-configuration-{{ .Values.environment }}-argus
         lifecycle:
+          # Delay SIGTERM until the load balancer has stopped routing here; must exceed
+          # its deregistration delay or the LB cuts connections mid-response (5xx).
           preStop:
             exec:
-              command: ["sh", "-c", "sleep 25"]
+              command: ["sh", "-c", "sleep {{ .Values.preStopDelaySeconds }}"]
         livenessProbe:
           failureThreshold: 3
           httpGet:
