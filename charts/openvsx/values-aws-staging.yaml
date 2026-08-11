@@ -56,7 +56,10 @@ externalSecrets:
   refreshInterval: 1h
   fastlyLogsBucket: "fastlyopenvsxorgstaging"
   storageBucket: "openvsxorgstaging"
-  elasticsearchClearOnStart: true
+  # Soft init — a pod builds the index only if missing. `true` made every pod start wipe the
+  # shared index; freshness comes from incremental writes + the daily 04:00 UTC JobRunr job.
+  # Hard rebuild on demand: POST /admin/update-search-index.
+  elasticsearchClearOnStart: false
   # Read the ES elastic password straight from the ECK secret (deployment.yaml) instead of SM/ESO —
   # app comes up green on first deploy, no bootstrap script, self-heals on ECK password rotation.
   elasticsearchPasswordFromEck: true
