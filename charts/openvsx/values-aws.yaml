@@ -161,7 +161,10 @@ externalSecrets:
   refreshInterval: 1h
   fastlyLogsBucket: "fastlyopenvsxorg"
   storageBucket: "openvsxorg"
-  elasticsearchClearOnStart: true
+  # Soft init — a pod builds the index only if missing. `true` made every pod start wipe the
+  # shared index; freshness comes from incremental writes + the daily 04:00 UTC JobRunr job.
+  # Hard rebuild on demand: POST /admin/update-search-index.
+  elasticsearchClearOnStart: false
 
 # ── Grafana Alloy — disabled; monitoring/ TF module manages Alloy cluster-wide with IRSA (OKD nodeSelector won't match EKS) ──
 alloy:
