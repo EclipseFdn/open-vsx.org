@@ -164,7 +164,7 @@ ovsx:
   extension-query:
     # limit the number of pre-release versions that are included in responses for /vscode/gallery/extensionquery
     # by default it is unlimited, -1
-    # max-pre-release-versions: 100
+    max-pre-release-versions: 500
   extension-control:
     # do not update on application start as this would trigger multiple jobs in multi-pod configuration
     update-on-start: false
