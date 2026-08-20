@@ -285,7 +285,7 @@ ovsx:
         required: true
         async: false
         max-concurrency: 5
-        timeout-minutes: 15
+        timeout-minutes: 10
 
         # Per-scanner HTTP client configuration
         # ClamAV needs longer timeouts for large files
@@ -294,7 +294,7 @@ ovsx:
           default-max-per-route: 10             # Max connections per host
           connection-request-timeout-ms: 60000  # Time to get connection from pool (1 min)
           connect-timeout-ms: 60000             # Time to establish TCP connection (1 min)
-          socket-timeout-ms: 300000             # Time to wait for response (5 min for large files)
+          socket-timeout-ms: 600000             # Time to wait for response (10 min for large files)
 
         start:
           method: POST
