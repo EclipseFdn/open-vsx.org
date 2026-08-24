@@ -282,6 +282,13 @@ ovsx:
       timeout-seconds: 10
       timeout-check-interval: 100
 
+    namespace-ownership-check:
+      enabled: true
+      enforced: true
+      required: true
+      check-active-extensions: false
+      gallery-url: 'https://marketplace.visualstudio.com/_apis/public/gallery'
+
     configured:
       # ClamAV REST wrapper - our custom Go service with file-level reporting
       # Requires clamav-rest service deployment
