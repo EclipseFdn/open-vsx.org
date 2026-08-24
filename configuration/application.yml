@@ -178,6 +178,7 @@ ovsx:
     files-webresource:
       tti: PT1H
       max-size: 500
+      max-total-size: 2147483648 # 2 GB
     files-browse:
       tti: PT1H
       max-size: 100

@@ -3720,7 +3720,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "npm:1.1.2"
+    openvsx-webui: "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -3744,9 +3744,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@npm:1.1.2":
-  version: 1.1.2
-  resolution: "openvsx-webui@npm:1.1.2"
+"openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
+  version: 1.2.0-dev.0
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=4a62ae0cb80c6f414fface8650a720086f8cc7c7"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -3779,7 +3779,7 @@ __metadata:
     react-helmet-async: "npm:^2.0.5"
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^7.18.2"
-  checksum: 10/6451f806ace018cc9655d841be53f3583dc90e6a7971ca71aaac9dc22010ddd5f25edf6422102519f3d05bda2e964decf0d6aedfe9b110a1a6e0cf39e1f43122
+  checksum: 10/2241169032af22e219f3d9e957a2d1bb1719492d13790c655ff445a474ccce42f84318ca90b91e838fafc278ab7cb38c51dcc7ba9732ee4d56ec32752986d42d
   languageName: node
   linkType: hard
 
