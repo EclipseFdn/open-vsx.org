@@ -222,14 +222,18 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
   };
 
   //---------- CLAIM NAMESPACE LINK
-  const claimNamespace: FunctionComponent<{ extension: Extension; sx: SxProps<Theme> }> = ({ sx, extension }) => {
-    const title = `Claiming namespace \`${extension.namespace}\``;
+  const claimNamespace: FunctionComponent<{ namespace: string; extension?: Extension; sx: SxProps<Theme> }> = ({
+    sx,
+    namespace,
+    extension
+  }) => {
+    const title = `Claiming namespace \`${namespace}\``;
 
     return (
       <>
-        {!extension.verified && (
+        {!extension?.verified && (
           <Link
-            href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?template=claim-namespace-ownership.yml&namespace=${encodeURIComponent(extension.namespace)}&title=${encodeURIComponent(title)}`}
+            href={`https://github.com/EclipseFdn/open-vsx.org/issues/new?template=claim-namespace-ownership.yml&namespace=${encodeURIComponent(namespace)}&title=${encodeURIComponent(title)}`}
             target='_blank'
             variant='body2'
             color='secondary'
