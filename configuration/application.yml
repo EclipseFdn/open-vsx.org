@@ -164,7 +164,7 @@ ovsx:
     batch-size: 200
     cron: '0 */2 * * * *'
     delay:
-      seconds: 10800
+      seconds: 60
     once-per-version: true
   extension-control:
     # do not update on application start as this would trigger multiple jobs in multi-pod configuration
