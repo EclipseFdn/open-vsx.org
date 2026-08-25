@@ -11,12 +11,11 @@
 import { forwardRef, FunctionComponent, PropsWithChildren, useState, useRef, useContext } from 'react';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-import { styled, alpha } from '@mui/material/styles';
-import { Link as RouteLink, useNavigate } from 'react-router';
+import { styled } from '@mui/material/styles';
+import { Link as RouteLink } from 'react-router';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
@@ -30,11 +29,10 @@ import HubIcon from '@mui/icons-material/Hub';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import BusinessIcon from '@mui/icons-material/Business';
 import SecurityIcon from '@mui/icons-material/Security';
-import { UserSettingsRoutes } from 'openvsx-webui/lib/pages/user/user-settings-routes';
+import { PublishRoutes } from 'openvsx-webui/lib/pages/publish/publish-routes';
 import { MainContext } from 'openvsx-webui/lib/context';
 import { itemIcon, MobileUserAvatar, headerItem, MenuLink, MenuItemText } from 'openvsx-webui/lib/default/menu-content';
-import { KbdKey } from 'openvsx-webui/lib/components/kbd-key';
-import { useShortcut } from 'openvsx-webui/lib/hooks/use-shortcut';
+import { PublishButton } from 'openvsx-webui/lib/components/publish/publish-button';
 import { LoginComponent } from 'openvsx-webui/lib/default/login';
 import { UserAvatar } from 'openvsx-webui/lib/pages/user/avatar';
 
@@ -70,8 +68,8 @@ export const MobileMenuContent: FunctionComponent = () => {
             }}
           />
         ))}
-      {loginProviders && !location.pathname.startsWith(UserSettingsRoutes.ROOT) && (
-        <MenuItem component={RouteLink} to='/user-settings/extensions'>
+      {loginProviders && !location.pathname.startsWith(PublishRoutes.ROOT) && (
+        <MenuItem component={RouteLink} to={PublishRoutes.ROOT}>
           <MenuItemText>
             <PublishIcon sx={itemIcon} />
             Publish
@@ -219,18 +217,9 @@ const ResourcesTrigger = styled('button')(({ theme }) => ({
 // header stays clean; only Publish and the account control remain top-level.
 export const DefaultMenuContent: FunctionComponent = () => {
   const { loginProviders, user } = useContext(MainContext);
-  const navigate = useNavigate();
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const resourcesAnchor = useRef<HTMLButtonElement | null>(null);
   const closeResources = () => setResourcesOpen(false);
-
-  useShortcut({
-    key: 'p',
-    label: 'Publish',
-    order: 3,
-    callback: () => navigate(UserSettingsRoutes.EXTENSIONS),
-    enabled: !!loginProviders
-  });
 
   return (
     <>
@@ -307,26 +296,7 @@ export const DefaultMenuContent: FunctionComponent = () => {
       </Menu>
       {loginProviders && (
         <>
-          <Button
-            variant='text'
-            color='secondary'
-            component={RouteLink}
-            to={UserSettingsRoutes.EXTENSIONS}
-            sx={(theme) => ({
-              mx: 0.5,
-              px: 2.25,
-              py: 1,
-              fontWeight: 600,
-              fontSize: '0.8125rem',
-              borderRadius: `${theme.shape.borderRadius}px`,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4375rem',
-              '&:hover': { backgroundColor: alpha(theme.palette.secondary.main, 0.08) }
-            })}>
-            Publish
-            <KbdKey>p</KbdKey>
-          </Button>
+          <PublishButton />
           {user ? (
             <UserAvatar />
           ) : (

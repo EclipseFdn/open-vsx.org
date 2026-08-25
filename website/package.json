@@ -10,7 +10,7 @@
   },
   "type": "module",
   "dependencies": {
-    "openvsx-webui": "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main"
+    "openvsx-webui": "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=5d32bda6de3bb346c71a87fc2ca91de2f0c4ec68"
   },
   "resolutions": {
     "qs": "^6.14.1"
