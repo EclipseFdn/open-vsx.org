@@ -161,6 +161,8 @@ ovsx:
       downloads: 2.0
       timestamp: 1.2
   migrations:
+    batch-size: 200
+    cron: '0 */2 * * * *'
     delay:
       seconds: 10800
     once-per-version: true
