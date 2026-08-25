@@ -1,4 +1,4 @@
-ARG SERVER_VERSION=bbc1538
+ARG SERVER_VERSION=5cfc452
 ARG SERVER_VERSION_STRING=v1.2.0-dev.1
 
 # Builder image to compile the website
