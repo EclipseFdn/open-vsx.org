@@ -4,6 +4,7 @@ title: "[ROD]: "
 labels: ["release-request", "production-deployment", "team:sre", "wg:Open VSX"]
 assignees:
   - "manpreetkaur-arch"
+  - "skettkepalli"
 body:
   - type: markdown
     attributes:
