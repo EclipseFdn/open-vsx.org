@@ -2,6 +2,8 @@ name: "Release on Demand (ROD) Request"
 description: Standardized production deployment request and execution playbook for Dev and SRE teams.
 title: "[ROD]: "
 labels: ["release-request", "production-deployment", "team:sre", "wg:Open VSX"]
+assignees:
+  - "manpreetkaur-arch"
 body:
   - type: markdown
     attributes:
