@@ -111,7 +111,7 @@ body:
         Trigger Thresholds:
         - 5xx Error rate exceeds 2% for over 3 minutes.
         - P99 latency spikes above 500ms.
-        
+
         Execution Steps:
         1. ...
     validations:
