@@ -74,9 +74,9 @@ body:
       options:
         - label: "[PRE] Validate CDN caching hit ratios, bandwidth consumption, and SSL certificates binding"
           required: false
-        - label: "[PRE] Verify EKS cluster health, node capacity, and namespace readiness"
+        - label: "[PRE] Verify EKS cluster health and readiness"
           required: false
-        - label: "[PRE] Confirm application staging sign-off logs are attached"
+        - label: "[PRE] Confirm application staging sign-off has been obtained"
           required: false
         - label: "[POST] Run functional smoke tests on all critical endpoints provided above"
           required: false
