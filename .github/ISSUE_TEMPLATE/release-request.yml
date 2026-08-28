@@ -1,0 +1,151 @@
+name: "Release on Demand (ROD) Request"
+description: Standardized production deployment request and execution playbook for Dev and SRE teams.
+title: "[ROD]: "
+labels: ["release-request", "production-deployment", "team:sre", "wg:Open VSX"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔀 Phase 1: Software Development Team Hand-off
+        *Dev team: Complete validation in Staging and pre-fills this section before submitting.*
+
+  - type: input
+    id: pr_link
+    attributes:
+      label: Production Pull Request (PR) Link
+      description: Provide the direct link to the approved production PR.
+      placeholder: "https://github.com/org/repo/pull/123"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope_changelogs
+    attributes:
+      label: Scope, Change Logs/Release Records
+      description: Details of what is being deployed. Provide clear text/direct links to release notes.
+      placeholder: |
+        - Application updates (v0.0.0)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: business_impact
+    attributes:
+      label: Business Impact & Expected Downtime
+      description: Select whether this deployment requires an active maintenance window with downtime.
+      options:
+        - "No downtime expected (Zero-downtime rolling update)"
+        - "Downtime expected (Requires active maintenance window)"
+    validations:
+      required: true
+
+  - type: input
+    id: maintenance_window
+    attributes:
+      label: Requested Maintenance Window
+      description: Specify target date, time, and timezone.
+      placeholder: "YYYY-MM-DD HH:MM - HH:MM UTC"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 🛡️ Phase 2: Collaborative Verification Steps
+        *Both Dev and SRE teams collaborate here. SRE will check these off during live deployment.*
+
+  - type: textarea
+    id: dev-smoke-test-endpoints
+    attributes:
+      label: "👉 [Dev Hand-off] Core Application Endpoints for Functional Smoke Tests"
+      description: "Development Team: List the Open VSX backend endpoints, queries, and expected responses that SRE must validate post-deployment."
+      placeholder: |
+        Examples:
+        - GET https://open-vsx.org/api/redhat/java -> 200 OK
+        - POST https://open-vsx.org/vscode/gallery/extensionquery -> 200 OK (with test payload)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: validation_checklist
+    attributes:
+      label: Pre & Post-Deployment Validation Checklist
+      description: Check off items as they are successfully verified in Production.
+      options:
+        - label: "[PRE] Validate CDN caching hit ratios, bandwidth consumption, and SSL certificates binding"
+          required: false
+        - label: "[PRE] Verify EKS cluster health, node capacity, and namespace readiness"
+          required: false
+        - label: "[PRE] Confirm application staging sign-off logs are attached"
+          required: false
+        - label: "[POST] Run functional smoke tests on all critical endpoints provided above"
+          required: false
+        - label: "[POST] Verify CDN cache hit ratio, bandwidth consumption and SSL certificate binding"
+          required: false
+        - label: "[POST] Monitor EKS pod restart rates and resource usage (CPU/Memory)"
+          required: false
+        - label: "[POST] Audit AWS, Fastly and Grafana dashboards for anomaly spikes"
+          required: false
+
+  - type: dropdown
+    id: contingency_strategy
+    attributes:
+      label: Contingency Strategy Type
+      description: "Data-driven decision: Choose the most appropriate rollback or roll-forward strategy for this deployment."
+      options:
+        - "Standard Rollback Plan (Revert to previous state)"
+        - "Roll-Forward Plan (Apply hotfixes/patches directly)"
+        - "Hybrid / Complex Strategy (Detailed below)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: contingency_playbook
+    attributes:
+      label: Rollback / Roll-forward Plan & Thresholds
+      description: Define clear procedures, commands, and SLA thresholds that trigger this plan.
+      placeholder: |
+        Trigger Thresholds:
+        - 5xx Error rate exceeds 2% for over 3 minutes.
+        - P99 latency spikes above 500ms.
+        
+        Execution Steps:
+        1. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: escalation_contacts
+    attributes:
+      label: Escalation Contacts
+      description: List primary and secondary engineering contacts available during the window.
+      placeholder: |
+        - Primary Dev: @dev_lead (Slack / Phone)
+        - Secondary Dev: @tech_architect
+        - Product Owner: @po_name
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## ⚙️ Phase 3: SRE Team Execution & Management
+        *SRE Ownership Grid: Tracks internal approvals, scheduling alignment, and production execution workflows.*
+
+  - type: checkboxes
+    id: sre_workflow
+    attributes:
+      label: SRE Operational Workflow Sign-off
+      description: Executed and verified exclusively by the SRE team.
+      options:
+        - label: "[APPROVALS] Consulted Product team and Service Delivery partners for explicit sign-off"
+          required: true
+        - label: "[SCHEDULING] Confirmed, booked, and communicated the maintenance window broadly"
+          required: true
+        - label: "[DEPLOYMENT] Executed end-to-end deployment process safely"
+          required: true
+        - label: "[VALIDATION] Verified all collaborative verification checklist items above"
+          required: true
+        - label: "[MONITORING] Handed off to continuous monitoring (observing stability/escalating if needed)"
+          required: true
