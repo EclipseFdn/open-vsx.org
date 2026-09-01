@@ -124,7 +124,7 @@ bucket4j:
 
 ovsx:
   access-token:
-    prefix: staging_ovsxat_
+    prefix: staging_ovsx
     expiration: P90D
     notification: P7D
     send-expired-mail: true
