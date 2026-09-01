@@ -1556,13 +1556,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"attr-accept@npm:^2.2.4":
-  version: 2.2.5
-  resolution: "attr-accept@npm:2.2.5"
-  checksum: 10/474b1c53e62c5b881c745d1f098196f190c8b493245e95d4b0fea9298d3acb56f551868fc12806885277e55e9d8ad3c5963e92d93456f4e4081dfc5190977bfd
-  languageName: node
-  linkType: hard
-
 "available-typed-arrays@npm:^1.0.7":
   version: 1.0.7
   resolution: "available-typed-arrays@npm:1.0.7"
@@ -2486,15 +2479,6 @@ __metadata:
   dependencies:
     flat-cache: "npm:^4.0.0"
   checksum: 10/afe55c4de4e0d226a23c1eae62a7219aafb390859122608a89fa4df6addf55c7fd3f1a2da6f5b41e7cdff496e4cf28bbd215d53eab5c817afa96d2b40c81bfb0
-  languageName: node
-  linkType: hard
-
-"file-selector@npm:^2.1.0":
-  version: 2.1.2
-  resolution: "file-selector@npm:2.1.2"
-  dependencies:
-    tslib: "npm:^2.7.0"
-  checksum: 10/2a6be0e1904df85f8705a5171fd3b93c1b1ff2ad0143556adb78ac4de899bfc0ba1a20083b4febd4f7000759ec9119a31af76a057e29dd9215907da69ac95e50
   languageName: node
   linkType: hard
 
@@ -3746,7 +3730,7 @@ __metadata:
 
 "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
   version: 1.2.0-dev.0
-  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=87eeaa065571465eb6602023de2a3ae363c66eed"
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=3941c0ee886781113cc83366cb18ffcd1ce3e488"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -3775,11 +3759,10 @@ __metadata:
     react: "npm:^18.2.0"
     react-avatar-editor: "npm:^15.0.0"
     react-dom: "npm:^18.2.0"
-    react-dropzone: "npm:^14.2.3"
     react-helmet-async: "npm:^2.0.5"
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^7.18.2"
-  checksum: 10/94de2ba52675ad10544bb26a492b707fac61138a9e9a7925cd48042a95ba1d7aded0b4908c1b9886be0817fa992e7b795fb3b1b9dbe68e32fe44833221cfb052
+  checksum: 10/99ac7d734d45187360875398a0b986d749a49bfeeb1a6008622345c1bce62eb893a46418cb828842005b06187586f2f732f29c1bafba8a775149d68a55139430
   languageName: node
   linkType: hard
 
@@ -4001,19 +3984,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dropzone@npm:^14.2.3":
-  version: 14.4.1
-  resolution: "react-dropzone@npm:14.4.1"
-  dependencies:
-    attr-accept: "npm:^2.2.4"
-    file-selector: "npm:^2.1.0"
-    prop-types: "npm:^15.8.1"
-  peerDependencies:
-    react: ">= 16.8 || 18.0.0"
-  checksum: 10/dd00fd88e6a804d4fe5e82fb2dce4a98416e6094e0950f84045289afc26be320e19b6dae4544be1a3f9fddc744022b1b91d479b05d183d6cf813b97fe1700dcc
-  languageName: node
-  linkType: hard
-
 "react-fast-compare@npm:^3.2.2":
   version: 3.2.2
   resolution: "react-fast-compare@npm:3.2.2"
@@ -4060,8 +4030,8 @@ __metadata:
   linkType: hard
 
 "react-router@npm:^7.18.2":
-  version: 7.18.2
-  resolution: "react-router@npm:7.18.2"
+  version: 7.18.3
+  resolution: "react-router@npm:7.18.3"
   dependencies:
     cookie: "npm:^1.0.1"
     set-cookie-parser: "npm:^2.6.0"
@@ -4071,7 +4041,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10/e68aa655e5ec2d4143f66ab3b745c50b8588152d89e4ec66c099625357c6a16dfaee5a7e963a9f4f9fbe0adaa37cf9731d63a108a2c4abfaa00124a06da16c24
+  checksum: 10/b7393d5f5b044cda9c922b3f96629abc442d6b1b85224c28d4aa292cda45ef4cf26792b613f2bc0742701da3ddc77dd0d4a181e7e5b85d1abd6982c9eba278f2
   languageName: node
   linkType: hard
 
@@ -4650,13 +4620,6 @@ __metadata:
   peerDependencies:
     typescript: ">=4.8.4"
   checksum: 10/d5f1936f5618c6ab6942a97b78802217540ced00e7501862ae1f578d9a3aa189fc06050e64cb8951d21f7088e5fd35f53d2bf0d0370a883861c7b05e993ebc44
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.7.0":
-  version: 2.8.1
-  resolution: "tslib@npm:2.8.1"
-  checksum: 10/3e2e043d5c2316461cb54e5c7fe02c30ef6dccb3384717ca22ae5c6b5bc95232a6241df19c622d9c73b809bea33b187f6dbc73030963e29950c2141bc32a79f7
   languageName: node
   linkType: hard
 

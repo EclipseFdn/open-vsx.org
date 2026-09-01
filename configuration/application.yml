@@ -140,7 +140,7 @@ ovsx:
       enabled: false
     primary-service: aws
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/search,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
+    frontendRoutes: "/extension/**,/namespace/**,/search,/publish,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
     additional-routes: "/.well-known/**"
   eclipse:
     base-url: https://api.eclipse.org/
@@ -239,6 +239,8 @@ ovsx:
   trusted-publishing:
     enabled: true
     audience: 'https://staging.open-vsx.org'
+    active-providers: 'github'
+    token-expiration: 'PT5M'
 
   # General scanning support
   scanning:
