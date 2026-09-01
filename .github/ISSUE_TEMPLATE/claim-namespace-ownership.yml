@@ -76,7 +76,7 @@ body:
     attributes:
       value: |
         __Chose one of the following:__
-        - [ ] Provide Open VSX administrator ID (`9f9ebf84-37d2-648b-bef8-8af4132d803a`) temporary reader access to the VS Code Marketplace Publisher Account. (Be sure to revoke the reader permission once request has closed)
+        - [ ] Provide Open VSX administrator ID (`46461f8e-a0a8-6de8-9186-8ac72e28656d`) temporary reader access to the VS Code Marketplace Publisher Account. (Be sure to revoke the reader permission once request has closed)
         - [ ] If the namespace matches your domain name, define a TXT record in your DNS, listing the URL to this issue and provide the domain/subdomain of the TXT record
         - [ ] If the namespace matches your domain name, send an email to [openvsx@eclipse-foundation.org](mailto:openvsx@eclipse-foundation.org) from an email account with a domain name that matches the namespace and provide the
         domain/subdomain of the email account.
