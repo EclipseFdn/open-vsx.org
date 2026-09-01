@@ -3704,7 +3704,7 @@ __metadata:
     eslint: "npm:^9.39.0"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-react: "npm:^7.37.0"
-    openvsx-webui: "https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=5d32bda6de3bb346c71a87fc2ca91de2f0c4ec68"
+    openvsx-webui: "https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main"
     prettier: "npm:^3.8.1"
     rollup-plugin-visualizer: "npm:^7.0.1"
     typescript: "npm:^5.9.0"
@@ -3728,7 +3728,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openvsx-webui@https://github.com/gnugomez/openvsx.git#workspace=openvsx-webui&commit=5d32bda6de3bb346c71a87fc2ca91de2f0c4ec68":
+"openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
   version: 1.2.0-dev.0
   resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=3941c0ee886781113cc83366cb18ffcd1ce3e488"
   dependencies:
