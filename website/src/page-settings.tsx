@@ -357,7 +357,8 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
     urls: {
       extensionDefaultIcon: '/default-icon.png',
       namespaceAccessInfo: 'https://github.com/eclipse-openvsx/openvsx/wiki/Namespace-Access',
-      publisherAgreement: '/documents/publisher-agreement-v1.1.md'
+      publisherAgreement: '/documents/publisher-agreement-v1.1.md',
+      trustedPublishing: 'https://github.com/eclipse-openvsx/openvsx/wiki/Trusted-Publishing'
     }
   };
 }
