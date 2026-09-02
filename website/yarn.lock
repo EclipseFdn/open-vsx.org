@@ -3730,7 +3730,7 @@ __metadata:
 
 "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
   version: 1.2.0-dev.0
-  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=ea96415cd45eeb71ce4b0bdc4bfda8a8787806c4"
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=c06a7baf0aac1c8563639b475aa1aeeb354d672a"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
