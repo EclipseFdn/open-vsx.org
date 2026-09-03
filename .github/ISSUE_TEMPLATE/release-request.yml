@@ -9,7 +9,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## 🔀 Phase 1: Software Development Team Hand-off
+        ## 🔀 Phase 1: Software Development Team Requests Release
         *Please complete validation in Staging and pre-fill this section before submitting.*
 
   - type: input
@@ -73,7 +73,7 @@ body:
     id: validation_checklist
     attributes:
       label: Pre & Post-Deployment Validation Checklist
-      description: Check off items as they are successfully verified in Production.
+      description: "SRE Team: Checks off items as they are successfully verified in Production."
       options:
         - label: "[PRE] Validate CDN caching hit ratios, bandwidth consumption, and SSL certificates binding"
           required: false
@@ -94,7 +94,7 @@ body:
     id: contingency_strategy
     attributes:
       label: Contingency Strategy Type
-      description: "Data-driven decision: Choose the most appropriate rollback or roll-forward strategy for this deployment."
+      description: "Data-driven decision: Development Team indicates the most appropriate rollback or roll-forward strategy for this deployment."
       options:
         - "Standard Rollback Plan (Revert to previous state)"
         - "Roll-Forward Plan (Apply hotfixes/patches directly)"
