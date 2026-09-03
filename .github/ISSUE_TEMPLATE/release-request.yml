@@ -60,8 +60,8 @@ body:
   - type: textarea
     id: dev-smoke-test-endpoints
     attributes:
-      label: "Core Application Endpoints for Functional Smoke Tests"
-      description: "Development Team: List the Open VSX backend endpoints, queries, and expected responses that SRE must validate post-deployment."
+      label: "Functional Smoke Tests"
+      description: "Development Team: List the Open VSX backend endpoints, queries, and expected responses that SRE must validate manually post-deployment."
       placeholder: |
         Examples:
         - GET https://open-vsx.org/api/redhat/java -> 200 OK
