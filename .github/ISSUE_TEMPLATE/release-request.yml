@@ -60,7 +60,7 @@ body:
   - type: textarea
     id: dev-smoke-test-endpoints
     attributes:
-      label: "👉 [Dev Hand-off] Core Application Endpoints for Functional Smoke Tests"
+      label: "Core Application Endpoints for Functional Smoke Tests"
       description: "Development Team: List the Open VSX backend endpoints, queries, and expected responses that SRE must validate post-deployment."
       placeholder: |
         Examples:
@@ -120,7 +120,7 @@ body:
   - type: textarea
     id: escalation_contacts
     attributes:
-      label: Escalation Contacts
+      label: "👉 [Dev Hand-off] Escalation Contacts"
       description: List primary and secondary engineering contacts available during the window.
       placeholder: |
         - Primary Dev: @dev_lead (Slack / Phone)
