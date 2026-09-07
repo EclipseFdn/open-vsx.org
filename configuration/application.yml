@@ -142,6 +142,7 @@ ovsx:
       enabled: false
     primary-service: aws
   webui:
+    url: "https://staging.open-vsx.org"
     frontendRoutes: "/extension/**,/namespace/**,/search,/user-settings/**,/admin-dashboard/**,/publish,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
     additional-routes: "/.well-known/**"
   eclipse:
