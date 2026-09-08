@@ -3723,7 +3723,7 @@ __metadata:
 
 "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
   version: 1.2.0-dev.0
-  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=f4e5645507025fd208f7383dfbaa851b59fc64a1"
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=34e8a236d9c9a5bda93b911d3ade129862ff7116"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -3752,7 +3752,7 @@ __metadata:
     react-helmet-async: "npm:^2.0.5"
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^7.18.2"
-  checksum: 10/cca5f3704805d58848dd9a20f350a654fd736303f2aad9e31a622d80c1784a0f41a9013eee7ee5986b60bd641b82004589727f139a4cf85b831bdb6fe221a9a5
+  checksum: 10/3baa1543dd55af523eb301ad9d13e1c8b1e24f6964e6ed66df2d52711a087b51abf91f9612fe14b40b493385b8ef13ab89d445be3cc2234251b7c82bf63057c1
   languageName: node
   linkType: hard
 
