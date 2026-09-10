@@ -143,12 +143,12 @@ body:
       description: Executed and verified exclusively by the SRE team.
       options:
         - label: "Consulted Product team and Service Delivery partners for explicit sign-off"
-          required: true
+          required: false
         - label: "Confirmed, booked, and communicated the maintenance window broadly"
-          required: true
+          required: false
         - label: "Executed end-to-end deployment process safely"
-          required: true
+          required: false
         - label: "Validated all collaborative verification checklist items above"
-          required: true
+          required: false
         - label: "Handed off to continuous monitoring (observing stability/escalating if needed)"
-          required: true
+          required: false
