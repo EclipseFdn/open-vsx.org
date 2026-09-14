@@ -258,6 +258,58 @@ clamav:
     MAX_THREADS: 4
     SCAN_TIMEOUT_MINUTES: 5
 
+# Analytics — extension download/usage analytics, stored in the in-cluster TimescaleDB
+# instance below. App-side wiring (ovsx.analytics.* datasource) lives in
+# external-secrets.yaml/deployment.yaml; database/role are created once by
+# templates/timescaledb-analytics-init.yaml (projected into timescaledb-single via postInit).
+analytics:
+  enabled: true
+  # Must match timescaledb-single.fullnameOverride below (the chart's Service DNS name).
+  host: staging-analytics-timescaledb
+  database: openvsx_analytics
+  username: admin
+  # Pinned via ExternalSecret below (same --atomic-uninstall-safety rationale as the
+  # postgresql-ha credentials further down this file). Key: PATRONI_admin_PASSWORD.
+  credentialsSecretName: staging-analytics-timescaledb-credentials
+
+timescaledb-single:
+  enabled: true
+  # Single node for now — staging analytics doesn't need Patroni HA yet.
+  replicaCount: 1
+  fullnameOverride: "staging-analytics-timescaledb"
+  image:
+    repository: timescale/timescaledb-ha
+    tag: pg17.11-ts2.30.0
+    pullPolicy: IfNotPresent
+  secrets:
+    credentialsSecretName: staging-analytics-timescaledb-credentials
+  # Runs once against a fresh cluster: creates the `openvsx_analytics` database/extension.
+  postInit:
+    - configMap:
+        name: staging-analytics-timescaledb-init
+        optional: false
+  persistentVolumes:
+    data:
+      size: 10Gi
+      storageClass: gp3
+    wal:
+      size: 2Gi
+      storageClass: gp3
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+  prometheus:
+    enabled: true
+  podMonitor:
+    enabled: true
+  podAnnotations:
+    "karpenter.sh/do-not-disrupt": "true"
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+
 yara:
   enabled: true
   name: "yara"

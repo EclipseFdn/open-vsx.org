@@ -17,3 +17,7 @@ dependencies:
     version: 1.14.0
     repository: https://aws.github.io/eks-charts
     condition: aws-load-balancer-controller.enabled
+  - name: timescaledb-single
+    version: 0.33.1
+    repository: https://charts.timescale.com
+    condition: timescaledb-single.enabled
