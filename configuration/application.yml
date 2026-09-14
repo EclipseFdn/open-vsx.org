@@ -179,6 +179,8 @@ ovsx:
   registry:
     version: <SERVER_VERSION>
   caching:
+    statistics:
+      enabled: true
     files-extension:
       tti: PT1H
       max-size: 200
