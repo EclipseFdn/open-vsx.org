@@ -1,0 +1,31 @@
+{{- if .Values.analytics.enabled }}
+# Projected into the timescaledb-single StatefulSet via its `postInit` list (see
+# values-aws-staging.yaml). Runs once, right after Patroni initializes the cluster —
+# creates the dedicated analytics role/database (the role first, since Patroni's own
+# bootstrap.users creation hasn't run yet at this point).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.environment }}-analytics-timescaledb-init
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+data:
+  01-create-analytics-database.sql: |
+    \set ON_ERROR_STOP on
+    \connect postgres
+    SET synchronous_commit to 'off';
+
+    -- Patroni creates bootstrap.users (including this role) after postInit runs, so it
+    -- doesn't exist yet here. Create it ourselves first; Patroni's own creation is
+    -- idempotent so this is safe to run again once Patroni catches up.
+    SELECT 'CREATE ROLE {{ .Values.analytics.username }} LOGIN'
+    WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{{ .Values.analytics.username }}')\gexec
+
+    SELECT 'CREATE DATABASE {{ .Values.analytics.database }} OWNER {{ .Values.analytics.username }}'
+    WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ .Values.analytics.database }}')\gexec
+
+    -- No CREATE EXTENSION here: post_init.sh already installs timescaledb into template1,
+    -- and {{ .Values.analytics.database }} inherits it since it's created from template1.
+{{- end }}

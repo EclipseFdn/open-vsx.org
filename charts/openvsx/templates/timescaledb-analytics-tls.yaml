@@ -1,0 +1,31 @@
+{{- if .Values.analytics.enabled }}
+# Self-signed TLS cert for the in-cluster analytics TimescaleDB (Patroni), created as a
+# normal (non-hook) resource. The timescaledb-single subchart's own cert Secret template
+# is annotated `helm.sh/hook: pre-install`, which only runs on a fresh `helm install` —
+# never on an upgrade. Since this subchart is being added to an already-installed openvsx
+# release, every deploy from here on is an upgrade, so that hook would never fire and the
+# StatefulSet would mount a Secret that's never created. Templating it here instead (with
+# the same lookup-to-preserve-across-upgrades trick the subchart's hook itself uses) keeps
+# it stable across deploys without depending on a hook moment that has already passed.
+{{- $secretName := .Values.analytics.certificateSecretName }}
+{{- $existing := lookup "v1" "Secret" .Values.namespace $secretName }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+type: kubernetes.io/tls
+{{- if $existing }}
+data:
+  tls.crt: {{ index $existing.data "tls.crt" }}
+  tls.key: {{ index $existing.data "tls.key" }}
+{{- else }}
+{{- $ca := genCA (printf "%s-analytics-timescaledb" .Values.environment) 3650 }}
+stringData:
+  tls.crt: {{ $ca.Cert | quote }}
+  tls.key: {{ $ca.Key | quote }}
+{{- end }}
+{{- end }}
