@@ -271,6 +271,10 @@ analytics:
   # Pinned via ExternalSecret below (same --atomic-uninstall-safety rationale as the
   # postgresql-ha credentials further down this file). Key: PATRONI_admin_PASSWORD.
   credentialsSecretName: staging-analytics-timescaledb-credentials
+  # Created by templates/timescaledb-analytics-tls.yaml as a normal (non-hook) resource —
+  # the subchart's own cert Secret is a pre-install-only hook, which never fires here since
+  # this subchart is being added to an already-installed release (every deploy is an upgrade).
+  certificateSecretName: staging-analytics-timescaledb-certificate
 
 timescaledb-single:
   enabled: true
@@ -283,6 +287,7 @@ timescaledb-single:
     pullPolicy: IfNotPresent
   secrets:
     credentialsSecretName: staging-analytics-timescaledb-credentials
+    certificateSecretName: staging-analytics-timescaledb-certificate
   # Runs once against a fresh cluster: creates the `openvsx_analytics` database/extension.
   postInit:
     - configMap:
@@ -304,8 +309,12 @@ timescaledb-single:
       memory: "2Gi"
   prometheus:
     enabled: true
+  # No PodMonitor CRD on eks-staging (only ServiceMonitor), so this must stay false — and
+  # Alloy only scrapes via prometheus.operator.servicemonitors anyway, so it wouldn't be
+  # read regardless. This chart doesn't offer a ServiceMonitor template, so the exporter's
+  # metrics aren't collected in staging for now.
   podMonitor:
-    enabled: true
+    enabled: false
   podAnnotations:
     "karpenter.sh/do-not-disrupt": "true"
     "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
