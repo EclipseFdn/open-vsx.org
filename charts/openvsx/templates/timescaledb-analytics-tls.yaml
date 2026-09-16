@@ -7,8 +7,20 @@
 # StatefulSet would mount a Secret that's never created. Templating it here instead (with
 # the same lookup-to-preserve-across-upgrades trick the subchart's hook itself uses) keeps
 # it stable across deploys without depending on a hook moment that has already passed.
+#
+# A pre-existing Secret is only reused when it actually carries both keys — a Secret that
+# exists but is empty or has renamed keys would otherwise render as null values and an
+# invalid Secret. In that case (and if an --atomic rollback ever deletes the Secret) we
+# mint a fresh CA; nothing verifies this certificate, so a new CA is not disruptive.
 {{- $secretName := .Values.analytics.certificateSecretName }}
 {{- $existing := lookup "v1" "Secret" .Values.namespace $secretName }}
+{{- $existingData := dict }}
+{{- with $existing }}
+  {{- $data := .data | default dict }}
+  {{- if and (index $data "tls.crt") (index $data "tls.key") }}
+    {{- $existingData = $data }}
+  {{- end }}
+{{- end }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -18,10 +30,10 @@ metadata:
     app: {{ .Values.name }}
     environment: {{ .Values.environment }}
 type: kubernetes.io/tls
-{{- if $existing }}
+{{- if $existingData }}
 data:
-  tls.crt: {{ index $existing.data "tls.crt" }}
-  tls.key: {{ index $existing.data "tls.key" }}
+  tls.crt: {{ index $existingData "tls.crt" }}
+  tls.key: {{ index $existingData "tls.key" }}
 {{- else }}
 {{- $ca := genCA (printf "%s-analytics-timescaledb" .Values.environment) 3650 }}
 stringData:

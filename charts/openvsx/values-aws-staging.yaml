@@ -262,6 +262,9 @@ clamav:
 # instance below. App-side wiring (ovsx.analytics.* datasource) lives in
 # external-secrets.yaml/deployment.yaml; database/role are created once by
 # templates/timescaledb-analytics-init.yaml (projected into timescaledb-single via postInit).
+# Every name shared with the timescaledb-single block below is cross-checked at render time
+# by templates/analytics-validation.yaml, which also enforces that the two `enabled` flags
+# agree — helm fails the upgrade on a mismatch rather than deploying something broken.
 analytics:
   enabled: true
   # Must match timescaledb-single.fullnameOverride below (the chart's Service DNS name).
@@ -288,7 +291,10 @@ timescaledb-single:
   secrets:
     credentialsSecretName: staging-analytics-timescaledb-credentials
     certificateSecretName: staging-analytics-timescaledb-certificate
-  # Runs once against a fresh cluster: creates the `openvsx_analytics` database/extension.
+  # Runs once against a fresh cluster: creates the `openvsx_analytics` role and database and
+  # sets the role's password. Created by templates/timescaledb-analytics-init.yaml, which
+  # names it from .Values.environment — hardcoded here because subchart values can't template.
+  # analytics-validation.yaml fails the render if the two ever drift apart.
   postInit:
     - configMap:
         name: staging-analytics-timescaledb-init
@@ -307,12 +313,13 @@ timescaledb-single:
     limits:
       cpu: "1"
       memory: "2Gi"
+  # Off until something actually scrapes it. This chart has no ServiceMonitor template, and
+  # PodMonitor below has to stay false (no PodMonitor CRD on eks-staging, and Alloy only
+  # scrapes via prometheus.operator.servicemonitors anyway), so the sidecar would just be a
+  # 2022-era postgres-exporter image against PG17 — pulled `Always`, with no requests or
+  # limits — that nothing reads. Turn this back on together with a ServiceMonitor.
   prometheus:
-    enabled: true
-  # No PodMonitor CRD on eks-staging (only ServiceMonitor), so this must stay false — and
-  # Alloy only scrapes via prometheus.operator.servicemonitors anyway, so it wouldn't be
-  # read regardless. This chart doesn't offer a ServiceMonitor template, so the exporter's
-  # metrics aren't collected in staging for now.
+    enabled: false
   podMonitor:
     enabled: false
   podAnnotations:

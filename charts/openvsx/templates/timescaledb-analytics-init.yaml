@@ -1,8 +1,11 @@
 {{- if .Values.analytics.enabled }}
 # Projected into the timescaledb-single StatefulSet via its `postInit` list (see
 # values-aws-staging.yaml). Runs once, right after Patroni initializes the cluster —
-# creates the dedicated analytics role/database (the role first, since Patroni's own
-# bootstrap.users creation hasn't run yet at this point).
+# creates the dedicated analytics role/database and sets the role's password.
+#
+# post_init.sh iterates /etc/timescaledb/post_init.d/* in shell glob (sorted) order and
+# handles `.sql` via psql and `.sh` by executing it (the projected volume is mode 0750),
+# so the numbered prefixes below define the ordering.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -17,9 +20,10 @@ data:
     \connect postgres
     SET synchronous_commit to 'off';
 
-    -- Patroni creates bootstrap.users (including this role) after postInit runs, so it
-    -- doesn't exist yet here. Create it ourselves first; Patroni's own creation is
-    -- idempotent so this is safe to run again once Patroni catches up.
+    -- Nothing else creates this role: the chart hands Patroni PATRONI_admin_PASSWORD /
+    -- PATRONI_admin_OPTIONS, but Patroni >= 4 dropped `bootstrap.users` entirely (it logs
+    -- "User creation is not be supported starting from v4.0.0" and points at post_bootstrap),
+    -- and the pinned timescaledb-ha image is Patroni 4.x. So we create it here, idempotently.
     SELECT 'CREATE ROLE {{ .Values.analytics.username }} LOGIN'
     WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{{ .Values.analytics.username }}')\gexec
 
@@ -28,4 +32,38 @@ data:
 
     -- No CREATE EXTENSION here: post_init.sh already installs timescaledb into template1,
     -- and {{ .Values.analytics.database }} inherits it since it's created from template1.
+
+  # Runs after 01-*.sql (sorted glob order). Kept out of the .sql above so the password never
+  # has to be templated into a ConfigMap: PATRONI_admin_PASSWORD reaches this process from the
+  # credentials Secret via the StatefulSet's `envFrom`, so that Secret stays the only source of
+  # truth. Without this the role exists with a NULL password while pg_hba is
+  # `hostssl all all all md5`, so the application's password auth fails at startup.
+  02-set-analytics-role-password.sh: |
+    #!/bin/sh
+    set -e
+
+    # Same env restore post_init.sh does — it runs before Patroni strips the pod environment,
+    # and we are exec'd from it, but sourcing again keeps this script correct standalone.
+    : "${ENV_FILE:=${HOME}/.pod_environment}"
+    if [ -f "${ENV_FILE}" ]; then
+        . "${ENV_FILE}"
+    fi
+
+    # Patroni passes the bootstrap connection string as argv[1] to post_init.sh, which forwards
+    # "$@" to us; ${URL} is post_init.sh's own fallback for the same thing.
+    conn="${1:-${URL:-}}"
+
+    if [ -z "${PATRONI_admin_PASSWORD:-}" ]; then
+        echo "ERROR: PATRONI_admin_PASSWORD is not set - cannot set a password for role" \
+             "{{ .Values.analytics.username }}; the application would fail password auth." >&2
+        exit 1
+    fi
+
+    # --set + :'...' / :"..." lets psql do the quoting, so no escaping concerns on the password.
+    PGOPTIONS="-c synchronous_commit=local" psql -d "${conn}" \
+        --set ON_ERROR_STOP=1 \
+        --set analytics_user="{{ .Values.analytics.username }}" \
+        --set analytics_password="${PATRONI_admin_PASSWORD}" <<'__SQL__'
+    ALTER ROLE :"analytics_user" WITH LOGIN PASSWORD :'analytics_password';
+    __SQL__
 {{- end }}

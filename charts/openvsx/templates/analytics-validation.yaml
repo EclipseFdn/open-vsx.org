@@ -1,0 +1,42 @@
+{{/*
+Render-time consistency checks for the analytics stack. Renders no manifest — it exists so
+that a mismatch fails `helm upgrade` up front, instead of silently producing a deployment
+that only breaks at TimescaleDB bootstrap or at application startup.
+
+These names have to agree across the openvsx chart and the timescaledb-single subchart, and
+nothing else enforces it: subchart values live in a plain values file and cannot reference
+`.Values.environment`, so they are hardcoded there while the templates here derive them.
+*/}}
+{{- $ts := index .Values "timescaledb-single" | default dict }}
+{{- if ne (.Values.analytics.enabled | toString) ($ts.enabled | toString) }}
+  {{- fail (printf "analytics.enabled (%v) and timescaledb-single.enabled (%v) must match: analytics without the subchart points the application at a database host that does not exist, and the application fails at startup." .Values.analytics.enabled $ts.enabled) }}
+{{- end }}
+{{- if .Values.analytics.enabled }}
+  {{/* analytics.host is used to build the JDBC URL; it must resolve to the subchart's Service. */}}
+  {{- if ne .Values.analytics.host $ts.fullnameOverride }}
+    {{- fail (printf "analytics.host (%s) must equal timescaledb-single.fullnameOverride (%s) - it is the Service DNS name the application connects to." .Values.analytics.host ($ts.fullnameOverride | toString)) }}
+  {{- end }}
+  {{/* Both charts must point at the same Secrets: one side creates them, the other mounts them. */}}
+  {{- $tsSecrets := $ts.secrets | default dict }}
+  {{- if ne .Values.analytics.credentialsSecretName ($tsSecrets.credentialsSecretName | toString) }}
+    {{- fail (printf "analytics.credentialsSecretName (%s) must equal timescaledb-single.secrets.credentialsSecretName (%s)." .Values.analytics.credentialsSecretName ($tsSecrets.credentialsSecretName | toString)) }}
+  {{- end }}
+  {{- if ne .Values.analytics.certificateSecretName ($tsSecrets.certificateSecretName | toString) }}
+    {{- fail (printf "analytics.certificateSecretName (%s) must equal timescaledb-single.secrets.certificateSecretName (%s)." .Values.analytics.certificateSecretName ($tsSecrets.certificateSecretName | toString)) }}
+  {{- end }}
+  {{/*
+  The bootstrap ConfigMap is named from .Values.environment in timescaledb-analytics-init.yaml
+  but hardcoded in the subchart's postInit list, with optional: false - so a rename of
+  `environment` would leave the StatefulSet waiting on a ConfigMap that is never created.
+  */}}
+  {{- $initName := printf "%s-analytics-timescaledb-init" .Values.environment }}
+  {{- $found := false }}
+  {{- range $ts.postInit | default list }}
+    {{- if and .configMap (eq (.configMap.name | toString) $initName) }}
+      {{- $found = true }}
+    {{- end }}
+  {{- end }}
+  {{- if not $found }}
+    {{- fail (printf "timescaledb-single.postInit must reference the ConfigMap %q created by templates/timescaledb-analytics-init.yaml; without it the analytics role and database are never created." $initName) }}
+  {{- end }}
+{{- end }}
