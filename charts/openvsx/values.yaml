@@ -181,6 +181,18 @@ clamav:
     MAX_THREADS: 4
     SCAN_TIMEOUT_MINUTES: 5
 
+# Analytics — extension download/usage analytics backed by TimescaleDB. Off by default;
+# enabled per-environment (currently aws-staging only, see values-aws-staging.yaml). When
+# enabled, deployment.yaml/external-secrets.yaml wire a second Spring datasource
+# (ovsx.analytics.*) pointing at the timescaledb-single instance below.
+analytics:
+  enabled: false
+
+# TimescaleDB (single-node w/ optional Patroni HA) backing `analytics` above.
+# https://github.com/timescale/helm-charts/tree/main/charts/timescaledb-single
+timescaledb-single:
+  enabled: false
+
 yara:
   enabled: true
   name: "yara"

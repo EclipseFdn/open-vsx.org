@@ -78,6 +78,15 @@ spec:
               name: elasticsearch-{{ .Values.environment }}-es-elastic-user
               key: elastic
         {{- end }}
+        {{- if .Values.analytics.enabled }}
+        # In-cluster timescaledb-single: password is chart-generated/ESO-pinned, injected
+        # here to override ovsx.analytics.datasource.password from configuration.yml.
+        - name: OVSX_ANALYTICS_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.analytics.credentialsSecretName }}
+              key: PATRONI_admin_PASSWORD
+        {{- end }}
         volumeMounts:
         - name: deployment-configuration
           mountPath: /run/secrets/open-vsx.org/deployment
