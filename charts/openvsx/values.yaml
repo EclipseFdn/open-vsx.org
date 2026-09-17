@@ -181,6 +181,61 @@ clamav:
     MAX_THREADS: 4
     SCAN_TIMEOUT_MINUTES: 5
 
+# ── Logical Postgres backup (templates/db-backup-cronjob.yaml) ────────────────
+# OFF by default and everywhere except aws-staging. Only meaningful where the database
+# is the in-cluster postgresql-ha StatefulSet; the RDS environments are covered by RDS
+# automated backups + PITR, and the template hard-fails if enabled without
+# externalSecrets.inClusterPostgres so it cannot silently activate in prod/test.
+dbBackup:
+  enabled: false
+  # 01:30 UTC — clear of the app's 02:10 usage-stats job, 03:00 gitleaks refresh and
+  # ~04:00 search reindex, and of the ElastiCache 01:00-03:00 snapshot window.
+  schedule: "30 1 * * *"
+  timeZone: "Etc/UTC"
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  backoffLimit: 2
+  activeDeadlineSeconds: 3600
+  # pg_dump -Fc level; 6 is the pg_dump default.
+  compression: "6"
+  statementTimeoutSeconds: 3000
+  # emptyDir for the dump. Must exceed the compressed dump size; also requested as
+  # ephemeral-storage below so the scheduler accounts for it.
+  scratchSize: 10Gi
+  image:
+    repository: postgres
+    tag: "17-alpine"
+    pullPolicy: IfNotPresent
+  # Interim: install aws-cli from the alpine repo at container start. Set false once a
+  # pinned image carrying pg_dump 17 + aws-cli v2 is published.
+  awsCliInstall: true
+  s3:
+    bucket: ""
+    prefix: ""
+    region: eu-central-1
+  serviceAccount:
+    create: true
+    # Must match the IRSA trust subject of the role annotated below
+    # (system:serviceaccount:<namespace>:openvsx-pg-backup).
+    name: openvsx-pg-backup
+    annotations: {}
+  report:
+    # Push the outcome line straight to Grafana Cloud Loki using LOKI_* from
+    # grafana-cloud-secret-<env>. Do not rely on scraped stdout: the staging Alloy logs
+    # pipeline drops pods in phase Succeeded/Failed, which is where a short-lived Job
+    # spends most of its life.
+    loki: true
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+      ephemeral-storage: 10Gi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 12Gi
+
 yara:
   enabled: true
   name: "yara"

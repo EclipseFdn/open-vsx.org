@@ -1,0 +1,264 @@
+{{- if .Values.dbBackup.enabled }}
+{{- if not .Values.externalSecrets.inClusterPostgres }}
+{{- fail "dbBackup.enabled requires externalSecrets.inClusterPostgres — the RDS environments are covered by RDS automated backups/PITR, not by this CronJob." }}
+{{- end }}
+{{- $h := required "dbBackup requires externalSecrets.postgresHost" .Values.externalSecrets.postgresHost }}
+{{- $n := int (.Values.externalSecrets.postgresReplicas | default 3) }}
+{{- $hosts := list }}
+{{- range $i := until $n }}
+{{- $hosts = append $hosts (printf "%s-%d.%s-headless.%s.svc.cluster.local:5432" $h $i $h $.Values.namespace) }}
+{{- end }}
+{{- if .Values.dbBackup.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.dbBackup.serviceAccount.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup
+  {{- with .Values.dbBackup.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
+# Logical backup of the in-cluster postgresql-ha (repmgr) database.
+#
+# Primary resolution: libpq multi-host + target_session_attrs=primary — the exact
+# analogue of the app's pgjdbc targetServerType=primary (external-secrets.yaml).
+# The -pgpool Service has no endpoints (pgpool.replicaCount=0) and Bitnami exposes no
+# role=primary pod label, so those are not options. A pg_is_in_recovery() assertion
+# follows the connect so a standby dump fails loudly instead of silently lagging.
+#
+# Credentials: the same ESO-synced secret that pins postgresql-ha to
+# openvsx/<env>/postgresql. No second credential path.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}-db-backup-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup
+spec:
+  schedule: {{ .Values.dbBackup.schedule | quote }}
+  timeZone: {{ .Values.dbBackup.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.dbBackup.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.dbBackup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.dbBackup.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.dbBackup.backoffLimit }}
+      activeDeadlineSeconds: {{ .Values.dbBackup.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.name }}
+            environment: {{ .Values.environment }}
+            # NOT type=website — the staging Alloy logs pipeline drops the compound
+            # match app=open-vsx-org;type=website to avoid double-shipping.
+            type: db-backup
+        spec:
+          restartPolicy: Never
+          serviceAccountName: {{ .Values.dbBackup.serviceAccount.name }}
+          securityContext:
+            runAsNonRoot: false
+            fsGroup: 999
+          containers:
+          - name: db-backup
+            image: "{{ .Values.dbBackup.image.repository }}:{{ .Values.dbBackup.image.tag }}"
+            imagePullPolicy: {{ .Values.dbBackup.image.pullPolicy }}
+            env:
+            - name: PGHOSTS
+              value: {{ join "," $hosts | quote }}
+            - name: PGUSER
+              value: {{ .Values.externalSecrets.postgresUsername | default "postgres" | quote }}
+            - name: PGDATABASE
+              value: {{ .Values.externalSecrets.postgresDb | quote }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.inClusterPostgres.passwordSecret.name }}
+                  key: {{ .Values.inClusterPostgres.passwordSecret.key }}
+            - name: S3_BUCKET
+              value: {{ .Values.dbBackup.s3.bucket | quote }}
+            - name: S3_PREFIX
+              value: {{ .Values.dbBackup.s3.prefix | trimSuffix "/" | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.dbBackup.s3.region | quote }}
+            - name: APP_IMAGE_TAG
+              value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
+            - name: CHART_APP_VERSION
+              value: {{ .Chart.AppVersion | quote }}
+            - name: ENVIRONMENT
+              value: {{ .Values.environment | quote }}
+            - name: K8S_NAMESPACE
+              value: {{ .Values.namespace | quote }}
+            - name: DUMP_COMPRESSION
+              value: {{ .Values.dbBackup.compression | quote }}
+            - name: STATEMENT_TIMEOUT_S
+              value: {{ .Values.dbBackup.statementTimeoutSeconds | quote }}
+            - name: AWS_CLI_INSTALL
+              value: {{ .Values.dbBackup.awsCliInstall | quote }}
+            - name: REPORT_TO_LOKI
+              value: {{ .Values.dbBackup.report.loki | quote }}
+            envFrom:
+            # LOKI_URL / LOKI_USERNAME / LOKI_PASSWORD — outcome reporting (see below).
+            - secretRef:
+                name: grafana-cloud-secret-{{ .Values.environment }}
+            resources:
+              {{- toYaml .Values.dbBackup.resources | nindent 14 }}
+            volumeMounts:
+            - name: backup-scratch
+              mountPath: /backup
+            - name: script
+              mountPath: /scripts
+            command: ["/bin/sh", "/scripts/backup.sh"]
+          volumes:
+          - name: backup-scratch
+            emptyDir:
+              sizeLimit: {{ .Values.dbBackup.scratchSize }}
+          - name: script
+            configMap:
+              name: {{ .Values.name }}-db-backup-{{ .Values.environment }}
+              defaultMode: 0555
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-db-backup-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup
+data:
+  backup.sh: |
+    #!/bin/sh
+    # pg_dump -Fc of the repmgr PRIMARY -> s3://$S3_BUCKET/$S3_PREFIX/
+    # Every exit path reports to Grafana Cloud Loki via the EXIT trap, including
+    # "tooling missing" and "connected to a standby".
+    set -eu
+
+    STATUS=failed
+    STAGE=init
+    REASON=""
+    OBJECT_KEY=""
+    FLYWAY_VERSION=""
+    DUMP_BYTES=0
+    DUMP_SHA=""
+    STARTED_EPOCH=$(date -u +%s)
+
+    report() {
+      rc=$?
+      [ "$rc" -eq 0 ] && STATUS=ok
+      DURATION=$(( $(date -u +%s) - STARTED_EPOCH ))
+      LINE="job=openvsx-db-backup env=${ENVIRONMENT} status=${STATUS} stage=${STAGE} rc=${rc} duration_s=${DURATION} schema=${FLYWAY_VERSION} image_tag=${APP_IMAGE_TAG} bytes=${DUMP_BYTES} sha256=${DUMP_SHA} key=${OBJECT_KEY} reason=${REASON}"
+      echo "${LINE}"
+      if [ "${REPORT_TO_LOKI}" = "true" ] && [ -n "${LOKI_URL:-}" ]; then
+        AUTH=$(printf '%s:%s' "${LOKI_USERNAME}" "${LOKI_PASSWORD}" | base64 | tr -d '\n')
+        NOW_NS="$(date -u +%s)000000000"
+        BODY='{"streams":[{"stream":{"job":"openvsx-db-backup","namespace":"'"${K8S_NAMESPACE}"'","environment":"'"${ENVIRONMENT}"'","status":"'"${STATUS}"'"},"values":[["'"${NOW_NS}"'","'"${LINE}"'"]]}]}'
+        wget -q -O /dev/null \
+          --header="Content-Type: application/json" \
+          --header="Authorization: Basic ${AUTH}" \
+          --post-data="${BODY}" \
+          "${LOKI_URL}" || echo "WARN: loki push failed (backup outcome above is authoritative)"
+      fi
+      exit "$rc"
+    }
+    trap report EXIT
+
+    # ── 0. tooling ────────────────────────────────────────────────────────────
+    STAGE=tooling
+    if ! command -v aws >/dev/null 2>&1 && [ "${AWS_CLI_INSTALL}" = "true" ]; then
+      apk add --no-cache aws-cli >/dev/null 2>&1 || true
+    fi
+    if ! command -v aws >/dev/null 2>&1; then
+      REASON="aws-cli-not-available"; exit 90
+    fi
+    if ! command -v pg_dump >/dev/null 2>&1; then
+      REASON="pg_dump-not-available"; exit 91
+    fi
+
+    CONN="postgresql://${PGUSER}@${PGHOSTS}/${PGDATABASE}?target_session_attrs=primary&connect_timeout=10&application_name=openvsx-db-backup"
+
+    # ── 1. resolve + assert PRIMARY ───────────────────────────────────────────
+    STAGE=resolve-primary
+    PROBE=$(psql "${CONN}" -tA -F'|' -c "select pg_is_in_recovery(), coalesce(host(inet_server_addr()),'unknown'), current_setting('server_version')")
+    IN_RECOVERY=$(echo "${PROBE}" | cut -d'|' -f1)
+    SERVER_ADDR=$(echo "${PROBE}" | cut -d'|' -f2)
+    SERVER_VERSION=$(echo "${PROBE}" | cut -d'|' -f3)
+    if [ "${IN_RECOVERY}" != "f" ]; then
+      REASON="connected-to-standby-${SERVER_ADDR}"; exit 92
+    fi
+    echo "primary=${SERVER_ADDR} server_version=${SERVER_VERSION}"
+
+    # ── 2. schema version (restore pairing) ───────────────────────────────────
+    STAGE=schema-version
+    FLYWAY_VERSION=$(psql "${CONN}" -tAc "select version from flyway_schema_history where success order by installed_rank desc limit 1")
+    if [ -z "${FLYWAY_VERSION}" ]; then
+      REASON="flyway-schema-history-empty"; exit 93
+    fi
+    SAFE_SCHEMA=$(echo "${FLYWAY_VERSION}" | tr -c 'A-Za-z0-9._-' '-')
+    SAFE_TAG=$(echo "${APP_IMAGE_TAG}" | tr -c 'A-Za-z0-9._-' '-')
+
+    # ── 3. dump ───────────────────────────────────────────────────────────────
+    STAGE=pg_dump
+    TS=$(date -u +%Y%m%dT%H%M%SZ)
+    YYYY=$(date -u +%Y)
+    MM=$(date -u +%m)
+    BASE="${PGDATABASE}_${TS}_schema-${SAFE_SCHEMA}_img-${SAFE_TAG}"
+    DUMP="/backup/${BASE}.dump"
+    PGOPTIONS="-c statement_timeout=${STATEMENT_TIMEOUT_S}s" \
+      pg_dump -Fc --compress="${DUMP_COMPRESSION}" --no-owner --no-privileges \
+        -d "${CONN}" -f "${DUMP}"
+
+    # ── 4. manifest ───────────────────────────────────────────────────────────
+    STAGE=manifest
+    DUMP_BYTES=$(wc -c < "${DUMP}" | tr -d ' ')
+    DUMP_SHA=$(sha256sum "${DUMP}" | cut -d' ' -f1)
+    if [ "${DUMP_BYTES}" -lt 1024 ]; then
+      REASON="dump-implausibly-small-${DUMP_BYTES}"; exit 94
+    fi
+    TABLES=$(psql "${CONN}" -tAc "select coalesce(json_agg(json_build_object('table', relname, 'estimated_rows', n_live_tup) order by n_live_tup desc), '[]'::json) from pg_stat_user_tables")
+    OBJECT_KEY="${S3_PREFIX}/${YYYY}/${MM}/${BASE}.dump"
+    cat > "/backup/${BASE}.manifest.json" <<EOF
+    {
+      "environment": "${ENVIRONMENT}",
+      "namespace": "${K8S_NAMESPACE}",
+      "database": "${PGDATABASE}",
+      "taken_at_utc": "${TS}",
+      "flyway_schema_version": "${FLYWAY_VERSION}",
+      "app_image_tag": "${APP_IMAGE_TAG}",
+      "chart_app_version": "${CHART_APP_VERSION}",
+      "postgres_server_version": "${SERVER_VERSION}",
+      "source_primary_addr": "${SERVER_ADDR}",
+      "dump_format": "custom",
+      "dump_object_key": "${OBJECT_KEY}",
+      "dump_bytes": ${DUMP_BYTES},
+      "dump_sha256": "${DUMP_SHA}",
+      "estimated_table_rows": ${TABLES}
+    }
+    EOF
+
+    # ── 5. upload ─────────────────────────────────────────────────────────────
+    # A dump is only usable with its manifest: baseline-on-migrate is false, so a dump
+    # whose flyway version is NEWER than the image you restore under is a hard start
+    # failure. The pairing is in both the key and the manifest.
+    STAGE=upload
+    aws s3 cp "${DUMP}" "s3://${S3_BUCKET}/${OBJECT_KEY}" \
+      --no-progress --only-show-errors \
+      --metadata "flyway-schema-version=${FLYWAY_VERSION},app-image-tag=${APP_IMAGE_TAG},sha256=${DUMP_SHA}"
+    aws s3 cp "/backup/${BASE}.manifest.json" "s3://${S3_BUCKET}/${S3_PREFIX}/${YYYY}/${MM}/${BASE}.manifest.json" \
+      --no-progress --only-show-errors
+    # Stable pointer: "what is the newest good backup, and what does it pair with".
+    aws s3 cp "/backup/${BASE}.manifest.json" "s3://${S3_BUCKET}/${S3_PREFIX}/_latest.json" \
+      --no-progress --only-show-errors
+
+    STAGE=done
+{{- end }}
