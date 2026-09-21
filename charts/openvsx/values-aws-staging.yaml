@@ -265,6 +265,17 @@ clamav:
 # Every name shared with the timescaledb-single block below is cross-checked at render time
 # by templates/analytics-validation.yaml, which also enforces that the two `enabled` flags
 # agree — helm fails the upgrade on a mismatch rather than deploying something broken.
+#
+# Availability, deliberately accepted for staging: the analytics datasource is wired eagerly, so
+# the application does not start while this database is unreachable — and the database below is a
+# single replica on a single PV with no pgbackrest backups. Losing that pod therefore takes
+# staging down until it is rescheduled, and losing the volume loses the collected analytics with
+# no way back. That is the intended trade-off while analytics is being evaluated here; the same
+# layout should not go to production without replicaCount > 1 and pgbackrest configured.
+#
+# Rotating the password is not just a Secrets Manager edit — the post-init scripts only run at
+# bootstrap, so the database keeps the old one. See "Rotating the analytics database password"
+# in kubernetes/README.md.
 analytics:
   enabled: true
   # Must match timescaledb-single.fullnameOverride below (the chart's Service DNS name).
@@ -281,7 +292,9 @@ analytics:
 
 timescaledb-single:
   enabled: true
-  # Single node for now — staging analytics doesn't need Patroni HA yet.
+  # Single node, and no pgbackrest: staging analytics is evaluation data we are willing to lose.
+  # See the availability note above the `analytics` block — this is the piece that makes app
+  # startup depend on a single pod.
   replicaCount: 1
   fullnameOverride: "staging-analytics-timescaledb"
   image:
