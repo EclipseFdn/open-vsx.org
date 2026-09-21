@@ -278,6 +278,87 @@ clamav:
     MAX_THREADS: 4
     SCAN_TIMEOUT_MINUTES: 5
 
+# Analytics — extension download/usage analytics, stored in the in-cluster TimescaleDB
+# instance below. App-side wiring (ovsx.analytics.* datasource) lives in
+# external-secrets.yaml/deployment.yaml; database/role are created once by
+# templates/timescaledb-analytics-init.yaml (projected into timescaledb-single via postInit).
+# Every name shared with the timescaledb-single block below is cross-checked at render time
+# by templates/analytics-validation.yaml, which also enforces that the two `enabled` flags
+# agree — helm fails the upgrade on a mismatch rather than deploying something broken.
+#
+# Availability, deliberately accepted for staging: the analytics datasource is wired eagerly, so
+# the application does not start while this database is unreachable — and the database below is a
+# single replica on a single PV with no pgbackrest backups. Losing that pod therefore takes
+# staging down until it is rescheduled, and losing the volume loses the collected analytics with
+# no way back. That is the intended trade-off while analytics is being evaluated here; the same
+# layout should not go to production without replicaCount > 1 and pgbackrest configured.
+#
+# Rotating the password is not just a Secrets Manager edit — the post-init scripts only run at
+# bootstrap, so the database keeps the old one. See "Rotating the analytics database password"
+# in kubernetes/README.md.
+analytics:
+  enabled: true
+  # Must match timescaledb-single.fullnameOverride below (the chart's Service DNS name).
+  host: staging-analytics-timescaledb
+  database: openvsx_analytics
+  username: admin
+  # Pinned via ExternalSecret below (same --atomic-uninstall-safety rationale as the
+  # postgresql-ha credentials further down this file). Key: PATRONI_admin_PASSWORD.
+  credentialsSecretName: staging-analytics-timescaledb-credentials
+  # Created by templates/timescaledb-analytics-tls.yaml as a normal (non-hook) resource —
+  # the subchart's own cert Secret is a pre-install-only hook, which never fires here since
+  # this subchart is being added to an already-installed release (every deploy is an upgrade).
+  certificateSecretName: staging-analytics-timescaledb-certificate
+
+timescaledb-single:
+  enabled: true
+  # Single node, and no pgbackrest: staging analytics is evaluation data we are willing to lose.
+  # See the availability note above the `analytics` block — this is the piece that makes app
+  # startup depend on a single pod.
+  replicaCount: 1
+  fullnameOverride: "staging-analytics-timescaledb"
+  image:
+    repository: timescale/timescaledb-ha
+    tag: pg17.11-ts2.30.0
+    pullPolicy: IfNotPresent
+  secrets:
+    credentialsSecretName: staging-analytics-timescaledb-credentials
+    certificateSecretName: staging-analytics-timescaledb-certificate
+  # Runs once against a fresh cluster: creates the `openvsx_analytics` role and database and
+  # sets the role's password. Created by templates/timescaledb-analytics-init.yaml, which
+  # names it from .Values.environment — hardcoded here because subchart values can't template.
+  # analytics-validation.yaml fails the render if the two ever drift apart.
+  postInit:
+    - configMap:
+        name: staging-analytics-timescaledb-init
+        optional: false
+  persistentVolumes:
+    data:
+      size: 10Gi
+      storageClass: gp3
+    wal:
+      size: 2Gi
+      storageClass: gp3
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+  # Off until something actually scrapes it. This chart has no ServiceMonitor template, and
+  # PodMonitor below has to stay false (no PodMonitor CRD on eks-staging, and Alloy only
+  # scrapes via prometheus.operator.servicemonitors anyway), so the sidecar would just be a
+  # 2022-era postgres-exporter image against PG17 — pulled `Always`, with no requests or
+  # limits — that nothing reads. Turn this back on together with a ServiceMonitor.
+  prometheus:
+    enabled: false
+  podMonitor:
+    enabled: false
+  podAnnotations:
+    "karpenter.sh/do-not-disrupt": "true"
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+
 yara:
   enabled: true
   name: "yara"

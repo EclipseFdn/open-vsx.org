@@ -1,0 +1,89 @@
+{{- if .Values.analytics.enabled }}
+# Projected into the timescaledb-single StatefulSet via its `postInit` list (see
+# values-aws-staging.yaml). Runs once, right after Patroni initializes the cluster —
+# creates the dedicated analytics role/database and sets the role's password.
+#
+# post_init.sh iterates /etc/timescaledb/post_init.d/* in shell glob (sorted) order and
+# handles `.sql` via psql and `.sh` by executing it (the projected volume is mode 0750),
+# so the numbered prefixes below define the ordering.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.environment }}-analytics-timescaledb-init
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+data:
+  01-create-analytics-database.sql: |
+    \set ON_ERROR_STOP on
+    \connect postgres
+    SET synchronous_commit to 'off';
+
+    -- Nothing else creates this role: the chart hands Patroni PATRONI_admin_PASSWORD /
+    -- PATRONI_admin_OPTIONS, but Patroni >= 4 dropped `bootstrap.users` entirely (it logs
+    -- "User creation is not be supported starting from v4.0.0" and points at post_bootstrap),
+    -- and the pinned timescaledb-ha image is Patroni 4.x. So we create it here, idempotently.
+    SELECT 'CREATE ROLE {{ .Values.analytics.username }} LOGIN'
+    WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{{ .Values.analytics.username }}')\gexec
+
+    SELECT 'CREATE DATABASE {{ .Values.analytics.database }} OWNER {{ .Values.analytics.username }}'
+    WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ .Values.analytics.database }}')\gexec
+
+    -- No CREATE EXTENSION here: post_init.sh already installs timescaledb into template1,
+    -- and {{ .Values.analytics.database }} inherits it since it's created from template1.
+
+  # Runs after 01-*.sql (sorted glob order). Kept out of the .sql above so the password never
+  # has to be templated into a ConfigMap: PATRONI_admin_PASSWORD reaches this process from the
+  # credentials Secret via the StatefulSet's `envFrom`, so that Secret stays the only source of
+  # truth. Without this the role exists with a NULL password while pg_hba is
+  # `hostssl all all all md5`, so the application's password auth fails at startup.
+  02-set-analytics-role-password.sh: |
+    #!/bin/sh
+    set -e
+
+    # Same env restore post_init.sh does — it runs before Patroni strips the pod environment,
+    # and we are exec'd from it, but sourcing again keeps this script correct standalone.
+    : "${ENV_FILE:=${HOME}/.pod_environment}"
+    if [ -f "${ENV_FILE}" ]; then
+        . "${ENV_FILE}"
+    fi
+
+    # Patroni passes the bootstrap connection string as argv[1] to post_init.sh, which forwards
+    # "$@" to us; ${URL} is post_init.sh's own fallback for the same thing.
+    conn="${1:-${URL:-}}"
+
+    if [ -z "${PATRONI_admin_PASSWORD:-}" ]; then
+        echo "ERROR: PATRONI_admin_PASSWORD is not set - cannot set a password for role" \
+             "{{ .Values.analytics.username }}; the application would fail password auth." >&2
+        exit 1
+    fi
+
+    # The password reaches psql through the environment and is read with \getenv, never through
+    # --set: psql's argv is visible in `ps` for the lifetime of the command. Re-exporting under
+    # our own name keeps this correct even if PATRONI_admin_PASSWORD was restored from
+    # ${ENV_FILE} as a plain (unexported) shell variable. :'...' / :"..." still let psql do the
+    # quoting, so there are no escaping concerns on the password itself.
+    ANALYTICS_PASSWORD="${PATRONI_admin_PASSWORD}"
+    export ANALYTICS_PASSWORD
+
+    PGOPTIONS="-c synchronous_commit=local" psql -d "${conn}" \
+        --set ON_ERROR_STOP=1 \
+        --set analytics_user="{{ .Values.analytics.username }}" <<'__SQL__'
+    \getenv analytics_password ANALYTICS_PASSWORD
+
+    -- ALTER ROLE is DDL and the cluster runs with log_statement = 'ddl', so without this the
+    -- password would be written verbatim to the pod's stdout and from there into Loki — and
+    -- kept by pg_stat_statements too, which tracks utility statements by default. Patroni
+    -- silences exactly these five around its own role SQL (postgresql/bootstrap.py); they are
+    -- session-local (SET, not ALTER SYSTEM) and we are superuser on this connection. The two
+    -- extension GUCs are accepted as placeholders even where the extension isn't loaded.
+    SET log_statement = 'none';
+    SET log_min_duration_statement = -1;
+    SET log_min_error_statement = 'log';
+    SET pg_stat_statements.track_utility = 'off';
+    SET pgaudit.log = 'none';
+
+    ALTER ROLE :"analytics_user" WITH LOGIN PASSWORD :'analytics_password';
+    __SQL__
+{{- end }}
