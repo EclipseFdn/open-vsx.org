@@ -204,8 +204,10 @@ data:
     if [ -z "${FLYWAY_VERSION}" ]; then
       REASON="flyway-schema-history-empty"; exit 93
     fi
-    SAFE_SCHEMA=$(echo "${FLYWAY_VERSION}" | tr -c 'A-Za-z0-9._-' '-')
-    SAFE_TAG=$(echo "${APP_IMAGE_TAG}" | tr -c 'A-Za-z0-9._-' '-')
+    # printf, not echo: echo's trailing newline is not in the allowed set, so tr -c
+    # rewrote it to '-' and every key ended up as schema-1.75-_img-<tag>-.
+    SAFE_SCHEMA=$(printf '%s' "${FLYWAY_VERSION}" | tr -c 'A-Za-z0-9._-' '-')
+    SAFE_TAG=$(printf '%s' "${APP_IMAGE_TAG}" | tr -c 'A-Za-z0-9._-' '-')
 
     # ── 3. dump ───────────────────────────────────────────────────────────────
     STAGE=pg_dump
@@ -225,7 +227,22 @@ data:
     if [ "${DUMP_BYTES}" -lt 1024 ]; then
       REASON="dump-implausibly-small-${DUMP_BYTES}"; exit 94
     fi
-    TABLES=$(psql "${CONN}" -tAc "select coalesce(json_agg(json_build_object('table', relname, 'estimated_rows', n_live_tup) order by n_live_tup desc), '[]'::json) from pg_stat_user_tables")
+    # Exact counts, not pg_stat_user_tables.n_live_tup: that column stays 0 until autovacuum
+    # or an explicit ANALYZE touches a table, so the manifest used to report 0 rows for tables
+    # holding tens of thousands -- which would let an empty restore pass verification.
+    # query_to_xml runs one count(*) per table inside the single statement below. Fine for the
+    # in-cluster databases this job is gated to; revisit if it is ever pointed at a large one.
+    TABLES=$(psql "${CONN}" -tAc "
+      select coalesce(json_agg(json_build_object('table', relname, 'rows', n_rows) order by n_rows desc), '[]'::json)
+      from (
+        select c.relname,
+               (xpath('/row/cnt/text()',
+                      query_to_xml(format('select count(*) as cnt from %I.%I', n.nspname, c.relname),
+                                   false, true, '')))[1]::text::bigint as n_rows
+        from pg_class c
+        join pg_namespace n on n.oid = c.relnamespace
+        where c.relkind = 'r' and n.nspname not in ('pg_catalog', 'information_schema')
+      ) counts")
     OBJECT_KEY="${S3_PREFIX}/${YYYY}/${MM}/${BASE}.dump"
     cat > "/backup/${BASE}.manifest.json" <<EOF
     {
@@ -242,7 +259,7 @@ data:
       "dump_object_key": "${OBJECT_KEY}",
       "dump_bytes": ${DUMP_BYTES},
       "dump_sha256": "${DUMP_SHA}",
-      "estimated_table_rows": ${TABLES}
+      "table_rows": ${TABLES}
     }
     EOF
 
