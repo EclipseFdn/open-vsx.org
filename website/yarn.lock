@@ -3723,7 +3723,7 @@ __metadata:
 
 "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&head=main":
   version: 1.2.0
-  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=2d2f29bd153d9da8d40a40d96b94d6cebe49e3ca"
+  resolution: "openvsx-webui@https://github.com/eclipse-openvsx/openvsx.git#workspace=openvsx-webui&commit=39f9ad0789222fbc3bf7acd1fd9458cd091073ef"
   dependencies:
     "@emotion/react": "npm:^11.11.1"
     "@emotion/styled": "npm:^11.11.0"
@@ -3752,7 +3752,7 @@ __metadata:
     react-helmet-async: "npm:^2.0.5"
     react-infinite-scroller: "npm:^1.2.6"
     react-router: "npm:^7.18.2"
-  checksum: 10/2824d10f32075bfc950e5a87b3bd3dbdf31a0ba829b48144ca41231e5631bbd58ce6b854e574ef6b6730773122e543c72f2c47c5fbbb06fd5b1d18d7aeacbe7f
+  checksum: 10/e460100119f9d8724f00916ca4b1a07d6ab2503e071aefd36b62a1cdca35df76d994d8b2f7ad8064f474c95cdc8503e4f831e9df281c3e7591d1d129eed6d44d
   languageName: node
   linkType: hard
 
@@ -4020,8 +4020,8 @@ __metadata:
   linkType: hard
 
 "react-router@npm:^7.18.2":
-  version: 7.18.3
-  resolution: "react-router@npm:7.18.3"
+  version: 7.18.4
+  resolution: "react-router@npm:7.18.4"
   dependencies:
     cookie: "npm:^1.0.1"
     set-cookie-parser: "npm:^2.6.0"
@@ -4031,7 +4031,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10/b7393d5f5b044cda9c922b3f96629abc442d6b1b85224c28d4aa292cda45ef4cf26792b613f2bc0742701da3ddc77dd0d4a181e7e5b85d1abd6982c9eba278f2
+  checksum: 10/2c4c6e23a38fe5994b126d55590f6dbfe810d47939b765cd7af97b4b26a16c3dab20c1b048811e05dc74bc93787a3d0c3fc5f29df19fd0732059cccc6bf7180a
   languageName: node
   linkType: hard
 
