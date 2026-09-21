@@ -59,6 +59,8 @@ spec:
         {{- end }}
         - name: JVM_ARGS
           value: {{ .Values.website.jvmArgs }}
+        - name: OVSX_REGISTRY_VERSION
+          value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
         {{- if .Values.externalSecrets.inClusterPostgres }}
         # In-cluster postgresql-ha: password is chart-generated, injected here and
         # overrides spring.datasource.password from the ESO-composed configuration.yml.
@@ -83,6 +85,9 @@ spec:
           mountPath: /run/secrets/open-vsx.org/deployment
         - name: truststore-with-elasticsearch-certs
           mountPath: /run/secrets/open-vsx.org/truststore
+        - name: application-configuration
+          mountPath: /home/openvsx/server/config/application.yml
+          subPath: application.yml
         envFrom:
         - secretRef:
             name: grafana-cloud-secret-{{ .Values.environment }}
@@ -144,6 +149,9 @@ spec:
           defaultMode: 420
           optional: false
           secretName: deployment-configuration-{{ .Values.environment }}
+      - name: application-configuration
+        configMap:
+          name: application-configuration-{{ .Values.environment }}
       - name: elastic-internal-http-certificates
         secret:
           defaultMode: 420

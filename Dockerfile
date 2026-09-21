@@ -1,5 +1,4 @@
 ARG SERVER_VERSION=39f9ad0
-ARG SERVER_VERSION_STRING=v1.3.0-dev.1
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
@@ -29,12 +28,12 @@ RUN cd website \
 # Main image derived from openvsx-server
 FROM ghcr.io/eclipse-openvsx/openvsx-server-snapshot:${SERVER_VERSION}
 ARG SERVER_VERSION
-ARG SERVER_VERSION_STRING
 
 COPY --from=builder --chown=openvsx:openvsx /workdir/website/dist/ BOOT-INF/classes/static/
-COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/application.yml config/
 COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-spring.xml BOOT-INF/classes/
 COPY --from=builder --chown=openvsx:openvsx /workdir/mail-templates BOOT-INF/classes/mail-templates
 
-# Replace version placeholder with arg value
-RUN sed -i "s/<SERVER_VERSION>/${SERVER_VERSION_STRING}/g" config/application.yml
+# configuration/application.yml is no longer baked in — it's mounted at
+# /home/openvsx/server/config/application.yml via a ConfigMap at deploy time
+# (see charts/openvsx/templates/configmap.yaml), so a config-only change
+# doesn't require rebuilding this image.

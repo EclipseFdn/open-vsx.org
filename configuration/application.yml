@@ -176,8 +176,6 @@ ovsx:
     update-on-start: false
   integrity:
     key-pair: create
-  registry:
-    version: <SERVER_VERSION>
   caching:
     statistics:
       enabled: true

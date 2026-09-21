@@ -102,6 +102,7 @@ printf "==> Running helm upgrade: release='%s' namespace='%s' image_tag='%s'\n" 
 helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" \
   -f "${values_file}" \
   --set image.tag="${image_tag}" \
+  --set-file applicationConfig="${ROOT_DIR}/configuration/application.yml" \
   --namespace "${namespace}" \
   --create-namespace \
   "${helm_mode_flags[@]}"
