@@ -332,6 +332,15 @@ timescaledb-single:
     - configMap:
         name: staging-analytics-timescaledb-init
         optional: false
+  # Patroni 4 (shipped in the pinned timescaledb-ha image) renamed the leader pod label
+  # from role=master to role=primary, but this chart's Services still select role=master.
+  # The EndpointSlice controller then matches no pod, so kube-proxy has no backend and every
+  # connection to the Service is refused - the application cannot reach the database at all.
+  # Pinning the old value is a values-only fix; patching the subchart's Services is not.
+  patroni:
+    kubernetes:
+      leader_label_value: master
+      standby_leader_label_value: master
   persistentVolumes:
     data:
       size: 10Gi
