@@ -1,5 +1,5 @@
-ARG SERVER_VERSION=39f9ad0
-ARG SERVER_VERSION_STRING=v1.3.0-dev.1
+ARG SERVER_VERSION=70811f5
+ARG SERVER_VERSION_STRING=v1.3.0-dev.2
 
 # Builder image to compile the website
 FROM ubuntu:24.04 AS builder
