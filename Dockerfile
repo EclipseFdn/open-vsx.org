@@ -1,40 +1,11 @@
-ARG SERVER_VERSION=70811f5
-ARG SERVER_VERSION_STRING=v1.3.0-dev.2
+# Republishes the combined server+website image built and pushed by
+# EclipseFdn/openvsx-ef (github.com/EclipseFdn/openvsx-ef, workflow
+# .github/workflows/docker-build.yml) under the ghcr.io/eclipsefdn/openvsx-website
+# name this repo's Jenkins pipeline and Helm chart already expect. That image
+# already contains the built website, the upstream openvsx server, and this
+# module's configuration/mail-templates - nothing left to build here.
+#
+# bump to deploy a newer openvsx-ef build
+ARG WEBSITE_IMAGE_TAG=fb29bf2
 
-# Builder image to compile the website
-FROM ubuntu:24.04 AS builder
-
-WORKDIR /workdir
-
-# See https://github.com/nodesource/distributions for Node.js package
-RUN apt-get update \
-  && apt-get install --no-install-recommends -y \
-    bash \
-    ca-certificates \
-    curl \
-  && rm -rf /var/lib/apt/lists/* \
-  && curl -sSL https://deb.nodesource.com/setup_20.x | bash - \
-  && apt-get install -y nodejs \
-  && apt-get clean \
-  && corepack enable \
-  && corepack prepare yarn@4.9.1 --activate
-
-# bump to update website
-COPY . /workdir
-
-RUN cd website \
-  && yarn install --immutable \
-  && yarn build
-
-# Main image derived from openvsx-server
-FROM ghcr.io/eclipse-openvsx/openvsx-server-snapshot:${SERVER_VERSION}
-ARG SERVER_VERSION
-ARG SERVER_VERSION_STRING
-
-COPY --from=builder --chown=openvsx:openvsx /workdir/website/dist/ BOOT-INF/classes/static/
-COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/application.yml config/
-COPY --from=builder --chown=openvsx:openvsx /workdir/configuration/logback-spring.xml BOOT-INF/classes/
-COPY --from=builder --chown=openvsx:openvsx /workdir/mail-templates BOOT-INF/classes/mail-templates
-
-# Replace version placeholder with arg value
-RUN sed -i "s/<SERVER_VERSION>/${SERVER_VERSION_STRING}/g" config/application.yml
+FROM ghcr.io/eclipsefdn/openvsx-website-snapshot:${WEBSITE_IMAGE_TAG}
