@@ -98,6 +98,9 @@ dbBackupDrill:
   statementTimeoutSeconds: 3000
   # The production dump is ~2 GB uncompressed as of 2026-09-23; well under this.
   minDumpBytes: 1048576
+  # Snapshots land in the 02:00-03:00 UTC window and the job runs 01:30, so the newest is
+  # normally ~23h old. 30h tolerates a late snapshot but trips if a night is missed.
+  maxSnapshotAgeHours: 30
   scratchSize: 20Gi
   image:
     repository: postgres

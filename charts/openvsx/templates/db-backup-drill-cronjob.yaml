@@ -109,6 +109,8 @@ spec:
               value: {{ .Values.dbBackupDrill.statementTimeoutSeconds | quote }}
             - name: MIN_DUMP_BYTES
               value: {{ .Values.dbBackupDrill.minDumpBytes | quote }}
+            - name: MAX_SNAPSHOT_AGE_H
+              value: {{ .Values.dbBackupDrill.maxSnapshotAgeHours | quote }}
             - name: AWS_CLI_INSTALL
               value: {{ .Values.dbBackupDrill.awsCliInstall | quote }}
             - name: REPORT_TO_LOKI
@@ -258,10 +260,23 @@ data:
 
     delete_drill_instance() {
       assert_drill_instance "$1" || return 1
-      aws rds delete-db-instance --region "${AWS_REGION}" \
+      # Not-found is success: the restore call can fail after the identifier is chosen,
+      # and reporting a teardown failure for an instance that never existed is noise.
+      err=$(aws rds delete-db-instance --region "${AWS_REGION}" \
         --db-instance-identifier "$1" \
-        --skip-final-snapshot --delete-automated-backups >/dev/null
-      echo "delete requested: $1"
+        --skip-final-snapshot --delete-automated-backups 2>&1 >/dev/null) && {
+          echo "delete requested: $1"; return 0; }
+      case "${err}" in
+        *DBInstanceNotFound*) echo "nothing to delete: $1"; return 0 ;;
+        *) echo "${err}"; return 1 ;;
+      esac
+    }
+
+    # busybox date cannot parse @epoch; python3 is present because aws-cli depends on it.
+    iso_utc_at() {
+      python3 -c "import datetime,sys;print(datetime.datetime.utcfromtimestamp(int(sys.argv[1])).strftime('%Y-%m-%dT%H:%M:%S'))" "$1" 2>/dev/null \
+        || date -u -d "@$1" +%Y-%m-%dT%H:%M:%S 2>/dev/null \
+        || true
     }
 
   drill.sh: |
@@ -286,11 +301,16 @@ data:
 
     report() {
       rc=$?
-      [ "$rc" -eq 0 ] && STATUS=ok
-      # Teardown runs even on failure — an orphaned instance is the expensive outcome.
+      # Teardown runs even on failure — an orphaned instance is the expensive outcome —
+      # and a run that leaves one behind is not a green run, whatever the backup did.
+      # STATUS is therefore decided after teardown, not before.
       if [ -n "${DRILL}" ]; then
-        delete_drill_instance "${DRILL}" || REASON="${REASON};teardown-failed"
+        if ! delete_drill_instance "${DRILL}"; then
+          REASON="${REASON};teardown-failed"
+          [ "$rc" -eq 0 ] && rc=101
+        fi
       fi
+      [ "$rc" -eq 0 ] && STATUS=ok
       DURATION=$(( $(date -u +%s) - STARTED_EPOCH ))
       LINE="job=openvsx-db-backup-drill env=${ENVIRONMENT} status=${STATUS} stage=${STAGE} rc=${rc} duration_s=${DURATION} restore_s=${RESTORE_S} snapshot=${SNAP} instance=${DRILL} schema=${FLYWAY_VERSION} image_tag=${APP_IMAGE_TAG} bytes=${DUMP_BYTES} sha256=${DUMP_SHA} verified_tables=${VERIFY_TABLES} key=${OBJECT_KEY} reason=${REASON}"
       echo "${LINE}"
@@ -315,6 +335,18 @@ data:
       --db-snapshot-identifier "${SNAP}" --snapshot-type automated \
       --query 'DBSnapshots[0].SnapshotCreateTime' --output text)
     echo "snapshot=${SNAP} taken=${SNAP_AGE_ISO}"
+
+    # "Newest available" is not the same as "recent". Without this, automated backups
+    # could stop entirely and the drill would keep restoring the last good snapshot and
+    # reporting green — the one failure this job exists to catch.
+    STALE_BEFORE=$(iso_utc_at $(( $(date -u +%s) - MAX_SNAPSHOT_AGE_H * 3600 )))
+    case "${STALE_BEFORE}" in
+      [0-9][0-9][0-9][0-9]-[0-9][0-9]-*) ;;
+      *) REASON="cannot-render-staleness-cutoff"; exit 102 ;;
+    esac
+    if [ "$(printf '%s' "${SNAP_AGE_ISO}" | cut -c1-19)" \< "${STALE_BEFORE}" ]; then
+      REASON="newest-snapshot-older-than-${MAX_SNAPSHOT_AGE_H}h-${SNAP_AGE_ISO}"; exit 103
+    fi
 
     # ── 2. copy the live instance's network + parameter config ────────────────
     # Read, never assumed: a drill instance on the wrong subnet group or security group
@@ -508,9 +540,7 @@ data:
     # rendered identically. busybox date cannot parse @epoch; python3 is present because
     # aws-cli depends on it. Neither available is a hard failure, not a silent no-op — a
     # reaper that quietly reaps nothing is worse than one that pages.
-    CUTOFF_ISO=$(python3 -c "import datetime,sys;print(datetime.datetime.utcfromtimestamp(int(sys.argv[1])).strftime('%Y-%m-%dT%H:%M:%S'))" "${CUTOFF}" 2>/dev/null \
-      || date -u -d "@${CUTOFF}" +%Y-%m-%dT%H:%M:%S 2>/dev/null \
-      || true)
+    CUTOFF_ISO=$(iso_utc_at "${CUTOFF}")
     case "${CUTOFF_ISO}" in
       [0-9][0-9][0-9][0-9]-[0-9][0-9]-*) ;;
       *) REASON="cannot-render-cutoff"; exit 90 ;;
