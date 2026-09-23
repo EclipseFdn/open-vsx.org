@@ -1,0 +1,23 @@
+# Values that differ for the staging environment (aws-staging and on-prem staging
+# share this profile — see values-staging.yaml / values-aws-staging.yaml, both
+# environment: staging). Deep-merges into the base application.yml baked into the
+# image; SPRING_PROFILES_ACTIVE=staging activates it.
+#
+# These are the values already running today, carried over from the single shared
+# application.yml this profile file replaces.
+ovsx:
+  storage:
+    cdn:
+      enabled: true
+      services:
+        aws: https://openvsx-staging.eclipsecontent.org/
+  scanning:
+    configured:
+      clamav-rest:
+        enabled: true
+        start:
+          url: "http://clamav-staging:9000/scan"
+      yara:
+        enabled: true
+        start:
+          url: "http://yara-staging:9001/scan"

@@ -1,0 +1,28 @@
+# Values that differ for the production environment. Deep-merges into the base
+# application.yml baked into the image; SPRING_PROFILES_ACTIVE=production activates it.
+#
+# NOTE: today (before this change) production shares staging's baked-in values,
+# including staging's token prefixes and staging's CDN/scanner hosts. The values
+# below are carried over from the pre-unification `production`/`aws-production` git
+# branches' application.yml and need confirming against current production infra
+# before merging.
+ovsx:
+  access-token:
+    prefix: ovsxat_
+  rate-limit:
+    token-prefix: ovsx_rl_
+  storage:
+    cdn:
+      enabled: true
+      services:
+        aws: https://openvsx.eclipsecontent.org/
+  scanning:
+    configured:
+      clamav-rest:
+        enabled: true
+        start:
+          url: "http://clamav-production:9000/scan"
+      yara:
+        enabled: true
+        start:
+          url: "http://yara-production:9001/scan"

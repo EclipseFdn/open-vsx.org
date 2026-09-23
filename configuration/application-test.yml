@@ -1,0 +1,23 @@
+# Values that differ for the test environment. Deep-merges into the base
+# application.yml baked into the image; SPRING_PROFILES_ACTIVE=test activates it.
+#
+# NOTE: today (before this change) test shares staging's baked-in values, which
+# point at staging's CDN/scanner hosts — almost certainly wrong for test. The
+# hostnames below are carried over from the pre-unification `test` git branch's
+# application.yml and need confirming against current test infra before merging.
+ovsx:
+  storage:
+    cdn:
+      enabled: true
+      services:
+        aws: https://openvsx-test.eclipsecontent.org/
+  scanning:
+    configured:
+      clamav-rest:
+        enabled: true
+        start:
+          url: "http://clamav-test:9000/scan"
+      yara:
+        enabled: true
+        start:
+          url: "http://yara-test:9001/scan"
