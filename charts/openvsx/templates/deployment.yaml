@@ -51,6 +51,10 @@ spec:
           value: /run/secrets/open-vsx.org/deployment/configuration.yml
         - name: ENVNAME
           value: {{ .Values.environment }}
+        # Activates config/application-{{ .Values.environment }}.yml (mounted below), which
+        # layers this environment's values on top of the base application.yml baked into the image.
+        - name: SPRING_PROFILES_ACTIVE
+          value: {{ .Values.environment }}
         {{- if .Values.eks.enabled }}
         # EKS: route Loki4jAppender push through cluster-wide Alloy in monitoring ns
         # (chart Alloy is disabled — see values-aws.yaml). Overrides LOKI_URL from envFrom.
@@ -92,6 +96,9 @@ spec:
           mountPath: /run/secrets/open-vsx.org/deployment
         - name: truststore-with-elasticsearch-certs
           mountPath: /run/secrets/open-vsx.org/truststore
+        - name: application-configuration
+          mountPath: /home/openvsx/server/config/application-{{ .Values.environment }}.yml
+          subPath: application-{{ .Values.environment }}.yml
         envFrom:
         - secretRef:
             name: grafana-cloud-secret-{{ .Values.environment }}
@@ -161,3 +168,6 @@ spec:
       - name: truststore-with-elasticsearch-certs
         emptyDir:
           medium: Memory
+      - name: application-configuration
+        configMap:
+          name: application-configuration-{{ .Values.environment }}
