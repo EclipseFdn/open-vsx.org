@@ -252,4 +252,7 @@ ovsx:
       }
 
   trusted-publishing:
+    enabled: true
     audience: 'https://test.open-vsx.org'
+    active-providers: 'github'
+    token-expiration: 'PT5M'
