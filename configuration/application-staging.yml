@@ -244,6 +244,7 @@ ovsx:
             Authorization: "Bearer ${ARGUS_API_KEY}"
           response:
             format: json
+            malicious-verdict-path: "$.verdictData.isMalicious"
             threats-path: "$.matches[*]"
             threat-mapping:
               condition: "true"
