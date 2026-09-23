@@ -1,23 +1,241 @@
-# Values that differ for the test environment. Deep-merges into the base
-# application.yml baked into the image; SPRING_PROFILES_ACTIVE=test activates it.
+# Values for the test environment. Deep-merges into the base application.yml
+# baked into the image; SPRING_PROFILES_ACTIVE=test activates it.
+#
+# ovsx.access-token, ovsx.rate-limit, and ovsx.scanning are defined here in full --
+# the base image doesn't define them at all -- so this is the single source of
+# truth for this environment's auth/rate-limit/scanning policy, not just overrides.
 #
 # NOTE: today (before this change) test shares staging's baked-in values, which
-# point at staging's CDN/scanner hosts — almost certainly wrong for test. The
+# point at staging's CDN/scanner hosts -- almost certainly wrong for test. The
 # hostnames below are carried over from the pre-unification `test` git branch's
 # application.yml and need confirming against current test infra before merging.
+
 ovsx:
+  access-token:
+    prefix: staging_ovsxat_
+    expiration: P90D
+    notification: P7D
+    send-expired-mail: true
+    max-token-notifications: 100
+    expiration-schedule: '0 */1 * * * *'
+    notification-schedule: '30 */1 * * * *'
   storage:
     cdn:
       enabled: true
       services:
         aws: https://openvsx-test.eclipsecontent.org/
   scanning:
+    enabled: true
+
+    # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
+    max-archive-size-bytes: 1073741824   # 1 GB total archive limit
+    max-single-file-bytes: 536870912     # 512 MB per-file limit
+    max-entry-count: 100000              # Max ZIP entries to process
+    blocklist-check:
+      enabled: true
+      enforced: true
+
+    similarity:
+      enabled: true
+      enforced: false
+      similarity-threshold: 0.2            # Min 20% name difference allowed
+      skip-if-publisher-verified: false    # Do not skip checks for verified publishers
+      only-protect-verified-names: false
+      allow-similarity-to-own-names: true  # Skip checks against extensions in namespaces owned by the same publisher
+      only-check-new-extensions: true      # Skip checks for extension with existing versions, applies similarity checks only to new extensions
+
+    secret-detection:
+      enabled: true
+      required: false
+      enforced: true
+      rules-path: 'classpath:scanning/secret-detection-custom-rules.yaml'
+      suppression-markers: 'secret-detector:ignore,gitleaks:allow,nosecret,@suppress-secret'
+      gitleaks:
+        auto-fetch: true
+        force-refresh: true
+        output-path: '/tmp/secret-detection-rules-gitleaks.yaml'
+        scheduled-refresh: true
+        refresh-cron: '0 0 3 * * *'  # Daily at 3 AM
+        skip-rule-ids: 'generic-api-key'  # Rule IDs that produce too many false positives
+      max-findings: 200
+      minified-line-threshold: 10000
+      long-line-no-space-threshold: 1000
+      regex-context-chars: 100
+      debug-preview-chars: 10
+
+      # Timeout & Performance
+      timeout-seconds: 10
+      timeout-check-interval: 100
+
     configured:
+      # ClamAV REST wrapper - our custom Go service with file-level reporting
       clamav-rest:
         enabled: true
+        enforced: true
+        type: "CLAMAV_REST"
+        required: true
+        async: false
+        max-concurrency: 4
+        timeout-minutes: 5
+
+        http:
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 300000
+
         start:
+          method: POST
           url: "http://clamav-test:9000/scan"
+          headers:
+            Accept: "application/json"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            error-path: "$.error"
+            threats-path: "$.threats[*]"
+            threat-mapping:
+              condition: "true"
+              name-path: "$.name"
+              description-path: "$.name"
+              severity-path: "$.severity"
+              file-path-path: "$.file"
+              file-hash-path: "$.file_hash"
+
+      # YARA Scanner - our custom Go service with file-level reporting
       yara:
         enabled: true
+        type: "YARA"
+        required: true
+        enforced: true
+        async: false
+        max-concurrency: 10
+        timeout-minutes: 5
+
+        http:
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 300000
+
         start:
+          method: POST
           url: "http://yara-test:9001/scan"
+          headers:
+            Accept: "application/json"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            error-path: "$.error"
+            threats-path: "$.matches[*]"
+            threat-mapping:
+              condition: "true"
+              name-path: "$.rule"
+              file-path-path: "$.file"
+              file-hash-path: "$.file_hash"
+              description-path: "$.description"
+              severity-path: "$.severity"
+
+      # Argus Scanner - cloud-based multi-engine malware and AI analysis service, same
+      # SaaS endpoint for every environment (ARGUS_API_KEY is the per-environment secret).
+      argus:
+        enabled: true
+        type: "ARGUS"
+        required: false
+        enforced: true
+        async: true
+        timeout-minutes: 30
+        max-concurrency: 40
+
+        external-url-template: "https://app.yeethsecurity.com/dashboard/scans/{jobId}"
+
+        http:
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 300000
+
+        start:
+          method: POST
+          url: "https://api.yeethsecurity.com/api/scan"
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          body:
+            type: multipart
+            file-field: "file"
+          response:
+            format: json
+            job-id-path: "$.jobId"
+
+        poll:
+          method: GET
+          url: "https://api.yeethsecurity.com/api/scan/{jobId}"
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          response:
+            format: json
+            status-path: "$.status"
+            status-mapping:
+              queued: SUBMITTED
+              scanning: PROCESSING
+              completed: COMPLETED
+              error: FAILED
+
+        result:
+          method: GET
+          url: "https://api.yeethsecurity.com/api/scan/{jobId}"
+          headers:
+            Accept: "application/json"
+            Authorization: "Bearer ${ARGUS_API_KEY}"
+          response:
+            format: json
+            threats-path: "$.matches[*]"
+            threat-mapping:
+              condition: "true"
+              name-path: "$.rule"
+              description-path: "$.details"
+              severity-path: "$.severity"
+              file-path-path: "$.fileName"
+              file-hash-path: "$.fileHash"
+
+        polling:
+          initial-delay-seconds: 10
+          interval-seconds: 15
+          max-attempts: 120
+
+  # dynamic tier-based rate limiting configuration
+  rate-limit:
+    enabled: true
+    token-prefix: staging_ovsxrl_
+    # on the trust boundary (fastly edge), "X-Fastly-Real-IP" is set for any external requests
+    # on nginx, "X-Real-IP" is set for any external requests, kept as a fallback
+    # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
+    # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
+    ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+    usage-stats:
+      job-schedule: '*/30 * * * * *'
+      daily-job-schedule: '*/30 * * * * *'
+    filters:
+      - url: '/(api|vscode)/.*'
+        http-response-headers:
+          Access-Control-Allow-Origin: '*'
+          Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+    default-http-content-type: application/json
+    default-http-response-body: >
+      {
+        "type": "https://open-vsx.org/probs/rate-limit-exceeded",
+        "title": "Too Many Requests",
+        "status": 429,
+        "detail": "A request rate limit has been exceeded for your current usage tier. Open VSX enforces tier-based limits to ensure reliable service. If this is unexpected for your use case, please contact us.",
+        "documentation": "https://github.com/EclipseFdn/open-vsx.org/wiki/Rate-Limiting",
+        "contact": "infrastructure@eclipse-foundation.org"
+      }
