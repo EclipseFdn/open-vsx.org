@@ -4,6 +4,7 @@
 {{- end }}
 {{- $sa := .Values.dbBackupDrill.serviceAccount.name }}
 {{- $cmName := printf "%s-db-backup-drill-%s" .Values.name .Values.environment }}
+{{- $secretName := printf "%s-db-backup-creds-%s" .Values.name .Values.environment }}
 {{- if .Values.dbBackupDrill.serviceAccount.create }}
 apiVersion: v1
 kind: ServiceAccount
@@ -20,6 +21,41 @@ metadata:
   {{- end }}
 ---
 {{- end }}
+# Credentials come from their own ExternalSecret, not the app's
+# deployment-configuration-{{ .Values.environment }}: that one renders a single
+# configuration.yml key for Spring to import, so it exposes no per-field keys to
+# reference. Same Secrets Manager entry, separate target — the app's secret is untouched.
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: {{ $secretName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup-drill
+spec:
+  refreshInterval: {{ .Values.externalSecrets.refreshInterval }}
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ .Values.externalSecrets.clusterSecretStore }}
+  target:
+    name: {{ $secretName }}
+    creationPolicy: Owner
+  data:
+    - secretKey: username
+      remoteRef:
+        key: openvsx/{{ .Values.environment }}/rds
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: openvsx/{{ .Values.environment }}/rds
+        property: password
+    - secretKey: db_name
+      remoteRef:
+        key: openvsx/{{ .Values.environment }}/rds
+        property: db_name
+---
 # Nightly backup that is also a restore test.
 #
 # RDS automated snapshots already protect the data; what they do not prove is that a
@@ -87,18 +123,18 @@ spec:
             - name: PGUSER
               valueFrom:
                 secretKeyRef:
-                  name: deployment-configuration-{{ .Values.environment }}
-                  key: rds_username
+                  name: {{ $secretName }}
+                  key: username
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: deployment-configuration-{{ .Values.environment }}
-                  key: rds_password
+                  name: {{ $secretName }}
+                  key: password
             - name: PGDATABASE
               valueFrom:
                 secretKeyRef:
-                  name: deployment-configuration-{{ .Values.environment }}
-                  key: rds_db_name
+                  name: {{ $secretName }}
+                  key: db_name
             - name: VERIFY_DATABASE
               value: {{ .Values.dbBackupDrill.verifyDatabase | quote }}
             - name: RESTORE_WAIT_S
