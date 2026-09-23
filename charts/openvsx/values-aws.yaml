@@ -67,6 +67,85 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-app"
 
+# ── Nightly backup + restore drill ───────────────────────────────────────────
+# Restores the newest RDS automated snapshot to a throwaway instance, dumps it, restores
+# that dump back and compares row counts, uploads, then deletes the instance. The live
+# database is never touched. Role ARN from: tf-resources/aws/production/eu-central-1/iam
+# output db_backup_role_arn.
+dbBackupDrill:
+  enabled: true
+  sourceDbInstance: "openvsx-production"
+  # Every identifier the job creates or deletes must start with this. The IAM policy
+  # scopes RestoreDBInstanceFromDBSnapshot and DeleteDBInstance to the same prefix.
+  drillPrefix: "openvsx-drill-"
+  # 01:30 UTC — clear of the app's 02:10 usage-stats job, 03:00 gitleaks refresh and
+  # ~04:00 search reindex, and of the ElastiCache 01:00-03:00 snapshot window.
+  schedule: "30 1 * * *"
+  timeZone: "Etc/UTC"
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  # Restore measured 7m30s on 2026-09-23; the round trip adds a few minutes. 90m leaves
+  # room for a slow restore without letting a wedged job hold an instance all day.
+  activeDeadlineSeconds: 5400
+  restoreWaitSeconds: 3600
+  # Drill economy, not a production replacement: prod is db.r6g.8xlarge on io2.
+  instanceClass: "db.t4g.large"
+  storageType: "gp3"
+  # Dropped and recreated on the throwaway instance for the round-trip check.
+  verifyDatabase: "openvsx_restore_check"
+  compression: "6"
+  statementTimeoutSeconds: 3000
+  # The production dump is ~2 GB uncompressed as of 2026-09-23; well under this.
+  minDumpBytes: 1048576
+  # Snapshots land in the 02:00-03:00 UTC window and the job runs 01:30, so the newest is
+  # normally ~23h old. 30h tolerates a late snapshot but trips if a night is missed.
+  maxSnapshotAgeHours: 30
+  scratchSize: 20Gi
+  image:
+    repository: postgres
+    tag: "16-alpine"
+    pullPolicy: IfNotPresent
+  # Interim: install aws-cli from the alpine repo at container start. Set false once a
+  # pinned image carrying pg_dump 16 + aws-cli v2 is published.
+  awsCliInstall: true
+  s3:
+    bucket: "eclipse-openvsx-db-backups"
+    prefix: "production"
+    region: eu-central-1
+  serviceAccount:
+    create: true
+    # Must match the IRSA trust subject of the role annotated below
+    # (system:serviceaccount:open-vsx-org:openvsx-db-backup).
+    name: openvsx-db-backup
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-db-backup-production"
+  reaper:
+    # An orphaned drill instance costs ~$190/month, so the sweep is hourly rather than
+    # daily. maxAgeHours must exceed activeDeadlineSeconds or it kills live drills.
+    schedule: "15 * * * *"
+    maxAgeHours: 3
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
+  report:
+    # Push the outcome straight to Grafana Cloud Loki using LOKI_* from
+    # grafana-cloud-secret-production. Do not rely on scraped stdout: the Alloy logs
+    # pipeline drops pods in phase Succeeded/Failed, which is where a Job spends most
+    # of its life.
+    loki: true
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 20Gi
+    limits:
+      memory: 2Gi
+      ephemeral-storage: 20Gi
+
 # ── Ingress (ALB/EKS Auto Mode) — fill from TF outputs: vpc→alb_security_group_id, acm→certificate_arn ──
 ingress:
   preActions:

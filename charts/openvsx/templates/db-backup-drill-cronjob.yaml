@@ -1,0 +1,604 @@
+{{- if (.Values.dbBackupDrill).enabled }}
+{{- if not .Values.eks.enabled }}
+{{- fail "dbBackupDrill.enabled requires eks.enabled — it restores an RDS snapshot and needs IRSA." }}
+{{- end }}
+{{- $sa := .Values.dbBackupDrill.serviceAccount.name }}
+{{- $cmName := printf "%s-db-backup-drill-%s" .Values.name .Values.environment }}
+{{- $secretName := printf "%s-db-backup-creds-%s" .Values.name .Values.environment }}
+{{- if .Values.dbBackupDrill.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $sa }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup-drill
+  {{- with .Values.dbBackupDrill.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
+# Credentials come from their own ExternalSecret, not the app's
+# deployment-configuration-{{ .Values.environment }}: that one renders a single
+# configuration.yml key for Spring to import, so it exposes no per-field keys to
+# reference. Same Secrets Manager entry, separate target — the app's secret is untouched.
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: {{ $secretName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup-drill
+spec:
+  refreshInterval: {{ .Values.externalSecrets.refreshInterval }}
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ .Values.externalSecrets.clusterSecretStore }}
+  target:
+    name: {{ $secretName }}
+    creationPolicy: Owner
+  data:
+    - secretKey: username
+      remoteRef:
+        key: openvsx/{{ .Values.environment }}/rds
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: openvsx/{{ .Values.environment }}/rds
+        property: password
+    - secretKey: db_name
+      remoteRef:
+        key: openvsx/{{ .Values.environment }}/rds
+        property: db_name
+---
+# Nightly backup that is also a restore test.
+#
+# RDS automated snapshots already protect the data; what they do not prove is that a
+# snapshot can be turned back into a working database. This restores the newest one to a
+# throwaway instance, dumps from it, restores that dump into a second database on the same
+# instance and compares row counts, then uploads the dump and deletes the instance. A
+# green run means the recovery path worked end to end last night, not that a file exists.
+#
+# The live database is never read or written. Everything happens on the restored copy.
+# Its config (subnet group, security groups, parameter group) is read from the live
+# instance at run time rather than pinned here, so it cannot drift out of step.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}-db-backup-drill-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup-drill
+spec:
+  schedule: {{ .Values.dbBackupDrill.schedule | quote }}
+  timeZone: {{ .Values.dbBackupDrill.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.dbBackupDrill.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.dbBackupDrill.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.dbBackupDrill.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      # 0: a retry would restore a second instance while the first may still exist.
+      # The reaper cleans up after a failure; the next night is the retry.
+      backoffLimit: 0
+      activeDeadlineSeconds: {{ .Values.dbBackupDrill.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.name }}
+            environment: {{ .Values.environment }}
+            type: db-backup-drill
+        spec:
+          restartPolicy: Never
+          serviceAccountName: {{ $sa }}
+          securityContext:
+            runAsNonRoot: false
+            fsGroup: 999
+          containers:
+          - name: db-backup-drill
+            image: "{{ .Values.dbBackupDrill.image.repository }}:{{ .Values.dbBackupDrill.image.tag }}"
+            imagePullPolicy: {{ .Values.dbBackupDrill.image.pullPolicy }}
+            env:
+            - name: SOURCE_DB_INSTANCE
+              value: {{ .Values.dbBackupDrill.sourceDbInstance | quote }}
+            - name: DRILL_PREFIX
+              value: {{ .Values.dbBackupDrill.drillPrefix | quote }}
+            - name: DRILL_INSTANCE_CLASS
+              value: {{ .Values.dbBackupDrill.instanceClass | quote }}
+            - name: DRILL_STORAGE_TYPE
+              value: {{ .Values.dbBackupDrill.storageType | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.dbBackupDrill.s3.region | quote }}
+            - name: S3_BUCKET
+              value: {{ .Values.dbBackupDrill.s3.bucket | quote }}
+            - name: S3_PREFIX
+              value: {{ .Values.dbBackupDrill.s3.prefix | trimSuffix "/" | quote }}
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: password
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: db_name
+            - name: VERIFY_DATABASE
+              value: {{ .Values.dbBackupDrill.verifyDatabase | quote }}
+            - name: RESTORE_WAIT_S
+              value: {{ .Values.dbBackupDrill.restoreWaitSeconds | quote }}
+            - name: DUMP_COMPRESSION
+              value: {{ .Values.dbBackupDrill.compression | quote }}
+            - name: STATEMENT_TIMEOUT_S
+              value: {{ .Values.dbBackupDrill.statementTimeoutSeconds | quote }}
+            - name: MIN_DUMP_BYTES
+              value: {{ .Values.dbBackupDrill.minDumpBytes | quote }}
+            - name: MAX_SNAPSHOT_AGE_H
+              value: {{ .Values.dbBackupDrill.maxSnapshotAgeHours | quote }}
+            - name: AWS_CLI_INSTALL
+              value: {{ .Values.dbBackupDrill.awsCliInstall | quote }}
+            - name: REPORT_TO_LOKI
+              value: {{ .Values.dbBackupDrill.report.loki | quote }}
+            - name: APP_IMAGE_TAG
+              value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
+            - name: CHART_APP_VERSION
+              value: {{ .Chart.AppVersion | quote }}
+            - name: ENVIRONMENT
+              value: {{ .Values.environment | quote }}
+            - name: K8S_NAMESPACE
+              value: {{ .Values.namespace | quote }}
+            envFrom:
+            # LOKI_URL / LOKI_USERNAME / LOKI_PASSWORD — outcome reporting.
+            - secretRef:
+                name: grafana-cloud-secret-{{ .Values.environment }}
+            resources:
+              {{- toYaml .Values.dbBackupDrill.resources | nindent 14 }}
+            volumeMounts:
+            - name: backup-scratch
+              mountPath: /backup
+            - name: script
+              mountPath: /scripts
+            command: ["/bin/sh", "/scripts/drill.sh"]
+          volumes:
+          - name: backup-scratch
+            emptyDir:
+              sizeLimit: {{ .Values.dbBackupDrill.scratchSize }}
+          - name: script
+            configMap:
+              name: {{ $cmName }}
+              defaultMode: 0555
+---
+# Safety net. The drill job deletes its own instance on every exit path, but a node
+# eviction or an activeDeadlineSeconds kill leaves no exit path at all — and an orphaned
+# instance costs real money per day. This deletes any drill instance older than
+# reaper.maxAgeHours, and nothing else: the identifier prefix is asserted twice.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}-db-drill-reaper-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-drill-reaper
+spec:
+  schedule: {{ .Values.dbBackupDrill.reaper.schedule | quote }}
+  timeZone: {{ .Values.dbBackupDrill.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 900
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.name }}
+            environment: {{ .Values.environment }}
+            type: db-drill-reaper
+        spec:
+          restartPolicy: Never
+          serviceAccountName: {{ $sa }}
+          containers:
+          - name: reaper
+            image: "{{ .Values.dbBackupDrill.image.repository }}:{{ .Values.dbBackupDrill.image.tag }}"
+            imagePullPolicy: {{ .Values.dbBackupDrill.image.pullPolicy }}
+            env:
+            - name: DRILL_PREFIX
+              value: {{ .Values.dbBackupDrill.drillPrefix | quote }}
+            - name: MAX_AGE_HOURS
+              value: {{ .Values.dbBackupDrill.reaper.maxAgeHours | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.dbBackupDrill.s3.region | quote }}
+            - name: AWS_CLI_INSTALL
+              value: {{ .Values.dbBackupDrill.awsCliInstall | quote }}
+            - name: REPORT_TO_LOKI
+              value: {{ .Values.dbBackupDrill.report.loki | quote }}
+            - name: ENVIRONMENT
+              value: {{ .Values.environment | quote }}
+            - name: K8S_NAMESPACE
+              value: {{ .Values.namespace | quote }}
+            envFrom:
+            - secretRef:
+                name: grafana-cloud-secret-{{ .Values.environment }}
+            resources:
+              {{- toYaml .Values.dbBackupDrill.reaper.resources | nindent 14 }}
+            volumeMounts:
+            - name: script
+              mountPath: /scripts
+            command: ["/bin/sh", "/scripts/reap.sh"]
+          volumes:
+          - name: script
+            configMap:
+              name: {{ $cmName }}
+              defaultMode: 0555
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $cmName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-backup-drill
+data:
+  common.sh: |
+    #!/bin/sh
+    # Shared by drill.sh and reap.sh: tooling install, Loki reporting, prefix guard.
+
+    install_tooling() {
+      if ! command -v aws >/dev/null 2>&1 && [ "${AWS_CLI_INSTALL}" = "true" ]; then
+        apk add --no-cache aws-cli >/dev/null 2>&1 || true
+      fi
+      command -v aws >/dev/null 2>&1 || { REASON="aws-cli-not-available"; return 90; }
+      return 0
+    }
+
+    push_loki() {
+      # $1 = job label, $2 = status, $3 = line
+      [ "${REPORT_TO_LOKI}" = "true" ] || return 0
+      [ -n "${LOKI_URL:-}" ] || return 0
+      AUTH=$(printf '%s:%s' "${LOKI_USERNAME}" "${LOKI_PASSWORD}" | base64 | tr -d '\n')
+      NOW_NS="$(date -u +%s)000000000"
+      BODY='{"streams":[{"stream":{"job":"'"$1"'","namespace":"'"${K8S_NAMESPACE}"'","environment":"'"${ENVIRONMENT}"'","status":"'"$2"'"},"values":[["'"${NOW_NS}"'","'"$3"'"]]}]}'
+      wget -q -O /dev/null \
+        --header="Content-Type: application/json" \
+        --header="Authorization: Basic ${AUTH}" \
+        --post-data="${BODY}" \
+        "${LOKI_URL}" || echo "WARN: loki push failed (outcome above is authoritative)"
+    }
+
+    # Deleting an RDS instance is irreversible, so the identifier is checked against the
+    # drill prefix here and again by the IAM policy, which only permits DeleteDBInstance
+    # on openvsx-drill-*. Neither alone would be enough.
+    assert_drill_instance() {
+      case "$1" in
+        "${DRILL_PREFIX}"?*) ;;
+        *) echo "REFUSING to touch '$1' — not a ${DRILL_PREFIX}* instance"; return 1 ;;
+      esac
+      return 0
+    }
+
+    delete_drill_instance() {
+      assert_drill_instance "$1" || return 1
+      # Not-found is success: the restore call can fail after the identifier is chosen,
+      # and reporting a teardown failure for an instance that never existed is noise.
+      err=$(aws rds delete-db-instance --region "${AWS_REGION}" \
+        --db-instance-identifier "$1" \
+        --skip-final-snapshot --delete-automated-backups 2>&1 >/dev/null) && {
+          echo "delete requested: $1"; return 0; }
+      case "${err}" in
+        *DBInstanceNotFound*) echo "nothing to delete: $1"; return 0 ;;
+        *) echo "${err}"; return 1 ;;
+      esac
+    }
+
+    # busybox date cannot parse @epoch; python3 is present because aws-cli depends on it.
+    iso_utc_at() {
+      python3 -c "import datetime,sys;print(datetime.datetime.utcfromtimestamp(int(sys.argv[1])).strftime('%Y-%m-%dT%H:%M:%S'))" "$1" 2>/dev/null \
+        || date -u -d "@$1" +%Y-%m-%dT%H:%M:%S 2>/dev/null \
+        || true
+    }
+
+  drill.sh: |
+    #!/bin/sh
+    # Restore the newest automated snapshot -> dump it -> restore the dump back and
+    # compare -> upload -> destroy. Every exit path deletes the instance and reports.
+    set -eu
+    . /scripts/common.sh
+
+    STATUS=failed
+    STAGE=init
+    REASON=""
+    DRILL=""
+    OBJECT_KEY=""
+    SNAP=""
+    FLYWAY_VERSION=""
+    DUMP_BYTES=0
+    DUMP_SHA=""
+    RESTORE_S=0
+    VERIFY_TABLES=0
+    STARTED_EPOCH=$(date -u +%s)
+
+    report() {
+      rc=$?
+      # Teardown runs even on failure — an orphaned instance is the expensive outcome —
+      # and a run that leaves one behind is not a green run, whatever the backup did.
+      # STATUS is therefore decided after teardown, not before.
+      if [ -n "${DRILL}" ]; then
+        if ! delete_drill_instance "${DRILL}"; then
+          REASON="${REASON};teardown-failed"
+          [ "$rc" -eq 0 ] && rc=101
+        fi
+      fi
+      [ "$rc" -eq 0 ] && STATUS=ok
+      DURATION=$(( $(date -u +%s) - STARTED_EPOCH ))
+      LINE="job=openvsx-db-backup-drill env=${ENVIRONMENT} status=${STATUS} stage=${STAGE} rc=${rc} duration_s=${DURATION} restore_s=${RESTORE_S} snapshot=${SNAP} instance=${DRILL} schema=${FLYWAY_VERSION} image_tag=${APP_IMAGE_TAG} bytes=${DUMP_BYTES} sha256=${DUMP_SHA} verified_tables=${VERIFY_TABLES} key=${OBJECT_KEY} reason=${REASON}"
+      echo "${LINE}"
+      push_loki openvsx-db-backup-drill "${STATUS}" "${LINE}"
+      exit "$rc"
+    }
+    trap report EXIT
+
+    STAGE=tooling
+    install_tooling || exit $?
+    command -v pg_dump >/dev/null 2>&1 || { REASON="pg_dump-not-available"; exit 91; }
+
+    # ── 1. newest automated snapshot ──────────────────────────────────────────
+    STAGE=find-snapshot
+    SNAP=$(aws rds describe-db-snapshots --region "${AWS_REGION}" \
+      --db-instance-identifier "${SOURCE_DB_INSTANCE}" --snapshot-type automated \
+      --query 'reverse(sort_by(DBSnapshots[?Status==`available`],&SnapshotCreateTime))[0].DBSnapshotIdentifier' \
+      --output text)
+    [ -n "${SNAP}" ] && [ "${SNAP}" != "None" ] || { REASON="no-available-automated-snapshot"; exit 92; }
+
+    SNAP_AGE_ISO=$(aws rds describe-db-snapshots --region "${AWS_REGION}" \
+      --db-snapshot-identifier "${SNAP}" --snapshot-type automated \
+      --query 'DBSnapshots[0].SnapshotCreateTime' --output text)
+    echo "snapshot=${SNAP} taken=${SNAP_AGE_ISO}"
+
+    # "Newest available" is not the same as "recent". Without this, automated backups
+    # could stop entirely and the drill would keep restoring the last good snapshot and
+    # reporting green — the one failure this job exists to catch.
+    STALE_BEFORE=$(iso_utc_at $(( $(date -u +%s) - MAX_SNAPSHOT_AGE_H * 3600 )))
+    case "${STALE_BEFORE}" in
+      [0-9][0-9][0-9][0-9]-[0-9][0-9]-*) ;;
+      *) REASON="cannot-render-staleness-cutoff"; exit 102 ;;
+    esac
+    if [ "$(printf '%s' "${SNAP_AGE_ISO}" | cut -c1-19)" \< "${STALE_BEFORE}" ]; then
+      REASON="newest-snapshot-older-than-${MAX_SNAPSHOT_AGE_H}h-${SNAP_AGE_ISO}"; exit 103
+    fi
+
+    # ── 2. copy the live instance's network + parameter config ────────────────
+    # Read, never assumed: a drill instance on the wrong subnet group or security group
+    # comes up "available" and is unreachable, which is the usual way this fails.
+    STAGE=read-source-config
+    SRC=$(aws rds describe-db-instances --region "${AWS_REGION}" \
+      --db-instance-identifier "${SOURCE_DB_INSTANCE}" \
+      --query 'DBInstances[0].[DBSubnetGroup.DBSubnetGroupName,DBParameterGroups[0].DBParameterGroupName,join(`,`,VpcSecurityGroups[?Status==`active`].VpcSecurityGroupId)]' \
+      --output text)
+    SUBNET_GROUP=$(echo "${SRC}" | cut -f1)
+    PARAM_GROUP=$(echo "${SRC}" | cut -f2)
+    SEC_GROUPS=$(echo "${SRC}" | cut -f3 | tr ',' ' ')
+    [ -n "${SUBNET_GROUP}" ] && [ -n "${PARAM_GROUP}" ] && [ -n "${SEC_GROUPS}" ] \
+      || { REASON="could-not-read-source-config"; exit 93; }
+    echo "subnet_group=${SUBNET_GROUP} param_group=${PARAM_GROUP} sgs=${SEC_GROUPS}"
+
+    # ── 3. restore ────────────────────────────────────────────────────────────
+    STAGE=restore
+    DRILL="${DRILL_PREFIX}$(date -u +%Y%m%d%H%M)"
+    assert_drill_instance "${DRILL}" || { REASON="generated-name-failed-prefix-guard"; exit 94; }
+    RESTORE_START=$(date -u +%s)
+    # Smaller class and gp3 rather than production's io2 — a rehearsal, not a replacement.
+    # shellcheck disable=SC2086
+    aws rds restore-db-instance-from-db-snapshot --region "${AWS_REGION}" \
+      --db-snapshot-identifier "${SNAP}" \
+      --db-instance-identifier "${DRILL}" \
+      --db-instance-class "${DRILL_INSTANCE_CLASS}" \
+      --db-subnet-group-name "${SUBNET_GROUP}" \
+      --db-parameter-group-name "${PARAM_GROUP}" \
+      --vpc-security-group-ids ${SEC_GROUPS} \
+      --storage-type "${DRILL_STORAGE_TYPE}" \
+      --no-multi-az --no-publicly-accessible \
+      --no-deletion-protection --no-auto-minor-version-upgrade \
+      --tags Key=purpose,Value=restore-drill Key=managed-by,Value=openvsx-db-backup-drill >/dev/null
+
+    # Poll rather than `aws rds wait`: its fixed 40x30s ceiling is both shorter than a
+    # slow restore and unreportable when it trips.
+    DEADLINE=$(( RESTORE_START + RESTORE_WAIT_S ))
+    while :; do
+      STATE=$(aws rds describe-db-instances --region "${AWS_REGION}" \
+        --db-instance-identifier "${DRILL}" \
+        --query 'DBInstances[0].DBInstanceStatus' --output text 2>/dev/null || echo unknown)
+      [ "${STATE}" = "available" ] && break
+      if [ "$(date -u +%s)" -ge "${DEADLINE}" ]; then
+        REASON="restore-timeout-after-${RESTORE_WAIT_S}s-state-${STATE}"; exit 95
+      fi
+      sleep 20
+    done
+    RESTORE_S=$(( $(date -u +%s) - RESTORE_START ))
+    echo "restored in ${RESTORE_S}s"
+
+    DRILL_HOST=$(aws rds describe-db-instances --region "${AWS_REGION}" \
+      --db-instance-identifier "${DRILL}" \
+      --query 'DBInstances[0].Endpoint.Address' --output text)
+    [ -n "${DRILL_HOST}" ] && [ "${DRILL_HOST}" != "None" ] || { REASON="no-endpoint"; exit 96; }
+
+    CONN="postgresql://${PGUSER}@${DRILL_HOST}:5432/${PGDATABASE}?sslmode=require&connect_timeout=15&application_name=openvsx-db-backup-drill"
+    ADMIN="postgresql://${PGUSER}@${DRILL_HOST}:5432/postgres?sslmode=require&connect_timeout=15&application_name=openvsx-db-backup-drill"
+
+    # ── 4. schema version ─────────────────────────────────────────────────────
+    STAGE=schema-version
+    FLYWAY_VERSION=$(psql "${CONN}" -tAc "select version from flyway_schema_history where success order by installed_rank desc limit 1")
+    [ -n "${FLYWAY_VERSION}" ] || { REASON="flyway-schema-history-empty"; exit 97; }
+    SAFE_SCHEMA=$(printf '%s' "${FLYWAY_VERSION}" | tr -c 'A-Za-z0-9._-' '-')
+    SAFE_TAG=$(printf '%s' "${APP_IMAGE_TAG}" | tr -c 'A-Za-z0-9._-' '-')
+
+    # ── 5. dump ───────────────────────────────────────────────────────────────
+    STAGE=pg_dump
+    TS=$(date -u +%Y%m%dT%H%M%SZ)
+    YYYY=$(date -u +%Y)
+    MM=$(date -u +%m)
+    BASE="${PGDATABASE}_${TS}_schema-${SAFE_SCHEMA}_img-${SAFE_TAG}"
+    DUMP="/backup/${BASE}.dump"
+    PGOPTIONS="-c statement_timeout=${STATEMENT_TIMEOUT_S}s" \
+      pg_dump -Fc --compress="${DUMP_COMPRESSION}" --no-owner --no-privileges \
+        -d "${CONN}" -f "${DUMP}"
+    DUMP_BYTES=$(wc -c < "${DUMP}" | tr -d ' ')
+    DUMP_SHA=$(sha256sum "${DUMP}" | cut -d' ' -f1)
+    [ "${DUMP_BYTES}" -ge "${MIN_DUMP_BYTES}" ] \
+      || { REASON="dump-implausibly-small-${DUMP_BYTES}"; exit 98; }
+
+    # ── 6. restore the dump back and compare ──────────────────────────────────
+    # The step that makes this a drill. Everything above succeeds against a dump that
+    # restores into nothing; only a round trip with matching row counts rules that out.
+    # Runs on the throwaway instance, so it is free of consequence.
+    STAGE=verify-restore
+    psql "${ADMIN}" -q -c "drop database if exists ${VERIFY_DATABASE}"
+    psql "${ADMIN}" -q -c "create database ${VERIFY_DATABASE}"
+    VERIFY_CONN="postgresql://${PGUSER}@${DRILL_HOST}:5432/${VERIFY_DATABASE}?sslmode=require&connect_timeout=15"
+    pg_restore --no-owner --no-privileges --exit-on-error -j 2 -d "${VERIFY_CONN}" "${DUMP}"
+
+    # Keyed by schema.table and covering every schema pg_dump carried, so a table
+    # restored into the wrong schema — or not at all — shows up as a mismatch.
+    COUNT_SQL="select coalesce(string_agg(t || '=' || n_rows, ',' order by t), '') from (
+      select n.nspname || '.' || c.relname as t,
+             (xpath('/row/cnt/text()',
+                    query_to_xml(format('select count(*) as cnt from %I.%I', n.nspname, c.relname),
+                                 false, true, '')))[1]::text::bigint as n_rows
+      from pg_class c join pg_namespace n on n.oid = c.relnamespace
+      where c.relkind = 'r' and n.nspname not in ('pg_catalog', 'information_schema')
+    ) s"
+    SRC_COUNTS=$(psql "${CONN}" -tAc "${COUNT_SQL}")
+    DST_COUNTS=$(psql "${VERIFY_CONN}" -tAc "${COUNT_SQL}")
+    psql "${ADMIN}" -q -c "drop database ${VERIFY_DATABASE}"
+
+    [ -n "${SRC_COUNTS}" ] || { REASON="source-has-no-tables"; exit 99; }
+    if [ "${SRC_COUNTS}" != "${DST_COUNTS}" ]; then
+      echo "src: ${SRC_COUNTS}"
+      echo "dst: ${DST_COUNTS}"
+      REASON="round-trip-row-count-mismatch"; exit 100
+    fi
+    VERIFY_TABLES=$(printf '%s' "${SRC_COUNTS}" | tr ',' '\n' | wc -l | tr -d ' ')
+    echo "round trip verified: ${VERIFY_TABLES} tables, identical counts"
+
+    # ── 7. manifest + upload ──────────────────────────────────────────────────
+    STAGE=upload
+    TABLES=$(psql "${CONN}" -tAc "
+      select coalesce(json_agg(json_build_object('table', relname, 'rows', n_rows) order by n_rows desc), '[]'::json)
+      from (
+        select c.relname,
+               (xpath('/row/cnt/text()',
+                      query_to_xml(format('select count(*) as cnt from %I.%I', n.nspname, c.relname),
+                                   false, true, '')))[1]::text::bigint as n_rows
+        from pg_class c join pg_namespace n on n.oid = c.relnamespace
+        where c.relkind = 'r' and n.nspname not in ('pg_catalog', 'information_schema')
+      ) counts")
+    OBJECT_KEY="${S3_PREFIX}/${YYYY}/${MM}/${BASE}.dump"
+    cat > "/backup/${BASE}.manifest.json" <<EOF
+    {
+      "environment": "${ENVIRONMENT}",
+      "namespace": "${K8S_NAMESPACE}",
+      "database": "${PGDATABASE}",
+      "taken_at_utc": "${TS}",
+      "source_db_instance": "${SOURCE_DB_INSTANCE}",
+      "source_snapshot": "${SNAP}",
+      "snapshot_created_utc": "${SNAP_AGE_ISO}",
+      "drill_instance": "${DRILL}",
+      "restore_seconds": ${RESTORE_S},
+      "round_trip_verified": true,
+      "verified_tables": ${VERIFY_TABLES},
+      "flyway_schema_version": "${FLYWAY_VERSION}",
+      "app_image_tag": "${APP_IMAGE_TAG}",
+      "chart_app_version": "${CHART_APP_VERSION}",
+      "dump_format": "custom",
+      "dump_object_key": "${OBJECT_KEY}",
+      "dump_bytes": ${DUMP_BYTES},
+      "dump_sha256": "${DUMP_SHA}",
+      "table_rows": ${TABLES}
+    }
+    EOF
+    # A dump is only usable with its manifest: baseline-on-migrate is false, so a dump
+    # whose flyway version is NEWER than the image you restore under is a hard start
+    # failure. The pairing is in both the key and the manifest.
+    aws s3 cp "${DUMP}" "s3://${S3_BUCKET}/${OBJECT_KEY}" \
+      --no-progress --only-show-errors \
+      --metadata "flyway-schema-version=${FLYWAY_VERSION},app-image-tag=${APP_IMAGE_TAG},sha256=${DUMP_SHA}"
+    aws s3 cp "/backup/${BASE}.manifest.json" "s3://${S3_BUCKET}/${S3_PREFIX}/${YYYY}/${MM}/${BASE}.manifest.json" \
+      --no-progress --only-show-errors
+    # Stable pointer: "what is the newest good backup, and what does it pair with".
+    aws s3 cp "/backup/${BASE}.manifest.json" "s3://${S3_BUCKET}/${S3_PREFIX}/_latest.json" \
+      --no-progress --only-show-errors
+
+    STAGE=done
+
+  reap.sh: |
+    #!/bin/sh
+    set -eu
+    . /scripts/common.sh
+
+    STATUS=failed
+    REASON=""
+    REAPED=0
+    FOUND=0
+
+    report() {
+      rc=$?
+      [ "$rc" -eq 0 ] && STATUS=ok
+      LINE="job=openvsx-db-drill-reaper env=${ENVIRONMENT} status=${STATUS} rc=${rc} found=${FOUND} reaped=${REAPED} max_age_h=${MAX_AGE_HOURS} reason=${REASON}"
+      echo "${LINE}"
+      push_loki openvsx-db-drill-reaper "${STATUS}" "${LINE}"
+      exit "$rc"
+    }
+    trap report EXIT
+
+    install_tooling || exit $?
+
+    NOW=$(date -u +%s)
+    CUTOFF=$(( NOW - MAX_AGE_HOURS * 3600 ))
+
+    # InstanceCreateTime is ISO-8601 UTC, so age is a lexical comparison against a cutoff
+    # rendered identically. busybox date cannot parse @epoch; python3 is present because
+    # aws-cli depends on it. Neither available is a hard failure, not a silent no-op — a
+    # reaper that quietly reaps nothing is worse than one that pages.
+    CUTOFF_ISO=$(iso_utc_at "${CUTOFF}")
+    case "${CUTOFF_ISO}" in
+      [0-9][0-9][0-9][0-9]-[0-9][0-9]-*) ;;
+      *) REASON="cannot-render-cutoff"; exit 90 ;;
+    esac
+    echo "reaping ${DRILL_PREFIX}* created before ${CUTOFF_ISO}Z"
+
+    # Age from InstanceCreateTime rather than a delete-after tag: a tag can fail to apply,
+    # a creation timestamp cannot.
+    aws rds describe-db-instances --region "${AWS_REGION}" \
+      --query "DBInstances[?starts_with(DBInstanceIdentifier,'${DRILL_PREFIX}')].[DBInstanceIdentifier,InstanceCreateTime,DBInstanceStatus]" \
+      --output text > /tmp/drills.txt
+
+    while IFS="$(printf '\t')" read -r ID CREATED STATE; do
+      [ -n "${ID:-}" ] || continue
+      FOUND=$(( FOUND + 1 ))
+      case "${STATE}" in deleting|deleted) echo "skip ${ID} (${STATE})"; continue ;; esac
+      if [ "$(printf '%s' "${CREATED}" | cut -c1-19)" \< "${CUTOFF_ISO}" ]; then
+        echo "orphan: ${ID} created=${CREATED} state=${STATE}"
+        delete_drill_instance "${ID}"
+        REAPED=$(( REAPED + 1 ))
+      else
+        echo "keep ${ID} created=${CREATED} (younger than ${MAX_AGE_HOURS}h)"
+      fi
+    done < /tmp/drills.txt
+{{- end }}
