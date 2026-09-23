@@ -51,8 +51,6 @@ spec:
           value: /run/secrets/open-vsx.org/deployment/configuration.yml
         - name: ENVNAME
           value: {{ .Values.environment }}
-        - name: OVSX_REGISTRY_VERSION
-          value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
         # Activates config/application-{{ .Values.environment }}.yml (mounted below), which
         # layers this environment's values on top of the base application.yml baked into the image.
         - name: SPRING_PROFILES_ACTIVE
