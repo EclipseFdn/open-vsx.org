@@ -24,6 +24,10 @@ ovsx:
       enabled: true
       services:
         aws: https://openvsx-test.eclipsecontent.org/
+  server:
+    url: "https://test.open-vsx.org"
+  webui:
+    url: "https://test.open-vsx.org"
   scanning:
     enabled: true
 
@@ -246,3 +250,6 @@ ovsx:
         "documentation": "https://github.com/EclipseFdn/open-vsx.org/wiki/Rate-Limiting",
         "contact": "infrastructure@eclipse-foundation.org"
       }
+
+  trusted-publishing:
+    audience: 'https://test.open-vsx.org'
