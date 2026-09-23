@@ -12,22 +12,59 @@
 
 ovsx:
   access-token:
-    prefix: staging_ovsx
+    prefix: test_ovsx
     expiration: P90D
     notification: P7D
     send-expired-mail: true
     max-token-notifications: 100
     expiration-schedule: '0 */1 * * * *'
     notification-schedule: '30 */1 * * * *'
+
   storage:
     cdn:
       enabled: true
       services:
         aws: https://openvsx-test.eclipsecontent.org/
+
   server:
     url: "https://test.open-vsx.org"
   webui:
     url: "https://test.open-vsx.org"
+
+  trusted-publishing:
+    enabled: true
+    audience: 'https://test.open-vsx.org'
+    active-providers: 'github'
+    token-expiration: 'PT5M'
+
+  # dynamic tier-based rate limiting configuration
+  rate-limit:
+    enabled: true
+    token-prefix: test_ovsxrl_
+    # on the trust boundary (fastly edge), "X-Fastly-Real-IP" is set for any external requests
+    # on nginx, "X-Real-IP" is set for any external requests, kept as a fallback
+    # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
+    # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
+    ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
+    usage-stats:
+      job-schedule: '*/30 * * * * *'
+      daily-job-schedule: '*/30 * * * * *'
+    filters:
+      - url: '/(api|vscode)/.*'
+        http-response-headers:
+          Access-Control-Allow-Origin: '*'
+          Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+    default-http-content-type: application/json
+    default-http-response-body: >
+      {
+        "type": "https://open-vsx.org/probs/rate-limit-exceeded",
+        "title": "Too Many Requests",
+        "status": 429,
+        "detail": "A request rate limit has been exceeded for your current usage tier. Open VSX enforces tier-based limits to ensure reliable service. If this is unexpected for your use case, please contact us.",
+        "documentation": "https://github.com/EclipseFdn/open-vsx.org/wiki/Rate-Limiting",
+        "contact": "infrastructure@eclipse-foundation.org"
+      }
+
   scanning:
     enabled: true
 
@@ -222,37 +259,3 @@ ovsx:
           initial-delay-seconds: 10
           interval-seconds: 15
           max-attempts: 120
-
-  # dynamic tier-based rate limiting configuration
-  rate-limit:
-    enabled: true
-    token-prefix: staging_ovsxrl_
-    # on the trust boundary (fastly edge), "X-Fastly-Real-IP" is set for any external requests
-    # on nginx, "X-Real-IP" is set for any external requests, kept as a fallback
-    # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
-    # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
-    ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-    usage-stats:
-      job-schedule: '*/30 * * * * *'
-      daily-job-schedule: '*/30 * * * * *'
-    filters:
-      - url: '/(api|vscode)/.*'
-        http-response-headers:
-          Access-Control-Allow-Origin: '*'
-          Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-    default-http-content-type: application/json
-    default-http-response-body: >
-      {
-        "type": "https://open-vsx.org/probs/rate-limit-exceeded",
-        "title": "Too Many Requests",
-        "status": 429,
-        "detail": "A request rate limit has been exceeded for your current usage tier. Open VSX enforces tier-based limits to ensure reliable service. If this is unexpected for your use case, please contact us.",
-        "documentation": "https://github.com/EclipseFdn/open-vsx.org/wiki/Rate-Limiting",
-        "contact": "infrastructure@eclipse-foundation.org"
-      }
-
-  trusted-publishing:
-    enabled: true
-    audience: 'https://test.open-vsx.org'
-    active-providers: 'github'
-    token-expiration: 'PT5M'
