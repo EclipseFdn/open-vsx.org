@@ -10,7 +10,7 @@
 
 ovsx:
   access-token:
-    prefix: staging_ovsxat_
+    prefix: staging_ovsx
     expiration: P90D
     notification: P7D
     send-expired-mail: true
@@ -64,6 +64,13 @@ ovsx:
       # Timeout & Performance
       timeout-seconds: 10
       timeout-check-interval: 100
+
+    namespace-ownership-check:
+      enabled: true
+      enforced: true
+      required: true
+      check-active-extensions: false
+      gallery-url: 'https://marketplace.visualstudio.com/_apis/public/gallery'
 
     configured:
       # ClamAV REST wrapper - our custom Go service with file-level reporting
