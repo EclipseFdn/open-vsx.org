@@ -138,15 +138,17 @@ spec:
             - name: VERIFY_DATABASE
               value: {{ .Values.dbBackupDrill.verifyDatabase | quote }}
             - name: RESTORE_WAIT_S
-              value: {{ .Values.dbBackupDrill.restoreWaitSeconds | quote }}
+              value: {{ .Values.dbBackupDrill.restoreWaitSeconds | int64 | quote }}
             - name: DUMP_COMPRESSION
               value: {{ .Values.dbBackupDrill.compression | quote }}
             - name: STATEMENT_TIMEOUT_S
-              value: {{ .Values.dbBackupDrill.statementTimeoutSeconds | quote }}
+              value: {{ .Values.dbBackupDrill.statementTimeoutSeconds | int64 | quote }}
+            # int64: YAML numbers are float64, and `quote` alone renders >=1e6 as
+            # scientific notation, which the shell cannot compare.
             - name: MIN_DUMP_BYTES
-              value: {{ .Values.dbBackupDrill.minDumpBytes | quote }}
+              value: {{ .Values.dbBackupDrill.minDumpBytes | int64 | quote }}
             - name: MAX_SNAPSHOT_AGE_H
-              value: {{ .Values.dbBackupDrill.maxSnapshotAgeHours | quote }}
+              value: {{ .Values.dbBackupDrill.maxSnapshotAgeHours | int64 | quote }}
             - name: AWS_CLI_INSTALL
               value: {{ .Values.dbBackupDrill.awsCliInstall | quote }}
             - name: REPORT_TO_LOKI
@@ -221,7 +223,7 @@ spec:
             - name: DRILL_PREFIX
               value: {{ .Values.dbBackupDrill.drillPrefix | quote }}
             - name: MAX_AGE_HOURS
-              value: {{ .Values.dbBackupDrill.reaper.maxAgeHours | quote }}
+              value: {{ .Values.dbBackupDrill.reaper.maxAgeHours | int64 | quote }}
             - name: AWS_REGION
               value: {{ .Values.dbBackupDrill.s3.region | quote }}
             - name: AWS_CLI_INSTALL
