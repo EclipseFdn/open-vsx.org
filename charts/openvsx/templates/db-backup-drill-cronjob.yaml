@@ -440,6 +440,7 @@ data:
       --db-instance-identifier "${DRILL}" \
       --query 'DBInstances[0].Endpoint.Address' --output text)
     [ -n "${DRILL_HOST}" ] && [ "${DRILL_HOST}" != "None" ] || { REASON="no-endpoint"; exit 96; }
+    echo "drill_host=${DRILL_HOST}"
 
     CONN="postgresql://${PGUSER}@${DRILL_HOST}:5432/${PGDATABASE}?sslmode=require&connect_timeout=15&application_name=openvsx-db-backup-drill"
     ADMIN="postgresql://${PGUSER}@${DRILL_HOST}:5432/postgres?sslmode=require&connect_timeout=15&application_name=openvsx-db-backup-drill"
@@ -448,6 +449,7 @@ data:
     STAGE=schema-version
     FLYWAY_VERSION=$(psql "${CONN}" -tAc "select version from flyway_schema_history where success order by installed_rank desc limit 1")
     [ -n "${FLYWAY_VERSION}" ] || { REASON="flyway-schema-history-empty"; exit 97; }
+    echo "schema=${FLYWAY_VERSION}"
     SAFE_SCHEMA=$(printf '%s' "${FLYWAY_VERSION}" | tr -c 'A-Za-z0-9._-' '-')
     SAFE_TAG=$(printf '%s' "${APP_IMAGE_TAG}" | tr -c 'A-Za-z0-9._-' '-')
 
@@ -458,11 +460,13 @@ data:
     MM=$(date -u +%m)
     BASE="${PGDATABASE}_${TS}_schema-${SAFE_SCHEMA}_img-${SAFE_TAG}"
     DUMP="/backup/${BASE}.dump"
+    DUMP_START=$(date -u +%s)
     PGOPTIONS="-c statement_timeout=${STATEMENT_TIMEOUT_S}s" \
       pg_dump -Fc --compress="${DUMP_COMPRESSION}" --no-owner --no-privileges \
         -d "${CONN}" -f "${DUMP}"
     DUMP_BYTES=$(wc -c < "${DUMP}" | tr -d ' ')
     DUMP_SHA=$(sha256sum "${DUMP}" | cut -d' ' -f1)
+    echo "dumped ${DUMP_BYTES} bytes in $(( $(date -u +%s) - DUMP_START ))s (min ${MIN_DUMP_BYTES})"
     [ "${DUMP_BYTES}" -ge "${MIN_DUMP_BYTES}" ] \
       || { REASON="dump-implausibly-small-${DUMP_BYTES}"; exit 98; }
 
@@ -471,6 +475,7 @@ data:
     # restores into nothing; only a round trip with matching row counts rules that out.
     # Runs on the throwaway instance, so it is free of consequence.
     STAGE=verify-restore
+    echo "restoring the dump into ${VERIFY_DATABASE} to verify it"
     psql "${ADMIN}" -q -c "drop database if exists ${VERIFY_DATABASE}"
     psql "${ADMIN}" -q -c "create database ${VERIFY_DATABASE}"
     VERIFY_CONN="postgresql://${PGUSER}@${DRILL_HOST}:5432/${VERIFY_DATABASE}?sslmode=require&connect_timeout=15"
@@ -512,6 +517,7 @@ data:
         where c.relkind = 'r' and n.nspname not in ('pg_catalog', 'information_schema')
       ) counts")
     OBJECT_KEY="${S3_PREFIX}/${YYYY}/${MM}/${BASE}.dump"
+    echo "uploading to s3://${S3_BUCKET}/${OBJECT_KEY}"
     cat > "/backup/${BASE}.manifest.json" <<EOF
     {
       "environment": "${ENVIRONMENT}",
