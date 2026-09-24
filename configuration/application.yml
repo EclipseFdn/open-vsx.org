@@ -99,6 +99,8 @@ management:
 
 springdoc:
   model-and-view-allowed: true
+  api-docs:
+    version: openapi_3_0
   swagger-ui:
     path: /swagger-ui
     docExpansion: list
@@ -125,7 +127,7 @@ bucket4j:
 
 ovsx:
   access-token:
-    prefix: ovsxat_
+    prefix: ovsx
     expiration: 0
     notification: 0
   storage:
@@ -136,8 +138,11 @@ ovsx:
     migration:
       enabled: false
     primary-service: aws
+  server:
+    url: "https://open-vsx.org"
   webui:
-    frontendRoutes: "/extension/**,/namespace/**,/search,/user-settings/**,/admin-dashboard/**,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
+    url: "https://open-vsx.org"
+    frontendRoutes: "/extension/**,/namespace/**,/search,/user-settings/**,/admin-dashboard/**,/publish,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
     additional-routes: "/.well-known/**"
   eclipse:
     base-url: https://api.eclipse.org/
@@ -158,6 +163,8 @@ ovsx:
       downloads: 2.0
       timestamp: 1.2
   migrations:
+    batch-size: 200
+    cron: '0 */2 * * * *'
     delay:
       seconds: 10800
     once-per-version: true
@@ -179,6 +186,7 @@ ovsx:
     files-webresource:
       tti: PT1H
       max-size: 500
+      max-total-size: 2147483648 # 2 GB
     files-browse:
       tti: PT1H
       max-size: 100
@@ -231,6 +239,12 @@ ovsx:
         "contact": "infrastructure@eclipse-foundation.org"
       }
 
+  trusted-publishing:
+    enabled: true
+    audience: 'https://open-vsx.org'
+    active-providers: 'github'
+    token-expiration: 'PT5M'
+
   # General scanning support
   scanning:
     enabled: true
@@ -274,6 +288,13 @@ ovsx:
       # Timeout & Performance
       timeout-seconds: 10
       timeout-check-interval: 100
+
+    namespace-ownership-check:
+      enabled: true
+      enforced: true
+      required: true
+      check-active-extensions: false
+      gallery-url: 'https://marketplace.visualstudio.com/_apis/public/gallery'
 
     configured:
       # ClamAV REST wrapper - our custom Go service with file-level reporting
