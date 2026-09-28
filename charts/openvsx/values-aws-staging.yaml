@@ -103,6 +103,8 @@ aws-load-balancer-controller:
   enabled: false
 
 ingress:
+  # false skips the Ingress and its ALB (e.g. a copy reached only by port-forward).
+  enabled: true
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840
   preActions:
     - forward-cors
