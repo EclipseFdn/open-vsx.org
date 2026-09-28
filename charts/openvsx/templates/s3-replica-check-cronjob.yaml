@@ -22,8 +22,9 @@ metadata:
 #
 # Compares the latest S3 Inventory of the source bucket with that of its replica: every
 # source file older than the comparison cutoff must exist in the replica with the same size
-# and ETag, and none may be FAILED or stuck PENDING. A small random sample is then read from
-# both sides and compared by sha256. Read-only; the outcome is pushed to Loki for alerting.
+# and ETag, and none may be FAILED or stuck PENDING. Replica-only files are counted as `extra`.
+# A small random sample is then read from both sides and compared by sha256. Read-only; the
+# outcome is pushed to Loki for alerting.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -139,7 +140,7 @@ data:
     STARTED_EPOCH=$(date -u +%s)
     STATUS=failed; STAGE=start; REASON=""
     SRC_INV=""; DST_INV=""; SRC_OBJECTS=0; CHECKED=0
-    MISSING=0; MISMATCH=0; FAILED_REPL=0; STALE_PENDING=0; SAMPLE_OK=0; SAMPLE_BAD=0; FOUND=0
+    MISSING=0; MISMATCH=0; FAILED_REPL=0; STALE_PENDING=0; SAMPLE_OK=0; SAMPLE_BAD=0; FOUND=0; EXTRA=0
     TAB=$(printf '\t')
 
     push_loki() {
@@ -164,7 +165,7 @@ data:
         STATUS=warming; PROBLEMS=0; rc=0
       fi
       DURATION=$(( $(date -u +%s) - STARTED_EPOCH ))
-      LINE="job=${JOB} env=${ENVIRONMENT} status=${STATUS} problems=${PROBLEMS} found=${FOUND} stage=${STAGE} duration_s=${DURATION} source_inventory=${SRC_INV} replica_inventory=${DST_INV} source_objects=${SRC_OBJECTS} checked=${CHECKED} missing=${MISSING} mismatch=${MISMATCH} failed_replication=${FAILED_REPL} stale_pending=${STALE_PENDING} sample_ok=${SAMPLE_OK} sample_bad=${SAMPLE_BAD} warmup_until=${WARMUP_UNTIL} reason=${REASON:-none}"
+      LINE="job=${JOB} env=${ENVIRONMENT} status=${STATUS} problems=${PROBLEMS} found=${FOUND} stage=${STAGE} duration_s=${DURATION} source_inventory=${SRC_INV} replica_inventory=${DST_INV} source_objects=${SRC_OBJECTS} checked=${CHECKED} missing=${MISSING} mismatch=${MISMATCH} failed_replication=${FAILED_REPL} stale_pending=${STALE_PENDING} extra=${EXTRA} sample_ok=${SAMPLE_OK} sample_bad=${SAMPLE_BAD} warmup_until=${WARMUP_UNTIL} reason=${REASON:-none}"
       echo "${LINE}"
       push_loki "${STATUS}" "${LINE}"
       exit "$rc"
@@ -247,7 +248,12 @@ data:
     awk -F'\t' '$4 != "FAILED" && $4 != "PENDING" {print $1"\t"$2"\t"$3}' src.checked \
       | sort -t "${TAB}" -k1,1 -S 256M -T /work > src.expect
     cut -f1-3 dst.all | sort -t "${TAB}" -k1,1 -S 256M -T /work > dst.sorted
-    rm -f src.all dst.all src.checked
+
+    # Files only in the replica. Deletes are replicated, so this should be near 0; a file
+    # deleted between the two listings shows here briefly. Informational — not in `found`.
+    cut -f1 src.all | sort -S 256M -T /work > src.keys
+    EXTRA=$(cut -f1 dst.sorted | comm -13 src.keys - | wc -l)
+    rm -f src.all dst.all src.checked src.keys
 
     MISSING=$(join -t "${TAB}" -v1 -o 1.1 src.expect dst.sorted | wc -l)
     # Replication copies the object unchanged, so the replica keeps the source's size and ETag.
