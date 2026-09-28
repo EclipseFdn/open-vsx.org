@@ -42,7 +42,7 @@ image:
 
 website:
   # MaxDirectMemorySize caps off-heap so the JVM cannot expand past the cgroup limit
-  # under load (2026-05-19 OKD incident: native+direct growth pushed total past 8Gi -> OOMKill).
+  # under load; unbounded native + direct growth has OOM-killed pods before.
   jvmArgs: >
     -Xms6G -Xmx8G
     -XX:MaxDirectMemorySize=512m
@@ -78,32 +78,28 @@ dbBackupDrill:
   # Every identifier the job creates or deletes must start with this. The IAM policy
   # scopes RestoreDBInstanceFromDBSnapshot and DeleteDBInstance to the same prefix.
   drillPrefix: "openvsx-drill-"
-  # 03:30 UTC — after the 02:00-03:00 RDS backup window, so the drill verifies the
-  # snapshot taken ~1.5h earlier rather than yesterday's. At 01:30 it always read a
-  # 23h-old snapshot, which both staled the S3 copy and delayed detection by a day.
-  # Finishes ~03:41, clear of the ~04:00 search reindex.
+  # After the RDS automated backup window, so the drill verifies that night's snapshot
+  # rather than the previous day's, and before the nightly search reindex.
   schedule: "30 3 * * *"
   timeZone: "Etc/UTC"
   startingDeadlineSeconds: 3600
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
-  # Restore measured 7m30s on 2026-09-23; the round trip adds a few minutes. 90m leaves
-  # room for a slow restore without letting a wedged job hold an instance all day.
+  # Room for a slow restore without letting a wedged job hold an instance all day.
   activeDeadlineSeconds: 5400
   restoreWaitSeconds: 3600
-  # Drill economy, not a production replacement: prod is db.r6g.8xlarge on io2.
+  # Drill economy, not a production replacement: production runs a larger class on io2.
   instanceClass: "db.t4g.large"
   storageType: "gp3"
   # Dropped and recreated on the throwaway instance for the round-trip check.
   verifyDatabase: "openvsx_restore_check"
   compression: "6"
   statementTimeoutSeconds: 3000
-  # The production dump is ~2 GB uncompressed as of 2026-09-23; well under this.
+  # Catches an empty or truncated dump only; a real dump is far larger.
   minDumpBytes: 1048576
   # Snapshots are daily, so the question is "did a backup happen in the last day", not
-  # "is this one fresh". At 03:30 a normal snapshot is ~1.4h old and a missed night shows
-  # as ~25.4h, so 20h fails the missed night with 5.4h to spare while still letting the
-  # job be run by hand at any point during a working day.
+  # "is this one fresh". Keep it under a day so a missed night fails, but long enough that
+  # the job can still be run by hand during a working day.
   maxSnapshotAgeHours: 20
   scratchSize: 20Gi
   image:
@@ -184,9 +180,9 @@ service:
   targetPort: 8080
 
 resources:
-  # Limit > request (Burstable QoS): 2Gi memory headroom above the 6G heap for thread stacks,
-  # direct buffers, metaspace; CPU limit raised to stop CFS throttling observed during the
-  # 2026-05-19 incident where pods needed 6-9 cores against a 5-core ceiling.
+  # Limit > request (Burstable QoS): memory headroom above the heap for thread stacks, direct
+  # buffers and metaspace; CPU limit kept high because a lower ceiling caused CFS throttling
+  # under load.
   limits:
     cpu: 7000m
     memory: 12Gi
