@@ -38,26 +38,10 @@ dbBackupDrill:
 s3ReplicaCheck:
   enabled: false
 
-# Same JVM as production, plus a dead LOKI_URL: Alloy relabels every pushed log line as
-# environment="production", so DR logs would trigger production alerts.
+# Dead log endpoint: Alloy relabels every pushed log line as environment="production", so DR
+# logs would trigger production alerts. JVM flags stay as in values-aws.yaml.
 website:
-  jvmArgs: >
-    -Xms6G -Xmx8G
-    -XX:MaxDirectMemorySize=512m
-    -XX:+AlwaysPreTouch
-    -XX:+HeapDumpOnOutOfMemoryError
-    -XX:+UseStringDeduplication
-    -XX:+ParallelRefProcEnabled
-    -XX:+DisableExplicitGC
-    -XX:+UnlockExperimentalVMOptions
-    -XX:+UnlockDiagnosticVMOptions
-    -XX:-OmitStackTraceInFastThrow
-    -Dlog4j2.formatMsgNoLookups=true
-    -Dlog4j.formatMsgNoLookups=true
-    -Dorg.jooq.no-logo=true
-    -Dorg.jooq.no-tips=true
-    --enable-native-access=ALL-UNNAMED
-    -DLOKI_URL=http://127.0.0.1:1/loki/api/v1/push
+  lokiUrl: "http://127.0.0.1:1/loki/api/v1/push"
 
 # Delete-on-release storage, so teardown leaves no EBS volume behind.
 es:
