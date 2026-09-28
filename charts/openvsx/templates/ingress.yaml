@@ -1,4 +1,6 @@
-{{- if .Values.eks.enabled }}
+{{- /* ingress.enabled defaults to true; false skips the Ingress (and its ALB), e.g. for a DR copy. */}}
+{{- $ingress := .Values.ingress | default dict }}
+{{- if and .Values.eks.enabled (or (not (hasKey $ingress "enabled")) $ingress.enabled) }}
 {{- $preActions := .Values.ingress.preActions | default (list "ssl-redirect") }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress

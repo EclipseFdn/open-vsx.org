@@ -152,6 +152,8 @@ dbBackupDrill:
 
 # ── Ingress (ALB/EKS Auto Mode) — fill from TF outputs: vpc→alb_security_group_id, acm→certificate_arn ──
 ingress:
+  # false skips the Ingress and its ALB (e.g. a copy reached only by port-forward).
+  enabled: true
   preActions:
     - forward-cors
     - ssl-redirect
