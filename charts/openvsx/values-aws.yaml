@@ -150,6 +150,55 @@ dbBackupDrill:
       memory: 2Gi
       ephemeral-storage: 20Gi
 
+# Daily completeness check of the eu-west-1 copy of the content bucket. Read-only.
+s3ReplicaCheck:
+  enabled: true
+  # Inventories are delivered overnight; 10:00 UTC leaves margin and stays clear of the
+  # 03:30 DB drill and the ~04:00 search reindex.
+  schedule: "0 10 * * *"
+  activeDeadlineSeconds: 3600
+  source:
+    bucket: "openvsxorg"
+    region: eu-central-1
+    inventoryBucket: "eclipse-openvsx-inventory-eu-central-1"
+  replica:
+    bucket: "eclipse-openvsx-dr-eu-west-1"
+    region: eu-west-1
+    inventoryBucket: "eclipse-openvsx-inventory-eu-west-1"
+  inventoryName: "dr-replica-check"
+  inventoryPrefix: "inventory"
+  # Only files older than this before the older listing are compared; replication usually
+  # completes in minutes, so anything still PENDING past it is a real problem.
+  cutoffHours: 6
+  # Inventory is daily but delivery is not guaranteed on time; 72h tolerates one late day.
+  maxInventoryAgeHours: 72
+  # ~2.79M objects as of 2026-09-28. A listing far below that is truncated, not complete.
+  minSourceObjects: 2000000
+  sampleSize: 20
+  sampleMaxBytes: 52428800
+  # Failures report as `warming` (no alert) until this date. Set it to a day after the
+  # Batch Replication backfill has completed and the first full check has been reviewed.
+  warmupUntil: "2026-10-31"
+  # Push straight to Loki, like the DB drill: Alloy drops logs of finished Job pods.
+  reportToLoki: true
+  image:
+    repository: alpine
+    tag: "3.22"
+  serviceAccount:
+    # Must match the IRSA trust subject of the role annotated below.
+    name: openvsx-s3-replica-check
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-s3-replica-check"
+  scratchSize: 10Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 10Gi
+    limits:
+      memory: 1Gi
+      ephemeral-storage: 10Gi
+
 # ── Ingress (ALB/EKS Auto Mode) — fill from TF outputs: vpc→alb_security_group_id, acm→certificate_arn ──
 ingress:
   preActions:
