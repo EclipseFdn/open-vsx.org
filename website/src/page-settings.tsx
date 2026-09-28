@@ -169,13 +169,15 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
   //---------- ANNOUNCEMENT BANNER
   const bannerContent: FunctionComponent = () => (
     <>
-      <Box component='span' sx={{ fontWeight: 700 }}>
-        Open VSX is growing.
+      Open VSX will be in{' '}
+      <Box component='strong' sx={{ fontWeight: 700 }}>
+        read only mode
       </Box>{' '}
-      <Box component='span' sx={{ color: 'text.secondary' }}>
-        To support reliable access as usage increases, we&apos;ve implemented rate limiting tiers that govern usage.
-      </Box>{' '}
-      <Link href='https://github.com/EclipseFdn/open-vsx.org/wiki/rate-limiting'>Learn more →</Link>
+      from{' '}
+      <Box component='strong' sx={{ fontWeight: 700 }}>
+        10:00AM EST - 4:00PM EST on Tuesday September 29th
+      </Box>
+      . Publishing and related activities will be disabled during this time.
     </>
   );
 
@@ -330,10 +332,10 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
           dismissButton: {
             show: true
           },
-          color: 'info'
+          color: 'warning'
         },
         cookie: {
-          key: 'Rate-Limit-Announcement',
+          key: 'Read-Only-Announcement-2026-09-29',
           value: 'closed',
           path: '/'
         }
