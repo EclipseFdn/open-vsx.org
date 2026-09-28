@@ -82,14 +82,12 @@ spec:
               value: {{ $c.cutoffHours | int64 | quote }}
             - name: MAX_INVENTORY_AGE_H
               value: {{ $c.maxInventoryAgeHours | int64 | quote }}
-            - name: MIN_SOURCE_OBJECTS
-              value: {{ $c.minSourceObjects | int64 | quote }}
+            - name: MIN_SOURCE_SHARE_PCT
+              value: {{ $c.minSourceSharePercent | int64 | quote }}
             - name: SAMPLE_SIZE
               value: {{ $c.sampleSize | int64 | quote }}
             - name: SAMPLE_MAX_BYTES
               value: {{ $c.sampleMaxBytes | int64 | quote }}
-            - name: WARMUP_UNTIL
-              value: {{ $c.warmupUntil | quote }}
             - name: REPORT_TO_LOKI
               value: {{ $c.reportToLoki | quote }}
             - name: AWS_RETRY_MODE
@@ -154,18 +152,14 @@ data:
         || echo "WARN: loki push failed (outcome above is authoritative)"
     }
 
-    # `problems` is what the alert reads. During warm-up (initial backfill, first inventories)
-    # it is forced to 0 so expected gaps do not page; `found` always carries the real count.
+    # `problems` is what the alert reads; `found` is the replica gap alone.
     report() {
       rc=$?
       [ "$rc" -ne 0 ] && [ -z "${REASON}" ] && REASON="exit-${rc}"
       PROBLEMS=${FOUND}
       [ "${STATUS}" = "failed" ] && [ "${PROBLEMS}" -eq 0 ] && PROBLEMS=1
-      if [ "${STATUS}" = "failed" ] && [ "$(date -u +%Y%m%d)" -lt "$(echo "${WARMUP_UNTIL}" | tr -d '-')" ]; then
-        STATUS=warming; PROBLEMS=0; rc=0
-      fi
       DURATION=$(( $(date -u +%s) - STARTED_EPOCH ))
-      LINE="job=${JOB} env=${ENVIRONMENT} status=${STATUS} problems=${PROBLEMS} found=${FOUND} stage=${STAGE} duration_s=${DURATION} source_inventory=${SRC_INV} replica_inventory=${DST_INV} source_objects=${SRC_OBJECTS} checked=${CHECKED} missing=${MISSING} mismatch=${MISMATCH} failed_replication=${FAILED_REPL} stale_pending=${STALE_PENDING} extra=${EXTRA} sample_ok=${SAMPLE_OK} sample_bad=${SAMPLE_BAD} warmup_until=${WARMUP_UNTIL} reason=${REASON:-none}"
+      LINE="job=${JOB} env=${ENVIRONMENT} status=${STATUS} problems=${PROBLEMS} found=${FOUND} stage=${STAGE} duration_s=${DURATION} source_inventory=${SRC_INV} replica_inventory=${DST_INV} source_objects=${SRC_OBJECTS} checked=${CHECKED} missing=${MISSING} mismatch=${MISMATCH} failed_replication=${FAILED_REPL} stale_pending=${STALE_PENDING} extra=${EXTRA} sample_ok=${SAMPLE_OK} sample_bad=${SAMPLE_BAD} reason=${REASON:-none}"
       echo "${LINE}"
       push_loki "${STATUS}" "${LINE}"
       exit "$rc"
@@ -212,7 +206,7 @@ data:
         }'
     }
 
-    inv_epoch() { # 2026-09-28T01-00Z -> epoch
+    inv_epoch() { # YYYY-MM-DDTHH-MMZ -> epoch
       date -u -d "$(echo "$1" | sed -E 's/T([0-9]{2})-([0-9]{2})Z/ \1:\2/')" +%s
     }
 
@@ -235,8 +229,12 @@ data:
     extract "${REPLICA_INVENTORY_BUCKET}" "${REPLICA_BUCKET}" "${REPLICA_REGION}" "${DST_INV}" > dst.all || fail "replica-inventory-unreadable"
 
     SRC_OBJECTS=$(wc -l < src.all)
-    # An empty or truncated listing would otherwise report "0 missing" and pass.
-    [ "${SRC_OBJECTS}" -ge "${MIN_SOURCE_OBJECTS}" ] || fail "source-inventory-too-small"
+    DST_OBJECTS=$(wc -l < dst.all)
+    # An empty or truncated source listing would otherwise report "0 missing" and pass. The replica
+    # holds every source file (plus recent deletes), so a source far smaller than it is truncated.
+    # While the backfill runs the replica is the smaller one, so this does not fire then.
+    [ "${SRC_OBJECTS}" -gt 0 ] && [ $(( SRC_OBJECTS * 100 )) -ge $(( DST_OBJECTS * MIN_SOURCE_SHARE_PCT )) ] \
+      || fail "source-inventory-too-small"
 
     STAGE=compare
     export LC_ALL=C

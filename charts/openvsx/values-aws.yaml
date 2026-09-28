@@ -153,8 +153,8 @@ dbBackupDrill:
 # Daily completeness check of the eu-west-1 copy of the content bucket. Read-only.
 s3ReplicaCheck:
   enabled: true
-  # Inventories are delivered overnight; 10:00 UTC leaves margin and stays clear of the
-  # 03:30 DB drill and the ~04:00 search reindex.
+  # Late morning UTC: after the overnight inventory delivery, clear of the nightly DB drill and
+  # search reindex.
   schedule: "0 10 * * *"
   activeDeadlineSeconds: 3600
   source:
@@ -172,13 +172,11 @@ s3ReplicaCheck:
   cutoffHours: 6
   # Inventory is daily but delivery is not guaranteed on time; 72h tolerates one late day.
   maxInventoryAgeHours: 72
-  # ~2.79M objects as of 2026-09-28. A listing far below that is truncated, not complete.
-  minSourceObjects: 2000000
+  # Fail if the source listing holds less than this share of the replica's objects: the replica
+  # has every source file, so a much smaller source listing is truncated, not complete.
+  minSourceSharePercent: 90
   sampleSize: 20
   sampleMaxBytes: 52428800
-  # Failures report as `warming` (no alert) until this date. Set it to a day after the
-  # Batch Replication backfill has completed and the first full check has been reviewed.
-  warmupUntil: "2026-10-31"
   # Push straight to Loki, like the DB drill: Alloy drops logs of finished Job pods.
   reportToLoki: true
   image:
