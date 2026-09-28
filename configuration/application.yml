@@ -258,7 +258,7 @@ ovsx:
       enforced: true
 
     similarity:
-      enabled: true
+      enabled: false
       enforced: false
       similarity-threshold: 0.2            # Min 20% name difference allowed
       skip-if-publisher-verified: false    # Do not skip checks for verified publishers
@@ -290,7 +290,7 @@ ovsx:
       timeout-check-interval: 100
 
     namespace-ownership-check:
-      enabled: true
+      enabled: false
       enforced: true
       required: true
       check-active-extensions: false
