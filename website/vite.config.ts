@@ -4,7 +4,7 @@ import webfontDownload from 'vite-plugin-webfont-dl';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, type PluginOption } from 'vite';
 
-const outRootDir = path.join(__dirname, 'dist');
+const outRootDir = path.join(import.meta.dirname, 'dist');
 
 export default defineConfig(() => ({
   plugins: [react(), webfontDownload(), visualizer() as PluginOption],
@@ -17,7 +17,7 @@ export default defineConfig(() => ({
   },
   resolve: {
     alias: [
-      { find: '@', replacement: path.resolve(__dirname, './src') },
+      { find: '@', replacement: path.resolve(import.meta.dirname, './src') },
       // @mui/icons-material's deep imports (e.g. '@mui/icons-material/Menu') resolve to
       // CJS files that Rolldown's dep optimizer/bundler unwraps incorrectly, yielding the
       // module's exports object instead of the icon component (React error #130). The
