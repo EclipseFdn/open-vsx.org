@@ -107,7 +107,7 @@ ovsx:
       timeout-check-interval: 100
 
     namespace-ownership-check:
-      enabled: true
+      enabled: false
       enforced: true
       required: true
       check-active-extensions: false
