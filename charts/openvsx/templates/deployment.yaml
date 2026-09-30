@@ -54,8 +54,9 @@ spec:
         {{- if .Values.eks.enabled }}
         # EKS: route Loki4jAppender push through cluster-wide Alloy in monitoring ns
         # (chart Alloy is disabled — see values-aws.yaml). Overrides LOKI_URL from envFrom.
+        {{- /* website.lokiUrl replaces it, e.g. to keep a DR copy's logs out of production's. */}}
         - name: LOKI_URL
-          value: "http://grafana-alloy.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+          value: {{ .Values.website.lokiUrl | default "http://grafana-alloy.monitoring.svc.cluster.local:3100/loki/api/v1/push" | quote }}
         {{- end }}
         - name: JVM_ARGS
           value: {{ .Values.website.jvmArgs }}

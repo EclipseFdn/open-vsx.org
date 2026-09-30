@@ -1,0 +1,48 @@
+# DR rehearsal copy of production, layered on values-aws.yaml:
+#   helm install dr charts/openvsx -n open-vsx-org-dr -f values-aws.yaml -f values-aws-dr.yaml
+# Private (port-forward only) and cut off from every production side effect. The Spring config
+# secret deployment-configuration-dr is created separately, never from production's secrets.
+namespace: open-vsx-org-dr
+environment: dr
+host: dr.invalid
+
+replicaCount: 1
+esReplicaCount: 1
+
+# No ALB, no autoscaling on production load.
+ingress:
+  enabled: false
+keda:
+  enabled: false
+
+# Secrets are made by hand: ESO would compose the config from production's SM entries.
+externalSecrets:
+  enabled: false
+  elasticsearchPasswordFromEck: true
+
+# No AWS credentials: with create false the pod runs as the namespace's default ServiceAccount,
+# which has no IRSA role (the inherited annotation cannot be removed by a values override). The app
+# cannot write to or delete from S3; downloads still work — they redirect to the CDN.
+serviceAccount:
+  create: false
+
+# Scanning is off in the Spring config; the scanner services are not needed.
+clamav:
+  enabled: false
+yara:
+  enabled: false
+
+# Production jobs that must not run twice.
+dbBackupDrill:
+  enabled: false
+s3ReplicaCheck:
+  enabled: false
+
+# Dead log endpoint: Alloy relabels every pushed log line as environment="production", so DR
+# logs would trigger production alerts. JVM flags stay as in values-aws.yaml.
+website:
+  lokiUrl: "http://127.0.0.1:1/loki/api/v1/push"
+
+# Delete-on-release storage, so teardown leaves no EBS volume behind.
+es:
+  storage_class: gp2
