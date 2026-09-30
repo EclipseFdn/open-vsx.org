@@ -146,6 +146,53 @@ dbBackupDrill:
       memory: 2Gi
       ephemeral-storage: 20Gi
 
+# Daily completeness check of the eu-west-1 copy of the content bucket. Read-only.
+s3ReplicaCheck:
+  enabled: true
+  # Late morning UTC: after the overnight inventory delivery, clear of the nightly DB drill and
+  # search reindex.
+  schedule: "0 10 * * *"
+  activeDeadlineSeconds: 3600
+  source:
+    bucket: "openvsxorg"
+    region: eu-central-1
+    inventoryBucket: "eclipse-openvsx-inventory-eu-central-1"
+  replica:
+    bucket: "eclipse-openvsx-dr-eu-west-1"
+    region: eu-west-1
+    inventoryBucket: "eclipse-openvsx-inventory-eu-west-1"
+  inventoryName: "dr-replica-check"
+  inventoryPrefix: "inventory"
+  # Only files older than this before the older listing are compared; replication usually
+  # completes in minutes, so anything still PENDING past it is a real problem.
+  cutoffHours: 6
+  # Inventory is daily but delivery is not guaranteed on time; 72h tolerates one late day.
+  maxInventoryAgeHours: 72
+  # Fail if the source listing holds less than this share of the replica's objects: the replica
+  # has every source file, so a much smaller source listing is truncated, not complete.
+  minSourceSharePercent: 90
+  sampleSize: 20
+  sampleMaxBytes: 52428800
+  # Push straight to Loki, like the DB drill: Alloy drops logs of finished Job pods.
+  reportToLoki: true
+  image:
+    repository: alpine
+    tag: "3.22"
+  serviceAccount:
+    # Must match the IRSA trust subject of the role annotated below.
+    name: openvsx-s3-replica-check
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-s3-replica-check"
+  scratchSize: 10Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 10Gi
+    limits:
+      memory: 1Gi
+      ephemeral-storage: 10Gi
+
 # ── Ingress (ALB/EKS Auto Mode) — fill from TF outputs: vpc→alb_security_group_id, acm→certificate_arn ──
 ingress:
   # false skips the Ingress and its ALB (e.g. a copy reached only by port-forward).
