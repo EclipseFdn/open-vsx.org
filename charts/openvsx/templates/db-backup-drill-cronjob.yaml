@@ -257,11 +257,14 @@ spec:
 ---
 {{- $gd := .Values.dbBackupDrill.reaper }}
 {{- if gt (($gd.gamedayMaxAgeHours | default 0) | int) 0 }}
+{{- if lt ($gd.gamedayMaxAgeHours | int) 4 }}
+{{- fail "dbBackupDrill.reaper.gamedayMaxAgeHours must be 0 (off) or at least 4, longer than a game day." }}
+{{- end }}
 {{- if not (hasPrefix "openvsx-gameday-" ($gd.gamedayPrefix | default "")) }}
 {{- fail "dbBackupDrill.reaper.gamedayPrefix must start with openvsx-gameday- (the IAM policy only allows that prefix)." }}
 {{- end }}
-{{- if or (not $gd.gamedayNamespace) (eq $gd.gamedayNamespace .Values.namespace) }}
-{{- fail "dbBackupDrill.reaper.gamedayNamespace must be set and must not be the release namespace." }}
+{{- if or (not (hasSuffix "-dr" ($gd.gamedayNamespace | default ""))) (eq $gd.gamedayNamespace .Values.namespace) }}
+{{- fail "dbBackupDrill.reaper.gamedayNamespace must end in -dr and must not be the release namespace." }}
 {{- end }}
 # Lets the reaper delete the game-day copy's namespace, and no other: resourceNames pins it.
 apiVersion: rbac.authorization.k8s.io/v1
@@ -667,7 +670,14 @@ data:
     # A name match alone never deletes: the resource must also carry purpose=game-day, which
     # the runbook sets at creation. A gameday-named resource without it fails the run, so it
     # is reported instead of lingering.
+    # Validate every setting before the first call, so a bad one deletes nothing.
+    [ "${GAMEDAY_MAX_AGE_HOURS}" -ge 4 ] || { REASON="bad-gameday-max-age"; exit 91; }
     case "${GAMEDAY_PREFIX}" in openvsx-gameday-*) ;; *) REASON="bad-gameday-prefix"; exit 91 ;; esac
+    case "${GAMEDAY_NAMESPACE}" in
+      "${K8S_NAMESPACE}") REASON="bad-gameday-namespace"; exit 91 ;;
+      ?*-dr) ;;
+      *) REASON="bad-gameday-namespace"; exit 91 ;;
+    esac
     GD_CUTOFF_ISO=$(iso_utc_at $(( NOW - GAMEDAY_MAX_AGE_HOURS * 3600 )))
     case "${GD_CUTOFF_ISO}" in
       [0-9][0-9][0-9][0-9]-[0-9][0-9]-*) ;;
@@ -678,9 +688,13 @@ data:
 
     is_gameday() {
       case "$1" in "${GAMEDAY_PREFIX}"?*) return 0 ;; esac
-      echo "REFUSING to touch '$1' — not a ${GAMEDAY_PREFIX}* resource"; return 1
+      echo "REFUSING to touch '$1' — not a ${GAMEDAY_PREFIX}* resource"; REASON="refused-non-gameday:$1"; return 1
     }
-    older() { [ "$(printf '%s' "$1" | cut -c1-19)" \< "${GD_CUTOFF_ISO}" ]; }
+    # Only a well-formed timestamp can count as old; a missing one ("None", empty) never does.
+    older() {
+      case "$1" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T*) ;; *) return 1 ;; esac
+      [ "$(printf '%s' "$1" | cut -c1-19)" \< "${GD_CUTOFF_ISO}" ]
+    }
 
     aws rds describe-db-instances --region "${AWS_REGION}" \
       --query "DBInstances[?starts_with(DBInstanceIdentifier,'${GAMEDAY_PREFIX}')].[DBInstanceIdentifier,InstanceCreateTime,DBInstanceStatus,TagList[?Key=='purpose'].Value|[0]]" \
