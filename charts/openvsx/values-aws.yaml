@@ -125,6 +125,12 @@ dbBackupDrill:
     # daily. maxAgeHours must exceed activeDeadlineSeconds or it kills live drills.
     schedule: "15 * * * *"
     maxAgeHours: 3
+    # Also removes leftovers of a game-day rehearsal: gamedayPrefix databases and caches
+    # tagged purpose=game-day, and the gamedayNamespace copy. Above a game day's length so a
+    # live one is never touched. 0 turns this off.
+    gamedayMaxAgeHours: 8
+    gamedayPrefix: "openvsx-gameday-"
+    gamedayNamespace: "open-vsx-org-dr"
     resources:
       requests:
         cpu: 20m
