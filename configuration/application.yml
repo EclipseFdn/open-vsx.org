@@ -441,6 +441,8 @@ ovsx:
             Authorization: "Bearer ${ARGUS_API_KEY}"
           response:
             format: json
+            # Quarantine follows Argus's explicit verdict rather than the presence of matches
+            malicious-verdict-path: "$.verdictData.isMalicious"
             threats-path: "$.matches[*]"
             threat-mapping:
               condition: "true"
