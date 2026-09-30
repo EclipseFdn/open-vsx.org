@@ -169,15 +169,14 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
   //---------- ANNOUNCEMENT BANNER
   const bannerContent: FunctionComponent = () => (
     <>
-      Open VSX will be in{' '}
       <Box component='strong' sx={{ fontWeight: 700 }}>
-        read only mode
+        Trusted Publishing
       </Box>{' '}
-      from{' '}
-      <Box component='strong' sx={{ fontWeight: 700 }}>
-        10:00AM EST - 4:00PM EST on Tuesday September 29th
-      </Box>
-      . Publishing and related activities will be disabled during this time.
+      is now available: publish your extensions straight from CI, without storing an access token as a secret. See the{' '}
+      <Link color='secondary' underline='hover' href={`${REPO_URL}/wiki/Trusted-Publishing`}>
+        documentation
+      </Link>{' '}
+      to get started.
     </>
   );
 
@@ -338,10 +337,10 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
           dismissButton: {
             show: true
           },
-          color: 'warning'
+          color: 'info'
         },
         cookie: {
-          key: 'Read-Only-Announcement-2026-09-29',
+          key: 'Trusted-Publishing-Announcement-2026-09-30',
           value: 'closed',
           path: '/'
         }
