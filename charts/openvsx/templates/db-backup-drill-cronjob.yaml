@@ -224,6 +224,12 @@ spec:
               value: {{ .Values.dbBackupDrill.drillPrefix | quote }}
             - name: MAX_AGE_HOURS
               value: {{ .Values.dbBackupDrill.reaper.maxAgeHours | int64 | quote }}
+            - name: GAMEDAY_MAX_AGE_HOURS
+              value: {{ .Values.dbBackupDrill.reaper.gamedayMaxAgeHours | default 0 | int64 | quote }}
+            - name: GAMEDAY_PREFIX
+              value: {{ .Values.dbBackupDrill.reaper.gamedayPrefix | default "" | quote }}
+            - name: GAMEDAY_NAMESPACE
+              value: {{ .Values.dbBackupDrill.reaper.gamedayNamespace | default "" | quote }}
             - name: AWS_REGION
               value: {{ .Values.dbBackupDrill.s3.region | quote }}
             - name: AWS_CLI_INSTALL
@@ -249,6 +255,50 @@ spec:
               name: {{ $cmName }}
               defaultMode: 0555
 ---
+{{- $gd := .Values.dbBackupDrill.reaper }}
+{{- if gt (($gd.gamedayMaxAgeHours | default 0) | int) 0 }}
+{{- if lt ($gd.gamedayMaxAgeHours | int) 4 }}
+{{- fail "dbBackupDrill.reaper.gamedayMaxAgeHours must be 0 (off) or at least 4, longer than a game day." }}
+{{- end }}
+{{- if not (hasPrefix "openvsx-gameday-" ($gd.gamedayPrefix | default "")) }}
+{{- fail "dbBackupDrill.reaper.gamedayPrefix must start with openvsx-gameday- (the IAM policy only allows that prefix)." }}
+{{- end }}
+{{- if or (not (hasSuffix "-dr" ($gd.gamedayNamespace | default ""))) (eq $gd.gamedayNamespace .Values.namespace) }}
+{{- fail "dbBackupDrill.reaper.gamedayNamespace must end in -dr and must not be the release namespace." }}
+{{- end }}
+# Lets the reaper delete the game-day copy's namespace, and no other: resourceNames pins it.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.name }}-gameday-reaper-{{ .Values.environment }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-drill-reaper
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  resourceNames: [{{ $gd.gamedayNamespace | quote }}]
+  verbs: ["get", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.name }}-gameday-reaper-{{ .Values.environment }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+    type: db-drill-reaper
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.name }}-gameday-reaper-{{ .Values.environment }}
+subjects:
+- kind: ServiceAccount
+  name: {{ $sa }}
+  namespace: {{ .Values.namespace }}
+---
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -564,11 +614,15 @@ data:
     REASON=""
     REAPED=0
     FOUND=0
+    # Game-day counts are kept apart: the alert reads found - reaped, and a young game day
+    # being kept is not a failure.
+    GD_FOUND=0
+    GD_REAPED=0
 
     report() {
       rc=$?
       [ "$rc" -eq 0 ] && STATUS=ok
-      LINE="job=openvsx-db-drill-reaper env=${ENVIRONMENT} status=${STATUS} rc=${rc} found=${FOUND} reaped=${REAPED} max_age_h=${MAX_AGE_HOURS} reason=${REASON}"
+      LINE="job=openvsx-db-drill-reaper env=${ENVIRONMENT} status=${STATUS} rc=${rc} found=${FOUND} reaped=${REAPED} max_age_h=${MAX_AGE_HOURS} gameday_found=${GD_FOUND} gameday_reaped=${GD_REAPED} gameday_max_age_h=${GAMEDAY_MAX_AGE_HOURS} reason=${REASON}"
       echo "${LINE}"
       push_loki openvsx-db-drill-reaper "${STATUS}" "${LINE}"
       exit "$rc"
@@ -609,4 +663,104 @@ data:
         echo "keep ${ID} created=${CREATED} (younger than ${MAX_AGE_HOURS}h)"
       fi
     done < /tmp/drills.txt
+
+    [ "${GAMEDAY_MAX_AGE_HOURS}" -gt 0 ] || exit 0
+
+    # ── Game-day leftovers (RESTORE-DRILL.md Part 4) ──
+    # A name match alone never deletes: the resource must also carry purpose=game-day, which
+    # the runbook sets at creation. A gameday-named resource without it fails the run, so it
+    # is reported instead of lingering.
+    # Validate every setting before the first call, so a bad one deletes nothing.
+    [ "${GAMEDAY_MAX_AGE_HOURS}" -ge 4 ] || { REASON="bad-gameday-max-age"; exit 91; }
+    case "${GAMEDAY_PREFIX}" in openvsx-gameday-*) ;; *) REASON="bad-gameday-prefix"; exit 91 ;; esac
+    case "${GAMEDAY_NAMESPACE}" in
+      "${K8S_NAMESPACE}") REASON="bad-gameday-namespace"; exit 91 ;;
+      ?*-dr) ;;
+      *) REASON="bad-gameday-namespace"; exit 91 ;;
+    esac
+    GD_CUTOFF_ISO=$(iso_utc_at $(( NOW - GAMEDAY_MAX_AGE_HOURS * 3600 )))
+    case "${GD_CUTOFF_ISO}" in
+      [0-9][0-9][0-9][0-9]-[0-9][0-9]-*) ;;
+      *) REASON="cannot-render-cutoff"; exit 90 ;;
+    esac
+    echo "reaping ${GAMEDAY_PREFIX}* and namespace ${GAMEDAY_NAMESPACE} created before ${GD_CUTOFF_ISO}Z"
+    UNTAGGED=""
+
+    is_gameday() {
+      case "$1" in "${GAMEDAY_PREFIX}"?*) return 0 ;; esac
+      echo "REFUSING to touch '$1' — not a ${GAMEDAY_PREFIX}* resource"; REASON="refused-non-gameday:$1"; return 1
+    }
+    # Only a well-formed timestamp can count as old; a missing one ("None", empty) never does.
+    older() {
+      case "$1" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T*) ;; *) return 1 ;; esac
+      [ "$(printf '%s' "$1" | cut -c1-19)" \< "${GD_CUTOFF_ISO}" ]
+    }
+
+    aws rds describe-db-instances --region "${AWS_REGION}" \
+      --query "DBInstances[?starts_with(DBInstanceIdentifier,'${GAMEDAY_PREFIX}')].[DBInstanceIdentifier,InstanceCreateTime,DBInstanceStatus,TagList[?Key=='purpose'].Value|[0]]" \
+      --output text > /tmp/gd-db.txt
+    while IFS="$(printf '\t')" read -r ID CREATED STATE PURPOSE; do
+      [ -n "${ID:-}" ] || continue
+      GD_FOUND=$(( GD_FOUND + 1 ))
+      is_gameday "${ID}" || exit 1
+      case "${STATE}" in deleting|deleted) echo "skip ${ID} (${STATE})"; continue ;; esac
+      [ "${PURPOSE}" = "game-day" ] || { UNTAGGED="${UNTAGGED} ${ID}"; continue; }
+      if older "${CREATED}"; then
+        echo "orphan: ${ID} created=${CREATED}"
+        aws rds delete-db-instance --region "${AWS_REGION}" --db-instance-identifier "${ID}" \
+          --skip-final-snapshot --delete-automated-backups >/dev/null
+        GD_REAPED=$(( GD_REAPED + 1 ))
+      else
+        echo "keep ${ID} created=${CREATED}"
+      fi
+    done < /tmp/gd-db.txt
+
+    aws elasticache describe-replication-groups --region "${AWS_REGION}" \
+      --query "ReplicationGroups[?starts_with(ReplicationGroupId,'${GAMEDAY_PREFIX}')].[ReplicationGroupId,ReplicationGroupCreateTime,Status,ARN]" \
+      --output text > /tmp/gd-cache.txt
+    while IFS="$(printf '\t')" read -r ID CREATED STATE ARN; do
+      [ -n "${ID:-}" ] || continue
+      GD_FOUND=$(( GD_FOUND + 1 ))
+      is_gameday "${ID}" || exit 1
+      case "${STATE}" in deleting) echo "skip ${ID} (${STATE})"; continue ;; esac
+      PURPOSE=$(aws elasticache list-tags-for-resource --region "${AWS_REGION}" --resource-name "${ARN}" \
+        --query "TagList[?Key=='purpose'].Value|[0]" --output text)
+      [ "${PURPOSE}" = "game-day" ] || { UNTAGGED="${UNTAGGED} ${ID}"; continue; }
+      if older "${CREATED}"; then
+        echo "orphan: ${ID} created=${CREATED}"
+        aws elasticache delete-replication-group --region "${AWS_REGION}" --replication-group-id "${ID}" >/dev/null
+        GD_REAPED=$(( GD_REAPED + 1 ))
+      else
+        echo "keep ${ID} created=${CREATED}"
+      fi
+    done < /tmp/gd-cache.txt
+
+    # The namespace holds the app copy, its Elasticsearch and the Helm release; deleting it
+    # removes all three. RBAC allows this one namespace name and nothing else.
+    if [ -n "${GAMEDAY_NAMESPACE}" ]; then
+      command -v curl >/dev/null 2>&1 || apk add --no-cache curl >/dev/null 2>&1 || true
+      command -v curl >/dev/null 2>&1 || { REASON="curl-not-available"; exit 90; }
+      SA_DIR=/var/run/secrets/kubernetes.io/serviceaccount
+      API="https://kubernetes.default.svc/api/v1/namespaces/${GAMEDAY_NAMESPACE}"
+      kube() { curl -sS --cacert "${SA_DIR}/ca.crt" -H "Authorization: Bearer $(cat "${SA_DIR}/token")" "$@"; }
+      CODE=$(kube -o /tmp/gd-ns.json -w '%{http_code}' "${API}")
+      case "${CODE}" in
+        404) echo "no namespace ${GAMEDAY_NAMESPACE}" ;;
+        200)
+          GD_FOUND=$(( GD_FOUND + 1 ))
+          NS_INFO=$(python3 -c 'import json,sys;d=json.load(open(sys.argv[1]));print(d["metadata"]["creationTimestamp"], d.get("status",{}).get("phase",""))' /tmp/gd-ns.json)
+          CREATED=${NS_INFO%% *}; PHASE=${NS_INFO#* }
+          if [ "${PHASE}" = "Terminating" ]; then echo "skip namespace ${GAMEDAY_NAMESPACE} (Terminating)"
+          elif older "${CREATED}"; then
+            echo "orphan: namespace ${GAMEDAY_NAMESPACE} created=${CREATED}"
+            CODE=$(kube -o /dev/null -w '%{http_code}' -X DELETE "${API}")
+            case "${CODE}" in 200|202) GD_REAPED=$(( GD_REAPED + 1 )) ;; *) REASON="namespace-delete-http-${CODE}"; exit 1 ;; esac
+          else
+            echo "keep namespace ${GAMEDAY_NAMESPACE} created=${CREATED}"
+          fi ;;
+        *) REASON="namespace-get-http-${CODE}"; exit 1 ;;
+      esac
+    fi
+
+    [ -z "${UNTAGGED}" ] || { REASON="untagged-gameday-resource:$(echo ${UNTAGGED} | tr ' ' ',')"; exit 1; }
 {{- end }}
