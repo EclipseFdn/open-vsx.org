@@ -43,6 +43,7 @@ s3ReplicaCheck:
 website:
   lokiUrl: "http://127.0.0.1:1/loki/api/v1/push"
 
-# Delete-on-release storage, so teardown leaves no EBS volume behind.
+# Delete-on-release storage, so teardown leaves no EBS volume behind. gp2 cannot provision on
+# EKS Auto Mode; gp3-delete is the cluster's gp3 class with reclaimPolicy Delete.
 es:
-  storage_class: gp2
+  storage_class: gp3-delete
