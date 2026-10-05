@@ -257,6 +257,10 @@ clamav:
     MAX_RECURSION: 16
     MAX_THREADS: 4
     SCAN_TIMEOUT_MINUTES: 5
+    # clamav-rest's own HTTP server closes the connection once this elapses, independent of
+    # the scan itself or any client-side timeout; it must stay comfortably above SCAN_TIMEOUT_MINUTES
+    # or a slow scan gets cut off mid-flight and its result is lost even though scanning keeps running.
+    WRITE_TIMEOUT_SECONDS: 360
 
 yara:
   enabled: true
