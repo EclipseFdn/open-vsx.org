@@ -22,7 +22,9 @@ metadata:
 #
 # Compares the latest S3 Inventory of the source bucket with that of its replica: every
 # source file older than the comparison cutoff must exist in the replica with the same size
-# and ETag, and none may be FAILED or stuck PENDING. Replica-only files are counted as `extra`.
+# and ETag, and none may be FAILED or stuck PENDING. Files the two listings disagree on are
+# re-checked live, so a delete or overwrite between the listings is not reported as missing.
+# Replica-only files are counted as `extra`.
 # A small random sample is then read from both sides and compared by sha256. Read-only; the
 # outcome is pushed to Loki for alerting.
 apiVersion: batch/v1
@@ -88,6 +90,8 @@ spec:
               value: {{ $c.sampleSize | int64 | quote }}
             - name: SAMPLE_MAX_BYTES
               value: {{ $c.sampleMaxBytes | int64 | quote }}
+            - name: RECHECK_MAX
+              value: {{ $c.recheckMax | default 1000 | int64 | quote }}
             - name: REPORT_TO_LOKI
               value: {{ $c.reportToLoki | quote }}
             - name: AWS_RETRY_MODE
@@ -138,7 +142,7 @@ data:
     STARTED_EPOCH=$(date -u +%s)
     STATUS=failed; STAGE=start; REASON=""
     SRC_INV=""; DST_INV=""; SRC_OBJECTS=0; CHECKED=0
-    MISSING=0; MISMATCH=0; FAILED_REPL=0; STALE_PENDING=0; SAMPLE_OK=0; SAMPLE_BAD=0; FOUND=0; EXTRA=0
+    MISSING=0; MISMATCH=0; FAILED_REPL=0; STALE_PENDING=0; SAMPLE_OK=0; SAMPLE_BAD=0; FOUND=0; EXTRA=0; RECHECKED_OK=0
     TAB=$(printf '\t')
 
     push_loki() {
@@ -159,7 +163,7 @@ data:
       PROBLEMS=${FOUND}
       [ "${STATUS}" = "failed" ] && [ "${PROBLEMS}" -eq 0 ] && PROBLEMS=1
       DURATION=$(( $(date -u +%s) - STARTED_EPOCH ))
-      LINE="job=${JOB} env=${ENVIRONMENT} status=${STATUS} problems=${PROBLEMS} found=${FOUND} stage=${STAGE} duration_s=${DURATION} source_inventory=${SRC_INV} replica_inventory=${DST_INV} source_objects=${SRC_OBJECTS} checked=${CHECKED} missing=${MISSING} mismatch=${MISMATCH} failed_replication=${FAILED_REPL} stale_pending=${STALE_PENDING} extra=${EXTRA} sample_ok=${SAMPLE_OK} sample_bad=${SAMPLE_BAD} reason=${REASON:-none}"
+      LINE="job=${JOB} env=${ENVIRONMENT} status=${STATUS} problems=${PROBLEMS} found=${FOUND} stage=${STAGE} duration_s=${DURATION} source_inventory=${SRC_INV} replica_inventory=${DST_INV} source_objects=${SRC_OBJECTS} checked=${CHECKED} missing=${MISSING} mismatch=${MISMATCH} failed_replication=${FAILED_REPL} stale_pending=${STALE_PENDING} extra=${EXTRA} rechecked_ok=${RECHECKED_OK} sample_ok=${SAMPLE_OK} sample_bad=${SAMPLE_BAD} reason=${REASON:-none}"
       echo "${LINE}"
       push_loki "${STATUS}" "${LINE}"
       exit "$rc"
@@ -253,16 +257,55 @@ data:
     EXTRA=$(cut -f1 dst.sorted | comm -13 src.keys - | wc -l)
     rm -f src.all dst.all src.checked src.keys
 
-    MISSING=$(join -t "${TAB}" -v1 -o 1.1 src.expect dst.sorted | wc -l)
+    join -t "${TAB}" -v1 -o 1.1 src.expect dst.sorted > missing.keys
     # Replication copies the object unchanged, so the replica keeps the source's size and ETag.
     join -t "${TAB}" -o 1.1,1.2,1.3,2.2,2.3 src.expect dst.sorted > joined
     # ""-concatenation forces string comparison: an all-digit or "...1e8480" ETag would
     # otherwise compare as a number.
-    MISMATCH=$(awk -F'\t' '($2 "") != ($4 "") || ($3 "") != ($5 "")' joined | wc -l)
+    awk -F'\t' '($2 "") != ($4 "") || ($3 "") != ($5 "") {print $1}' joined > mismatch.keys
 
-    STAGE=sample
     # Inventory keys are form-encoded ('+' = space). `env printf` is coreutils, which handles \xHH.
     decode() { env printf '%b' "$(printf '%s' "$1" | sed -e 's/+/ /g' -e 's/%\([0-9A-Fa-f][0-9A-Fa-f]\)/\\x\1/g')"; }
+
+    # The two listings are taken minutes apart, so a file deleted or overwritten in between looks
+    # missing or different. Ask S3 about each such file now: gone from the source means it was
+    # deleted; the same ETag on both sides means the replica caught up. Any other answer
+    # (403, an error, or more than RECHECK_MAX files) keeps it counted.
+    STAGE=recheck
+    etag_now() { # $1 bucket, $2 region, $3 key -> ETag; "gone" on 404; "error" otherwise
+      out=$(aws s3api head-object --bucket "$1" --region "$2" --key "$3" --query ETag --output text 2>&1) \
+        && { printf '%s' "${out}" | tr -d '"'; return; }
+      case "${out}" in *"(404)"*|*"Not Found"*) echo gone ;; *) echo error ;; esac
+    }
+    # HeadObject has no error body, so a missing bucket also reads as 404: only trust a 404 when
+    # both buckets answer.
+    BUCKETS_OK=no
+    aws s3api head-bucket --bucket "${SOURCE_BUCKET}" --region "${SOURCE_REGION}" >/dev/null 2>&1 \
+      && aws s3api head-bucket --bucket "${REPLICA_BUCKET}" --region "${REPLICA_REGION}" >/dev/null 2>&1 \
+      && BUCKETS_OK=yes
+    recheck() { # $1 key file, $2 label; prints how many are still a problem
+      { [ "${BUCKETS_OK}" = yes ] && [ "$(wc -l < "$1")" -le "${RECHECK_MAX}" ]; } || { wc -l < "$1"; return; }
+      still=0
+      while read -r enc; do
+        key=$(decode "${enc}")
+        a=$(etag_now "${SOURCE_BUCKET}" "${SOURCE_REGION}" "${key}")
+        b=$(etag_now "${REPLICA_BUCKET}" "${REPLICA_REGION}" "${key}")
+        if [ "$a" = gone ] || { [ "$a" != error ] && [ "$a" = "$b" ]; }; then
+          echo "${key}" >> recheck.ok
+        else
+          still=$((still+1))
+          # Names go to the pod log only; the Loki line stays one summary.
+          [ "${still}" -le 50 ] && echo "$2: ${key} (source ${a}, replica ${b})" >&2
+        fi
+      done < "$1"
+      echo "${still}"
+    }
+    : > recheck.ok
+    MISSING=$(recheck missing.keys missing)
+    MISMATCH=$(recheck mismatch.keys mismatch)
+    RECHECKED_OK=$(wc -l < recheck.ok)
+
+    STAGE=sample
     awk -F'\t' -v m="${SAMPLE_MAX_BYTES}" '($2 "") == ($4 "") && ($3 "") == ($5 "") && $2 > 0 && $2 <= m {print $1}' joined \
       | shuf -n "${SAMPLE_SIZE}" > sample
     rm -f joined
