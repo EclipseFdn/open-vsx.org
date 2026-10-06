@@ -179,6 +179,8 @@ s3ReplicaCheck:
   minSourceSharePercent: 90
   sampleSize: 20
   sampleMaxBytes: 52428800
+  # Files the two listings disagree on are re-checked live; more than this and they all count.
+  recheckMax: 1000
   # Push straight to Loki, like the DB drill: Alloy drops logs of finished Job pods.
   reportToLoki: true
   image:
