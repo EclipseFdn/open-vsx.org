@@ -212,7 +212,7 @@ ingress:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/security-groups: "sg-04eb53c6c5eed3b52"
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-central-1:365555376529:certificate/c247a8c7-31fa-4116-bd4a-c1e5aebad840"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-central-1:365555376529:certificate/b3835b51-0271-404d-8b35-31f14bd651cc"
     alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}, {"HTTP": 80}]'
     alb.ingress.kubernetes.io/actions.ssl-redirect: >
