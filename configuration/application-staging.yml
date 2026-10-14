@@ -29,6 +29,13 @@ ovsx:
   webui:
     url: "https://staging.open-vsx.org"
 
+  # Search relevance weights (used when sortBy=relevance). Upstream defaults are 1.0
+  # for rating/downloads/timestamp. Halving timestamp so recently published
+  # extensions don't outrank established ones as easily. Staging only for now.
+  search:
+    relevance:
+      timestamp: 0.5
+
   trusted-publishing:
     enabled: true
     audience: 'https://staging.open-vsx.org'
