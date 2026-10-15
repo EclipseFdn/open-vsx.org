@@ -381,6 +381,7 @@ analyticsCnpg:
   instances: 2
   # Maintained by Timescale and includes the TSL features the app uses. Pinned by digest;
   # bump on each Timescale release, as fixed tags are never rebuilt.
+  postgresMajor: 17
   image: "timescale/timescaledb-ha:pg17.11-ts2.30.2@sha256:20534b8a06680956336604f3735d5811807f5244c6a364c761a70dea9c63de36"
   backupRoleArn: "arn:aws:iam::365555376529:role/openvsx-analytics-backup-staging"
   storage:

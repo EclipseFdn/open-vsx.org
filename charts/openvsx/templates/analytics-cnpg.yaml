@@ -3,6 +3,17 @@
 {{- $name := printf "%s-analytics" .Values.environment }}
 # Analytics TimescaleDB on CloudNativePG: HA cluster with WAL archiving and daily base backups
 # to S3 through the Barman Cloud plugin. Needs the CNPG operator, plugin and cert-manager.
+# CNPG cannot read the major version from timescaledb-ha tags, so it is declared in a catalog.
+apiVersion: postgresql.cnpg.io/v1
+kind: ImageCatalog
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  images:
+    - major: {{ $c.postgresMajor }}
+      image: {{ $c.image | quote }}
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -10,7 +21,11 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   instances: {{ $c.instances }}
-  imageName: {{ $c.image | quote }}
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: {{ $name }}
+    major: {{ $c.postgresMajor }}
   # The timescaledb-ha image runs as postgres uid/gid 1000, not the CNPG default 26.
   postgresUID: 1000
   postgresGID: 1000
