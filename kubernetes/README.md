@@ -28,9 +28,9 @@ kubectl apply -f clusterroles.yaml
 
 ## Analytics (TimescaleDB)
 
-`aws-staging` stores extension analytics in an in-cluster `timescaledb-single` release deployed as
-a subchart. The `admin` role and the `openvsx_analytics` database are created by the post-init
-scripts in `charts/openvsx/templates/timescaledb-analytics-init.yaml`.
+`aws-staging` stores extension analytics in an in-cluster CloudNativePG cluster with TimescaleDB
+(`charts/openvsx/templates/analytics-cnpg.yaml`). The `admin` role and the `openvsx_analytics`
+database are created by the cluster's bootstrap.
 
 ### Rotating the analytics database password
 

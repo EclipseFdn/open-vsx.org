@@ -88,13 +88,8 @@ spec:
         - name: OVSX_ANALYTICS_DATASOURCE_PASSWORD
           valueFrom:
             secretKeyRef:
-              {{- if eq .Values.analytics.backend "cnpg" }}
               name: {{ .Values.environment }}-analytics-app
               key: password
-              {{- else }}
-              name: {{ .Values.analytics.credentialsSecretName }}
-              key: PATRONI_admin_PASSWORD
-              {{- end }}
         {{- end }}
         volumeMounts:
         - name: deployment-configuration
