@@ -391,6 +391,14 @@ analyticsCnpg:
     limits:
       cpu: "1"
       memory: "2Gi"
+  # Sized for the 2Gi memory limit above and EBS SSD storage; CNPG defaults assume more memory
+  # and spinning disks. Revisit together with resources.
+  parameters:
+    shared_buffers: 256MB
+    effective_cache_size: 768MB
+    work_mem: 16MB
+    maintenance_work_mem: 128MB
+    random_page_cost: "1.1"
   backup:
     destinationPath: "s3://openvsx-analytics-backups-staging/"
     retentionPolicy: "30d"
