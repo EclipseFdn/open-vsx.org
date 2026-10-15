@@ -35,6 +35,7 @@ spec:
       - timescaledb
     parameters:
       timescaledb.telemetry_level: "off"
+      wal_compression: lz4
   bootstrap:
     initdb:
       database: {{ .Values.analytics.database }}

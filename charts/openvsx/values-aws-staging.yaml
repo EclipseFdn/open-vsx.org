@@ -387,8 +387,9 @@ analyticsCnpg:
   storage:
     size: 10Gi
     storageClass: gp3
+  # Sized for bulk loads (restores, backfills), which write roughly the data size in WAL.
   walStorage:
-    size: 2Gi
+    size: 10Gi
     storageClass: gp3
   resources:
     requests:
