@@ -374,6 +374,34 @@ timescaledb-single:
     "karpenter.sh/do-not-disrupt": "true"
     "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
 
+# Analytics on CloudNativePG, running next to timescaledb-single until the data is moved and
+# the app is switched over. Role and bucket come from tf-resources (staging iam/ and s3/).
+analyticsCnpg:
+  enabled: true
+  instances: 2
+  # Maintained by Timescale and includes the TSL features the app uses. Pinned by digest;
+  # bump on each Timescale release, as fixed tags are never rebuilt.
+  image: "timescale/timescaledb-ha:pg17.11-ts2.30.2@sha256:20534b8a06680956336604f3735d5811807f5244c6a364c761a70dea9c63de36"
+  backupRoleArn: "arn:aws:iam::365555376529:role/openvsx-analytics-backup-staging"
+  storage:
+    size: 10Gi
+    storageClass: gp3
+  walStorage:
+    size: 2Gi
+    storageClass: gp3
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+  backup:
+    destinationPath: "s3://openvsx-analytics-backups-staging/"
+    retentionPolicy: "30d"
+    # CNPG cron has a leading seconds field.
+    schedule: "0 0 3 * * *"
+
 yara:
   enabled: true
   name: "yara"

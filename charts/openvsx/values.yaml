@@ -197,6 +197,11 @@ analytics:
 timescaledb-single:
   enabled: false
 
+# Analytics TimescaleDB on CloudNativePG (templates/analytics-cnpg.yaml), replacing
+# timescaledb-single. Needs the CNPG operator, Barman Cloud plugin and cert-manager.
+analyticsCnpg:
+  enabled: false
+
 # ── Logical Postgres backup (templates/db-backup-cronjob.yaml) ────────────────
 # OFF by default and everywhere except aws-staging. Only meaningful where the database
 # is the in-cluster postgresql-ha StatefulSet; the RDS environments are covered by RDS
