@@ -191,6 +191,8 @@ clamav:
 # (ovsx.analytics.*) pointing at the timescaledb-single instance below.
 analytics:
   enabled: false
+  # Which database the app connects to: cnpg (analyticsCnpg below) or timescaledb-single.
+  backend: timescaledb-single
 
 # TimescaleDB (single-node w/ optional Patroni HA) backing `analytics` above.
 # https://github.com/timescale/helm-charts/tree/main/charts/timescaledb-single

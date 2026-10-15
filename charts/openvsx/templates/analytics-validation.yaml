@@ -8,11 +8,22 @@ nothing else enforces it: subchart values live in a plain values file and cannot
 `.Values.environment`, so they are hardcoded there while the templates here derive them.
 */}}
 {{- $ts := index .Values "timescaledb-single" | default dict }}
-{{- if ne (.Values.analytics.enabled | toString) ($ts.enabled | toString) }}
-  {{- fail (printf "analytics.enabled (%v) and timescaledb-single.enabled (%v) must match: analytics without the subchart points the application at a database host that does not exist, and the application fails at startup." .Values.analytics.enabled $ts.enabled) }}
-{{- end }}
 {{- if .Values.analytics.enabled }}
-  {{/* analytics.host is used to build the JDBC URL; it must resolve to the subchart's Service. */}}
+  {{- if not (has .Values.analytics.backend (list "cnpg" "timescaledb-single")) }}
+    {{- fail (printf "analytics.backend must be cnpg or timescaledb-single, got %q." (toString .Values.analytics.backend)) }}
+  {{- end }}
+  {{- if and (eq .Values.analytics.backend "cnpg") (not .Values.analyticsCnpg.enabled) }}
+    {{- fail "analytics.backend is cnpg but analyticsCnpg.enabled is false: the application would point at a cluster that does not exist." }}
+  {{- end }}
+  {{- if and (eq .Values.analytics.backend "timescaledb-single") (not $ts.enabled) }}
+    {{- fail "analytics.backend is timescaledb-single but timescaledb-single.enabled is false: the application would point at a host that does not exist." }}
+  {{- end }}
+{{- end }}
+{{- if and $ts.enabled (not .Values.analytics.enabled) }}
+  {{- fail "timescaledb-single.enabled requires analytics.enabled: its bootstrap ConfigMap and TLS Secret are only rendered with analytics on." }}
+{{- end }}
+{{- if $ts.enabled }}
+  {{/* analytics.host names the subchart's Service (the JDBC host when analytics.backend is timescaledb-single). */}}
   {{- if ne .Values.analytics.host $ts.fullnameOverride }}
     {{- fail (printf "analytics.host (%s) must equal timescaledb-single.fullnameOverride (%s) - it is the Service DNS name the application connects to." .Values.analytics.host ($ts.fullnameOverride | toString)) }}
   {{- end }}
