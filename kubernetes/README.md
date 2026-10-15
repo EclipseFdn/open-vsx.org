@@ -34,16 +34,17 @@ scripts in `charts/openvsx/templates/timescaledb-analytics-init.yaml`.
 
 ### Rotating the analytics database password
 
-The post-init scripts run **once**, when Patroni bootstraps a fresh cluster. `openvsx/<env>/analytics-timescaledb`
-in Secrets Manager is the source of truth for the password, but rotating it there only updates the
-Kubernetes Secret and the value the application connects with — the database keeps the old
-password, and the app then fails password auth on startup. Change the database first:
+`openvsx/<env>/analytics-timescaledb` (property `admin-password`) in Secrets Manager is the source
+of truth for the analytics password. Rotating it there only updates the Kubernetes Secret and the
+value the application connects with; the database keeps the old password until the role is changed,
+and the app's analytics calls then fail password auth. Change the database first:
 
-1. Set the new password on the role, from inside the primary pod:
+1. Set the new password on the role, from inside the CloudNativePG primary:
 
    ```bash
-   kubectl exec -n open-vsx-org-staging -it staging-analytics-timescaledb-0 -c timescaledb -- \
-     psql -U postgres
+   P=$(kubectl get cluster.postgresql.cnpg.io -n open-vsx-org-staging staging-analytics \
+     -o jsonpath='{.status.currentPrimary}')
+   kubectl exec -n open-vsx-org-staging -it "$P" -c postgres -- psql
    ```
 
    then, at the prompt:
@@ -53,24 +54,18 @@ password, and the app then fails password auth on startup. Change the database f
    ```
 
    Use `\password` rather than a hand-written `ALTER ROLE ... PASSWORD`: it hashes the password
-   client-side, so only the SCRAM verifier reaches the server, and it suppresses statement logging
-   around the `ALTER ROLE` it issues. A hand-written one would be written verbatim to the pod log,
-   since the cluster runs with `log_statement = 'ddl'` and `ALTER ROLE` is DDL.
+   client-side, so only the SCRAM verifier reaches the server and nothing readable ends up in logs.
 
 2. Store the same value under the `admin-password` property of
    `openvsx/<env>/analytics-timescaledb` in Secrets Manager.
 
-3. Wait for External Secrets to refresh `<env>-analytics-timescaledb-credentials` (the
-   `externalSecrets.refreshInterval` in the values file), then restart the application so it picks
-   up the new value — it is injected as an environment variable at pod start:
+3. Wait for External Secrets to refresh `<env>-analytics-app` (the `externalSecrets.refreshInterval`
+   in the values file), then restart the application so it picks up the new value — it is injected
+   as an environment variable at pod start:
 
    ```bash
    kubectl rollout restart -n open-vsx-org-staging deployment/open-vsx-org-staging
    ```
-
-Rotating the `superuser-password` or `replication-password` properties is a Patroni concern and
-needs the [timescaledb-single credentials procedure](https://github.com/timescale/helm-charts/blob/main/charts/timescaledb-single/admin-guide.md),
-not this one.
 
 ## Dependencies
 

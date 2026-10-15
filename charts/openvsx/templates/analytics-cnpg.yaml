@@ -36,6 +36,9 @@ spec:
     parameters:
       timescaledb.telemetry_level: "off"
       wal_compression: lz4
+      {{- range $k, $v := $c.parameters }}
+      {{ $k }}: {{ $v | quote }}
+      {{- end }}
   bootstrap:
     initdb:
       database: {{ .Values.analytics.database }}
