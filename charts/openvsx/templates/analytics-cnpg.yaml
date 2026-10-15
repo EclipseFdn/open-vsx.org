@@ -29,6 +29,9 @@ spec:
   # The timescaledb-ha image runs as postgres uid/gid 1000, not the CNPG default 26.
   postgresUID: 1000
   postgresGID: 1000
+  # Promote the standby before restarting the old primary, so updates only drop connections
+  # briefly. CNPG then rejects a change to both the image and parameters in one update.
+  primaryUpdateMethod: switchover
   enableSuperuserAccess: false
   postgresql:
     shared_preload_libraries:
