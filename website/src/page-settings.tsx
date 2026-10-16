@@ -169,14 +169,10 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
   //---------- ANNOUNCEMENT BANNER
   const bannerContent: FunctionComponent = () => (
     <>
-      <Box component='strong' sx={{ fontWeight: 700 }}>
-        Trusted Publishing
+      <Box component='span' sx={{ color: 'text.secondary' }}>
+        <strong>For publishers</strong> who use the same namespaces on the VS Code Marketplace, there is an upcoming change that tightens up matching rules.
       </Box>{' '}
-      is now available: publish your extensions straight from CI, without storing an access token as a secret. See the{' '}
-      <Link color='secondary' underline='hover' href={`${REPO_URL}/wiki/Trusted-Publishing`}>
-        documentation
-      </Link>{' '}
-      to get started.
+      <Link href='https://blogs.eclipse.org/post/brian-king/stronger-safety-nets-vs-code-marketplace-namespace-matching-open-vsx'>Read more →</Link>
     </>
   );
 
@@ -340,7 +336,7 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
           color: 'info'
         },
         cookie: {
-          key: 'Trusted-Publishing-Announcement-2026-09-30',
+          key: 'namespace-check-2026-10-16',
           value: 'closed',
           path: '/'
         }
