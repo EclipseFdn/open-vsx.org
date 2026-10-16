@@ -170,9 +170,12 @@ export default function createPageSettings(theme: Theme, prefersDarkMode: boolea
   const bannerContent: FunctionComponent = () => (
     <>
       <Box component='span' sx={{ color: 'text.secondary' }}>
-        <strong>For publishers</strong> who use the same namespaces on the VS Code Marketplace, there is an upcoming change that tightens up matching rules.
+        <strong>For publishers</strong> who use the same namespaces on the VS Code Marketplace, there is an upcoming
+        change that tightens up matching rules.
       </Box>{' '}
-      <Link href='https://blogs.eclipse.org/post/brian-king/stronger-safety-nets-vs-code-marketplace-namespace-matching-open-vsx'>Read more →</Link>
+      <Link href='https://blogs.eclipse.org/post/brian-king/stronger-safety-nets-vs-code-marketplace-namespace-matching-open-vsx'>
+        Read more →
+      </Link>
     </>
   );
 
