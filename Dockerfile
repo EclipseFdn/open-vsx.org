@@ -6,6 +6,6 @@
 # module's configuration/mail-templates - nothing left to build here.
 #
 # bump to deploy a newer openvsx-ef build
-ARG WEBSITE_IMAGE_TAG=c9f966a
+ARG WEBSITE_IMAGE_TAG=7c1ae3d
 
 FROM ghcr.io/eclipsefdn/openvsx-website-snapshot:${WEBSITE_IMAGE_TAG}
