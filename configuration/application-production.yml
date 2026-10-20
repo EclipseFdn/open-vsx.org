@@ -12,6 +12,9 @@ server:
     connection-idle-timeout: 310000
 
 ovsx:
+  analytics:
+    enabled: true
+
   access-token:
     prefix: ovsx
     expiration: 0
