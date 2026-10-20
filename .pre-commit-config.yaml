@@ -1,4 +1,3 @@
-exclude: ^website/.yarn/.*$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v6.0.0
@@ -17,12 +16,3 @@ repos:
   hooks:
     - id: zizmor
       args: [ --min-severity, low ]
-- repo: local
-  hooks:
-    - id: lint
-      name: eslint & prettier
-      entry: bash -c 'cd website && yarn lint' --
-      language: system
-      require_serial: true
-      files: ^website/
-      types: [file]

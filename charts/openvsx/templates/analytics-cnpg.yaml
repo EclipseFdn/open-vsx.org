@@ -1,0 +1,132 @@
+{{- if .Values.analyticsCnpg.enabled }}
+{{- $c := .Values.analyticsCnpg }}
+{{- $name := printf "%s-analytics" .Values.environment }}
+# Analytics TimescaleDB on CloudNativePG: HA cluster with WAL archiving and daily base backups
+# to S3 through the Barman Cloud plugin. Needs the CNPG operator, plugin and cert-manager.
+# CNPG cannot read the major version from timescaledb-ha tags, so it is declared in a catalog.
+apiVersion: postgresql.cnpg.io/v1
+kind: ImageCatalog
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  images:
+    - major: {{ $c.postgresMajor }}
+      image: {{ $c.image | quote }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  instances: {{ $c.instances }}
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: {{ $name }}
+    major: {{ $c.postgresMajor }}
+  # The timescaledb-ha image runs as postgres uid/gid 1000, not the CNPG default 26.
+  postgresUID: 1000
+  postgresGID: 1000
+  # Promote the standby before restarting the old primary, so updates only drop connections
+  # briefly. CNPG then rejects a change to both the image and parameters in one update.
+  primaryUpdateMethod: switchover
+  enableSuperuserAccess: false
+  postgresql:
+    shared_preload_libraries:
+      - timescaledb
+    parameters:
+      timescaledb.telemetry_level: "off"
+      wal_compression: lz4
+      {{- range $k, $v := $c.parameters }}
+      {{ $k }}: {{ $v | quote }}
+      {{- end }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.analytics.database }}
+      owner: {{ .Values.analytics.username }}
+      secret:
+        name: {{ $name }}-app
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS timescaledb
+  storage:
+    size: {{ $c.storage.size }}
+    storageClass: {{ $c.storage.storageClass }}
+  walStorage:
+    size: {{ $c.walStorage.size }}
+    storageClass: {{ $c.walStorage.storageClass }}
+  resources:
+    {{- toYaml $c.resources | nindent 4 }}
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: topology.kubernetes.io/zone
+    podAntiAffinityType: required
+  serviceAccountTemplate:
+    metadata:
+      annotations:
+        eks.amazonaws.com/role-arn: {{ $c.backupRoleArn | quote }}
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: {{ $name }}-backups
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: {{ $name }}-backups
+  namespace: {{ .Values.namespace }}
+spec:
+  retentionPolicy: {{ $c.backup.retentionPolicy | quote }}
+  configuration:
+    destinationPath: {{ $c.backup.destinationPath | quote }}
+    s3Credentials:
+      inheritFromIAMRole: true
+    wal:
+      compression: gzip
+    data:
+      compression: gzip
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: {{ $name }}-daily
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: {{ $c.backup.schedule | quote }}
+  # Take the first base backup on creation instead of waiting for the schedule.
+  immediate: true
+  backupOwnerReference: self
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+  cluster:
+    name: {{ $name }}
+---
+# App role credentials for the bootstrap above. Reuses the existing analytics password so the
+# application's credentials do not change when it is switched over.
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: {{ $name }}-app
+  namespace: {{ .Values.namespace }}
+spec:
+  refreshInterval: {{ .Values.externalSecrets.refreshInterval }}
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ .Values.externalSecrets.clusterSecretStore }}
+  target:
+    name: {{ $name }}-app
+    creationPolicy: Owner
+    template:
+      type: kubernetes.io/basic-auth
+      data:
+        username: {{ .Values.analytics.username | quote }}
+        password: "{{ "{{" }} .password {{ "}}" }}"
+  data:
+    - secretKey: password
+      remoteRef:
+        key: openvsx/{{ .Values.environment }}/analytics-timescaledb
+        property: admin-password
+{{- end }}

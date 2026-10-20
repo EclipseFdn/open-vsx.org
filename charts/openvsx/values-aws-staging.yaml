@@ -75,6 +75,26 @@ inClusterPostgres:
     name: "staging-postgresql-ha-postgresql"
     key: "password"
 
+# ── Logical Postgres backup ───────────────────────────────────────────────────
+# The in-cluster postgresql-ha PVCs are gp3/reclaimPolicy=Delete with no EBS snapshots,
+# so this dump is staging's only recovery point. Reuses the same ESO-pinned credential
+# secret as the app (inClusterPostgres.passwordSecret above) — no second credential path.
+# IRSA: dedicated write-only role (s3:PutObject + s3:AbortMultipartUpload on
+# arn:aws:s3:::eclipse-openvsx-db-backups/staging/* only) — deliberately NOT an extra
+# statement on openvsx-app-staging. The SA name is the IRSA trust subject, so it must
+# stay equal to the one the role's trust policy names.
+dbBackup:
+  enabled: true
+  s3:
+    bucket: "eclipse-openvsx-db-backups"
+    prefix: "staging"
+    region: eu-central-1
+  serviceAccount:
+    create: true
+    name: openvsx-pg-backup
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-pg-backup-staging"
+
 serviceMonitors:
   platformMetrics:
     enabled: true
@@ -261,6 +281,55 @@ clamav:
     # the scan itself or any client-side timeout; it must stay comfortably above SCAN_TIMEOUT_MINUTES
     # or a slow scan gets cut off mid-flight and its result is lost even though scanning keeps running.
     WRITE_TIMEOUT_SECONDS: 360
+
+# Analytics — extension download/usage analytics, stored in the CloudNativePG cluster
+# (analyticsCnpg below). App-side wiring (ovsx.analytics.* datasource) lives in
+# external-secrets.yaml/deployment.yaml. The app keeps serving while this database is
+# unreachable and catches up on analytics afterwards. database/username are used by the
+# CNPG bootstrap. Rotating the password is not just a Secrets Manager edit — see
+# "Rotating the analytics database password" in kubernetes/README.md.
+analytics:
+  enabled: true
+  database: openvsx_analytics
+  username: admin
+
+# Analytics on CloudNativePG; the app uses it (analytics block above). Role and bucket
+# come from tf-resources (staging iam/ and s3/).
+analyticsCnpg:
+  enabled: true
+  instances: 2
+  # Maintained by Timescale and includes the TSL features the app uses. Pinned by digest;
+  # bump on each Timescale release, as fixed tags are never rebuilt.
+  postgresMajor: 17
+  image: "timescale/timescaledb-ha:pg17.11-ts2.30.2@sha256:20534b8a06680956336604f3735d5811807f5244c6a364c761a70dea9c63de36"
+  backupRoleArn: "arn:aws:iam::365555376529:role/openvsx-analytics-backup-staging"
+  storage:
+    size: 10Gi
+    storageClass: gp3
+  # Sized for bulk loads (restores, backfills), which write roughly the data size in WAL.
+  walStorage:
+    size: 10Gi
+    storageClass: gp3
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+  # Sized for the 2Gi memory limit above and EBS SSD storage; CNPG defaults assume more memory
+  # and spinning disks. Revisit together with resources.
+  parameters:
+    shared_buffers: 256MB
+    effective_cache_size: 768MB
+    work_mem: 16MB
+    maintenance_work_mem: 128MB
+    random_page_cost: "1.1"
+  backup:
+    destinationPath: "s3://openvsx-analytics-backups-staging/"
+    retentionPolicy: "30d"
+    # CNPG cron has a leading seconds field.
+    schedule: "0 0 3 * * *"
 
 yara:
   enabled: true

@@ -107,12 +107,14 @@ helm version
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo add postgresql-ha https://charts.bitnami.com/bitnami
 helm repo add eks https://aws.github.io/eks-charts
+helm repo add timescale https://charts.timescale.com
 helm dependency build  "${ROOT_DIR}/charts/openvsx"
 
 printf "==> Running helm upgrade: release='%s' namespace='%s' image_tag='%s'\n" "${release_name}" "${namespace}" "${image_tag}"
 helm upgrade --install "${release_name}" "${ROOT_DIR}/charts/openvsx" \
   -f "${values_file}" \
   --set image.tag="${image_tag}" \
+  --set-file applicationProfile="${ROOT_DIR}/configuration/application-${deployment_env}.yml" \
   --namespace "${namespace}" \
   --create-namespace \
   "${helm_mode_flags[@]}"
