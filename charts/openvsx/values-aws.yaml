@@ -306,39 +306,6 @@ externalSecrets:
 alloy:
   enabled: false
 
-# ── ClamAV ───────────────────────────────────────────────────────────────────
-clamav:
-  enabled: true
-  name: "clamav"
-  replicas: 3
-  persistence:
-    storageClass: "gp3-retain"
-  image:
-    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.2"
-    pullPolicy: Always
-  resources:
-    requests:
-      cpu: 2
-      memory: 4Gi
-    limits:
-      cpu: 4
-      memory: 6Gi
-  service:
-    port: 9000
-  env:
-    MAX_UPLOAD_SIZE_MB: 512
-    MAX_EXTRACTED_SIZE_MB: 512
-    MAX_FILE_COUNT: 100000
-    MAX_SINGLE_FILE_MB: 512
-    MAX_RECURSION: 16
-    MAX_THREADS: 10
-    SCAN_TIMEOUT_MINUTES: 10
-    # clamav-rest's own HTTP server closes the connection once this elapses, independent of
-    # the scan itself or any client-side timeout; it must stay comfortably above SCAN_TIMEOUT_MINUTES
-    # or a slow scan gets cut off mid-flight and its result is lost even though scanning keeps running.
-    WRITE_TIMEOUT_SECONDS: 660
-
 # Analytics — extension download/usage analytics, stored in the CloudNativePG cluster
 # (analyticsCnpg below). App-side wiring (ovsx.analytics.* datasource) lives in
 # external-secrets.yaml/deployment.yaml. The app keeps serving while this database is
@@ -387,6 +354,39 @@ analyticsCnpg:
     retentionPolicy: "30d"
     # CNPG cron has a leading seconds field.
     schedule: "0 0 3 * * *"
+
+# ── ClamAV ───────────────────────────────────────────────────────────────────
+clamav:
+  enabled: true
+  name: "clamav"
+  replicas: 3
+  persistence:
+    storageClass: "gp3-retain"
+  image:
+    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
+    tag: "v0.1.2"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 2
+      memory: 4Gi
+    limits:
+      cpu: 4
+      memory: 6Gi
+  service:
+    port: 9000
+  env:
+    MAX_UPLOAD_SIZE_MB: 512
+    MAX_EXTRACTED_SIZE_MB: 512
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 512
+    MAX_RECURSION: 16
+    MAX_THREADS: 10
+    SCAN_TIMEOUT_MINUTES: 10
+    # clamav-rest's own HTTP server closes the connection once this elapses, independent of
+    # the scan itself or any client-side timeout; it must stay comfortably above SCAN_TIMEOUT_MINUTES
+    # or a slow scan gets cut off mid-flight and its result is lost even though scanning keeps running.
+    WRITE_TIMEOUT_SECONDS: 660
 
 # ── YARA ─────────────────────────────────────────────────────────────────────
 yara:
