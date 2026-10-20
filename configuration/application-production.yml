@@ -36,6 +36,10 @@ ovsx:
   webui:
     url: "https://open-vsx.org"
 
+  publishing:
+    max-content-size: 268435456 # 256 MiB
+    max-override-size: 1073741824 # 1 GiB
+
   trusted-publishing:
     enabled: true
     audience: 'https://open-vsx.org'
