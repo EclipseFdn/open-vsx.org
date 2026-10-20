@@ -12,10 +12,6 @@ server:
     connection-idle-timeout: 310000
 
 ovsx:
-  # Production has no analytics database; the image default (true) would wire the feature without a datasource.
-  analytics:
-    enabled: false
-
   access-token:
     prefix: ovsx
     expiration: 0
