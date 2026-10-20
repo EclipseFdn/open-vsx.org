@@ -339,7 +339,6 @@ clamav:
     # or a slow scan gets cut off mid-flight and its result is lost even though scanning keeps running.
     WRITE_TIMEOUT_SECONDS: 660
 
-# ── YARA ─────────────────────────────────────────────────────────────────────
 # Analytics — extension download/usage analytics, stored in the CloudNativePG cluster
 # (analyticsCnpg below). App-side wiring (ovsx.analytics.* datasource) lives in
 # external-secrets.yaml/deployment.yaml. The app keeps serving while this database is
@@ -389,6 +388,7 @@ analyticsCnpg:
     # CNPG cron has a leading seconds field.
     schedule: "0 0 3 * * *"
 
+# ── YARA ─────────────────────────────────────────────────────────────────────
 yara:
   enabled: true
   name: "yara"
