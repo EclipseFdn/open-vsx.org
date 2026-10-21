@@ -75,6 +75,7 @@ else
   deployment_env="${environment}"
 fi
 
+KUBECONFIG="${KUBECONFIG:-${HOME}/.kube/config}"
 chmod 600 "${KUBECONFIG}"
 
 export HELM_CACHE_HOME="${ROOT_DIR}/.helm/cache"
@@ -89,14 +90,23 @@ if [[ -n "${DRY_RUN}" ]]; then
   printf "==> DRY RUN — render + server-side validate, no changes will be applied\n"
   helm_mode_flags=(--dry-run=server --debug)
 else
-  helm_mode_flags=(--atomic --timeout 10m)
+  # No auto-rollback: the chart owns an ECK Elasticsearch, and ECK rejects version
+  # downgrades, so a rollback can never succeed — it only leaves the release failed.
+  # Safety comes from the Deployment's maxUnavailable=0: old pods serve until new ones are Ready.
+  # Timeout must stay below the Jenkinsfile job timeout so Helm fails cleanly instead of
+  # being killed mid-operation and leaving the release locked in pending-upgrade.
+  helm_major=$(helm version --template '{{.Version}}' | sed -E 's/^v?([0-9]+).*/\1/')
+  if (( helm_major >= 4 )); then
+    helm_mode_flags=(--wait --timeout 25m --force-conflicts)
+  else
+    helm_mode_flags=(--wait --timeout 25m)
+  fi
 fi
 
 helm version
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo add postgresql-ha https://charts.bitnami.com/bitnami
 helm repo add eks https://aws.github.io/eks-charts
-helm repo add timescale https://charts.timescale.com
 helm dependency build  "${ROOT_DIR}/charts/openvsx"
 
 printf "==> Running helm upgrade: release='%s' namespace='%s' image_tag='%s'\n" "${release_name}" "${namespace}" "${image_tag}"
