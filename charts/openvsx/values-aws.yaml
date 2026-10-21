@@ -328,7 +328,7 @@ analyticsCnpg:
   image: "timescale/timescaledb-ha:pg17.11-ts2.30.2@sha256:20534b8a06680956336604f3735d5811807f5244c6a364c761a70dea9c63de36"
   backupRoleArn: "arn:aws:iam::365555376529:role/openvsx-analytics-backup-production"
   storage:
-    size: 10Gi
+    size: 30Gi
     storageClass: gp3
   # Sized for bulk loads (restores, backfills), which write roughly the data size in WAL.
   walStorage:
