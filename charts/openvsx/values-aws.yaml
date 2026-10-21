@@ -313,14 +313,14 @@ alloy:
 # CNPG bootstrap. Rotating the password is not just a Secrets Manager edit — see
 # "Rotating the analytics database password" in kubernetes/README.md.
 analytics:
-  enabled: true
+  enabled: false
   database: openvsx_analytics
   username: admin
 
 # Analytics on CloudNativePG; the app uses it (analytics block above). Role and bucket
 # come from tf-resources (production iam/ and s3/).
 analyticsCnpg:
-  enabled: true
+  enabled: false
   instances: 2
   # Maintained by Timescale and includes the TSL features the app uses. Pinned by digest;
   # bump on each Timescale release, as fixed tags are never rebuilt.
