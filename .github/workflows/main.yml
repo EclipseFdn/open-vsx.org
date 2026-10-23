@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - aws-main
+      - aws-production
   pull_request:
     types: [opened, synchronize, reopened]
 
