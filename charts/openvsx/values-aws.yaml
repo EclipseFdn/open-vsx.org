@@ -306,6 +306,55 @@ externalSecrets:
 alloy:
   enabled: false
 
+# Analytics — extension download/usage analytics, stored in the CloudNativePG cluster
+# (analyticsCnpg below). App-side wiring (ovsx.analytics.* datasource) lives in
+# external-secrets.yaml/deployment.yaml. The app keeps serving while this database is
+# unreachable and catches up on analytics afterwards. database/username are used by the
+# CNPG bootstrap. Rotating the password is not just a Secrets Manager edit — see
+# "Rotating the analytics database password" in kubernetes/README.md.
+analytics:
+  enabled: false
+  database: openvsx_analytics
+  username: admin
+
+# Analytics on CloudNativePG; the app uses it (analytics block above). Role and bucket
+# come from tf-resources (production iam/ and s3/).
+analyticsCnpg:
+  enabled: false
+  instances: 2
+  # Maintained by Timescale and includes the TSL features the app uses. Pinned by digest;
+  # bump on each Timescale release, as fixed tags are never rebuilt.
+  postgresMajor: 17
+  image: "timescale/timescaledb-ha:pg17.11-ts2.30.2@sha256:20534b8a06680956336604f3735d5811807f5244c6a364c761a70dea9c63de36"
+  backupRoleArn: "arn:aws:iam::365555376529:role/openvsx-analytics-backup-production"
+  storage:
+    size: 30Gi
+    storageClass: gp3
+  # Sized for bulk loads (restores, backfills), which write roughly the data size in WAL.
+  walStorage:
+    size: 10Gi
+    storageClass: gp3
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+  # Sized for the 2Gi memory limit above and EBS SSD storage; CNPG defaults assume more memory
+  # and spinning disks. Revisit together with resources.
+  parameters:
+    shared_buffers: 256MB
+    effective_cache_size: 768MB
+    work_mem: 16MB
+    maintenance_work_mem: 128MB
+    random_page_cost: "1.1"
+  backup:
+    destinationPath: "s3://openvsx-analytics-backups-production/"
+    retentionPolicy: "30d"
+    # CNPG cron has a leading seconds field.
+    schedule: "0 0 3 * * *"
+
 # ── ClamAV ───────────────────────────────────────────────────────────────────
 clamav:
   enabled: true
@@ -327,8 +376,8 @@ clamav:
   service:
     port: 9000
   env:
-    MAX_UPLOAD_SIZE_MB: 512
-    MAX_EXTRACTED_SIZE_MB: 512
+    MAX_UPLOAD_SIZE_MB: 1024
+    MAX_EXTRACTED_SIZE_MB: 2048
     MAX_FILE_COUNT: 100000
     MAX_SINGLE_FILE_MB: 512
     MAX_RECURSION: 16
@@ -358,8 +407,8 @@ yara:
   service:
     port: 9001
   env:
-    MAX_UPLOAD_SIZE_MB: 512
-    MAX_EXTRACTED_SIZE_MB: 1024
+    MAX_UPLOAD_SIZE_MB: 1024
+    MAX_EXTRACTED_SIZE_MB: 2048
     MAX_FILE_COUNT: 100000
     MAX_SINGLE_FILE_MB: 512
     MAX_RECURSION: 16

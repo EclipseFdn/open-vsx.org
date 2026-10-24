@@ -1,218 +1,46 @@
-# This is the base configuration of the server running at open-vsx.org.
-# Properties containing secrets are not included here, e.g. spring.datasource
-# for database access and ovsx.storage.azure for file storage access.
-# Additional properties are loaded from the file provided with the
-# DEPLOYMENT_CONFIG environment variable.
-logging:
-  level:
-    root: "info"
-    # avoid log messages like: Received invalid Accept header. Assuming all media types are accepted
-    org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: "error"
-    # reduce log verbosity for redis connection watchdog
-    io.lettuce.core.protocol: "warn"
-
+# Values for the production environment. Deep-merges into the base application.yml
+# baked into the image; SPRING_PROFILES_ACTIVE=production activates it.
+#
+# ovsx.access-token, ovsx.rate-limit, and ovsx.scanning are defined here in full --
+# the base image doesn't define them at all -- so this is the single source of
+# truth for this environment's auth/rate-limit/scanning policy, not just overrides.
+#
 server:
-  address: 0.0.0.0
-  port: 8080
-  shutdown: graceful
-  compression:
-    enabled: true
-    mime-types: text/html,text/plain,text/css,application/javascript,application/json,text/xml,application/xml,application/xml+rss,text/javascript
-    min-response-size: 1024
   jetty:
-    threads:
-      max: 450
-      max-queue-capacity: 500
     # Must exceed the ALB idle_timeout (values-aws.yaml: 300s) so the ALB never
-    # tries to reuse a Jetty-closed connection — otherwise the client sees 502s.
+    # tries to reuse a Jetty-closed connection, otherwise clients see 502s.
     connection-idle-timeout: 310000
-spring:
-  application:
-    name: openvsx-server
-  config:
-    import: file:${DEPLOYMENT_CONFIG}
-  datasource:
-    hikari:
-      maximum-pool-size: 30
-      leak-detection-threshold: 30000
-  flyway:
-    baseline-on-migrate: false
-  jpa:
-    open-in-view: false
-  session:
-    store-type: jdbc
-  lifecycle:
-    timeout-per-shutdown-phase: 10s
-  security:
-    oauth2:
-      client:
-        registration:
-          eclipse:
-            authorization-grant-type: authorization_code
-            scope: openvsx_publisher_agreement, profile
-        provider:
-          eclipse:
-            issuer-uri: https://auth.eclipse.org/auth/realms/community
-            user-name-attribute: preferred_username
-  thymeleaf:
-    check-template-location: false
-  web:
-    error:
-      path: /server-error
-      include-stacktrace: never
-      whitelabel:
-        enabled: false
-    resources:
-      cache:
-        cachecontrol:
-          max-age: 4h
-          cache-public: true
-
-management:
-  server:
-    port: 8081
-  endpoint:
-    health:
-      show-details: always
-      show-components: always
-      probes:
-        enabled: true
-  health:
-    livenessstate:
-      enabled: true
-    readinessstate:
-      enabled: true
-  metrics:
-    tags:
-      application: ${spring.application.name}
-      environment: ${ENVNAME}
-      instance: ${HOSTNAME}
-  endpoints:
-    web:
-      exposure:
-        include:
-          - health
-          - prometheus
-  tracing:
-    sampling:
-      probability: 0.01
-
-springdoc:
-  model-and-view-allowed: true
-  api-docs:
-    version: openapi_3_0
-  swagger-ui:
-    path: /swagger-ui
-    docExpansion: list
-    operationsSorter: alpha
-    urlsPrimaryName: Registry API
-    supportedSubmitMethods:
-      - get
-
-jobrunr:
-  job-scheduler:
-    enabled: true
-  background-job-server:
-    enabled: true
-    worker-count: 2
-  dashboard:
-    enabled: false
-  database:
-    type: sql
-  miscellaneous:
-    allow-anonymous-data-usage: false
-
-bucket4j:
-  enabled: false
 
 ovsx:
   access-token:
     prefix: ovsx
     expiration: 0
     notification: 0
+
+  migrations:
+    delay:
+      seconds: 10800
+
   storage:
     cdn:
       enabled: true
       services:
         aws: https://openvsx.eclipsecontent.org/
-    migration:
-      enabled: false
-    primary-service: aws
+
   server:
     url: "https://open-vsx.org"
   webui:
     url: "https://open-vsx.org"
-    frontendRoutes: "/extension/**,/namespace/**,/search,/user-settings/**,/admin-dashboard/**,/publish,/about,/publisher-agreement-*,/terms-of-use,/members,/adopters,/error"
-    additional-routes: "/.well-known/**"
-  eclipse:
-    base-url: https://api.eclipse.org/
-    publisher-agreement:
-      version: 1.1
-      allowed-versions: "1,1.0,1.1"
+
   publishing:
-    require-license: true
-    max-content-size: 262144000 # 250MB
-  redis:
+    max-content-size: 268435456 # 256 MiB
+    max-override-size: 1073741824 # 1 GiB
+
+  trusted-publishing:
     enabled: true
-  elasticsearch:
-    enabled: true
-    ssl: true
-  search:
-    relevance:
-      rating: 0.5
-      downloads: 2.0
-      timestamp: 1.2
-  migrations:
-    batch-size: 200
-    cron: '0 */2 * * * *'
-    delay:
-      seconds: 10800
-    once-per-version: true
-  extension-query:
-    # limit the number of pre-release versions that are included in responses for /vscode/gallery/extensionquery
-    # by default it is unlimited, -1
-    # max-pre-release-versions: 500
-  extension-control:
-    # do not update on application start as this would trigger multiple jobs in multi-pod configuration
-    update-on-start: false
-  integrity:
-    key-pair: create
-  registry:
-    version: <SERVER_VERSION>
-  caching:
-    files-extension:
-      tti: PT1H
-      max-size: 200
-    files-webresource:
-      tti: PT1H
-      max-size: 500
-      max-total-size: 2147483648 # 2 GB
-    files-browse:
-      tti: PT1H
-      max-size: 100
-    average-review-rating:
-      ttl: P3D
-    namespace-details-json:
-      ttl: PT1H
-    database-search:
-      ttl: PT1H
-    extension-json:
-      ttl: PT1H
-    latest-extension-version:
-      ttl: PT1H
-    sitemap:
-      ttl: PT1H
-    malicious-extensions:
-      ttl: P3D
-    customer:
-      tti: P1D
-    tier:
-      tti: P1D
-  foregroundHttpConnPool:
-    maxTotal: 50
-    defaultMaxPerRoute: 50
-  mail:
-    from: no-reply@open-vsx.org
+    audience: 'https://open-vsx.org'
+    active-providers: 'github'
+    token-expiration: 'PT5M'
 
   # dynamic tier-based rate limiting configuration
   rate-limit:
@@ -239,13 +67,6 @@ ovsx:
         "contact": "infrastructure@eclipse-foundation.org"
       }
 
-  trusted-publishing:
-    enabled: true
-    audience: 'https://open-vsx.org'
-    active-providers: 'github'
-    token-expiration: 'PT5M'
-
-  # General scanning support
   scanning:
     enabled: true
 
@@ -298,7 +119,6 @@ ovsx:
 
     configured:
       # ClamAV REST wrapper - our custom Go service with file-level reporting
-      # Requires clamav-rest service deployment
       clamav-rest:
         enabled: true
         enforced: true
@@ -308,14 +128,12 @@ ovsx:
         max-concurrency: 5
         timeout-minutes: 10
 
-        # Per-scanner HTTP client configuration
-        # ClamAV needs longer timeouts for large files
         http:
-          max-total: 20                         # Max connections in pool
-          default-max-per-route: 10             # Max connections per host
-          connection-request-timeout-ms: 60000  # Time to get connection from pool (1 min)
-          connect-timeout-ms: 60000             # Time to establish TCP connection (1 min)
-          socket-timeout-ms: 600000             # Time to wait for response (10 min for large files)
+          max-total: 20
+          default-max-per-route: 10
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 600000
 
         start:
           method: POST
@@ -328,27 +146,22 @@ ovsx:
           response:
             format: json
             error-path: "$.error"
-            # Our wrapper returns: { status, threats[], scanned_files, scan_time_ms }
             threats-path: "$.threats[*]"
             threat-mapping:
-              # All threats in the array are malware detections
               condition: "true"
               name-path: "$.name"
               description-path: "$.name"
               severity-path: "$.severity"
               file-path-path: "$.file"
               file-hash-path: "$.file_hash"
-        # ClamAV REST is synchronous - threats are delivered with the start call.
-        # No separate poll/result operations are required.
 
       # YARA Scanner - our custom Go service with file-level reporting
-      # Requires yara-rest service deployment
       yara:
-        enabled: true   # Enable when yara-rest service is deployed
+        enabled: true
         type: "YARA"
         required: true
         enforced: true
-        async: false     # Synchronous - YARA is fast
+        async: false
         max-concurrency: 10
         timeout-minutes: 5
 
@@ -357,7 +170,7 @@ ovsx:
           default-max-per-route: 10
           connection-request-timeout-ms: 60000
           connect-timeout-ms: 60000
-          socket-timeout-ms: 300000   # 5 min for large extensions
+          socket-timeout-ms: 300000
 
         start:
           method: POST
@@ -370,10 +183,8 @@ ovsx:
           response:
             format: json
             error-path: "$.error"
-            # Matches are returned as an array
             threats-path: "$.matches[*]"
             threat-mapping:
-              # All YARA matches are threats
               condition: "true"
               name-path: "$.rule"
               file-path-path: "$.file"
@@ -381,29 +192,25 @@ ovsx:
               description-path: "$.description"
               severity-path: "$.severity"
 
-      # Argus Scanner - cloud-based multi-engine malware and AI analysis service
-      # API: POST /api/scan to start, GET /api/scan/{jobId} to poll for completion.
-      # Requires an Argus API key set as a Bearer token (set ARGUS_API_KEY env var).
+      # Argus Scanner - cloud-based multi-engine malware and AI analysis service, same
+      # SaaS endpoint for every environment (ARGUS_API_KEY is the per-environment secret).
       argus:
         enabled: true
         type: "ARGUS"
         required: false
         enforced: true
-        async: true        # Asynchronous - POST returns a jobId, then poll until done
+        async: true
         timeout-minutes: 20
         max-concurrency: 10
 
-        # Deep-link template for the admin scan dashboard. {jobId} is replaced
-        # with the scanner's externalJobId at render time, giving admins a
-        # clickable link from a scan check result to Argus's own UI.
         external-url-template: "https://app.yeethsecurity.com/dashboard/scans/{jobId}"
 
         http:
           max-total: 20
           default-max-per-route: 10
-          connection-request-timeout-ms: 60000   # Time to get connection from pool (1 min)
-          connect-timeout-ms: 60000              # Time to establish TCP connection (1 min)
-          socket-timeout-ms: 300000              # 5 min for large extensions
+          connection-request-timeout-ms: 60000
+          connect-timeout-ms: 60000
+          socket-timeout-ms: 300000
 
         start:
           method: POST
@@ -416,11 +223,11 @@ ovsx:
             file-field: "file"
           response:
             format: json
-            job-id-path: "$.jobId"  # Extract jobId for use in poll/result URLs
+            job-id-path: "$.jobId"
 
         poll:
           method: GET
-          url: "https://api.yeethsecurity.com/api/scan/{jobId}"  # {jobId} substituted at runtime
+          url: "https://api.yeethsecurity.com/api/scan/{jobId}"
           headers:
             Accept: "application/json"
             Authorization: "Bearer ${ARGUS_API_KEY}"

@@ -1,0 +1,7 @@
+{{/*
+Render-time consistency check for the analytics stack. Renders no manifest — it exists so that
+a mismatch fails `helm upgrade` up front instead of pointing the app at a database that does not exist.
+*/}}
+{{- if and .Values.analytics.enabled (not .Values.analyticsCnpg.enabled) }}
+  {{- fail "analytics.enabled requires analyticsCnpg.enabled: the application connects to the CloudNativePG cluster." }}
+{{- end }}
