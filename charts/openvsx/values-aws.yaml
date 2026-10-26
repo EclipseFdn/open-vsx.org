@@ -313,14 +313,14 @@ alloy:
 # CNPG bootstrap. Rotating the password is not just a Secrets Manager edit — see
 # "Rotating the analytics database password" in kubernetes/README.md.
 analytics:
-  enabled: false
+  enabled: true
   database: openvsx_analytics
   username: admin
 
 # Analytics on CloudNativePG; the app uses it (analytics block above). Role and bucket
 # come from tf-resources (production iam/ and s3/).
 analyticsCnpg:
-  enabled: false
+  enabled: true
   instances: 2
   # Maintained by Timescale and includes the TSL features the app uses. Pinned by digest;
   # bump on each Timescale release, as fixed tags are never rebuilt.
@@ -329,11 +329,11 @@ analyticsCnpg:
   backupRoleArn: "arn:aws:iam::365555376529:role/openvsx-analytics-backup-production"
   storage:
     size: 30Gi
-    storageClass: gp3
+    storageClass: gp3-retain
   # Sized for bulk loads (restores, backfills), which write roughly the data size in WAL.
   walStorage:
     size: 10Gi
-    storageClass: gp3
+    storageClass: gp3-retain
   resources:
     requests:
       cpu: "250m"
