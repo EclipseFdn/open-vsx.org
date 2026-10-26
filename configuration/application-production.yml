@@ -162,7 +162,7 @@ ovsx:
         required: true
         enforced: true
         async: false
-        max-concurrency: 10
+        max-concurrency: 4
         timeout-minutes: 5
 
         http:

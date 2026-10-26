@@ -344,13 +344,14 @@ yara:
   resources:
     requests:
       cpu: 1
-      memory: 1Gi
+      memory: 3Gi
     limits:
       cpu: 2
-      memory: 2Gi
+      memory: 4Gi
   service:
     port: 9001
   env:
+    GOMEMLIMIT: 3GiB
     MAX_UPLOAD_SIZE_MB: 1024
     MAX_EXTRACTED_SIZE_MB: 1024
     MAX_FILE_COUNT: 100000
