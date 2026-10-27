@@ -334,18 +334,20 @@ analyticsCnpg:
   walStorage:
     size: 10Gi
     storageClass: gp3-retain
+  # The registry analytics dashboard runs several aggregate queries at once, each with parallel
+  # workers; a 1 CPU limit throttled them from under a second to 8s each.
   resources:
     requests:
-      cpu: "250m"
-      memory: "1Gi"
-    limits:
       cpu: "1"
-      memory: "2Gi"
-  # Sized for the 2Gi memory limit above and EBS SSD storage; CNPG defaults assume more memory
+      memory: "4Gi"
+    limits:
+      cpu: "4"
+      memory: "4Gi"
+  # Sized for the 4Gi memory limit above and EBS SSD storage; CNPG defaults assume more memory
   # and spinning disks. Revisit together with resources.
   parameters:
-    shared_buffers: 256MB
-    effective_cache_size: 768MB
+    shared_buffers: 1GB
+    effective_cache_size: 3GB
     work_mem: 16MB
     maintenance_work_mem: 128MB
     random_page_cost: "1.1"
