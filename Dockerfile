@@ -6,6 +6,6 @@
 # module's configuration/mail-templates - nothing left to build here.
 #
 # bump to deploy a newer openvsx-ef build
-ARG WEBSITE_IMAGE_TAG=v1.3.1-ef.1
+ARG WEBSITE_IMAGE_TAG=v1.3.2-ef.1
 
 FROM ghcr.io/eclipsefdn/openvsx-website-release:${WEBSITE_IMAGE_TAG}
