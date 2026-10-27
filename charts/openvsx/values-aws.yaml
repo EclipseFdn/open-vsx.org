@@ -395,7 +395,7 @@ yara:
   replicas: 1
   image:
     repository: "ghcr.io/eclipsefdn/yara-rest"
-    tag: "v0.1.1"
+    tag: "v0.1.2"
     pullPolicy: Always
   resources:
     requests:
@@ -413,3 +413,7 @@ yara:
     MAX_SINGLE_FILE_MB: 512
     MAX_RECURSION: 16
     SCAN_TIMEOUT_MINUTES: 5
+    # The HTTP write timeout also spans the upload and must stay above SCAN_TIMEOUT_MINUTES (5 min),
+    # or a slow scan is cut off before its response is written.
+    HTTP_READ_TIMEOUT_SECONDS: 120
+    HTTP_WRITE_TIMEOUT_SECONDS: 600
