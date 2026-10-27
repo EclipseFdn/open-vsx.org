@@ -364,7 +364,7 @@ clamav:
     storageClass: "gp3-retain"
   image:
     repository: "ghcr.io/eclipsefdn/clamav-rest-new"
-    tag: "v0.1.2"
+    tag: "v0.1.3"
     pullPolicy: Always
   resources:
     requests:
@@ -383,10 +383,12 @@ clamav:
     MAX_RECURSION: 16
     MAX_THREADS: 10
     SCAN_TIMEOUT_MINUTES: 10
-    # clamav-rest's own HTTP server closes the connection once this elapses, independent of
-    # the scan itself or any client-side timeout; it must stay comfortably above SCAN_TIMEOUT_MINUTES
-    # or a slow scan gets cut off mid-flight and its result is lost even though scanning keeps running.
-    WRITE_TIMEOUT_SECONDS: 660
+    # clamav-rest's own HTTP server closes the connection once the write timeout elapses, independent
+    # of the scan itself or any client-side timeout. It starts when the request headers are read, so it
+    # spans the upload and the scan: keep it well above SCAN_TIMEOUT_MINUTES (10 min) or a slow scan
+    # gets cut off mid-flight and its result is lost even though scanning keeps running.
+    READ_TIMEOUT_SECONDS: 120
+    WRITE_TIMEOUT_SECONDS: 900
 
 # ── YARA ─────────────────────────────────────────────────────────────────────
 yara:
