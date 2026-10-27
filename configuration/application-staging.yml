@@ -74,8 +74,8 @@ ovsx:
     enabled: true
 
     # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
-    max-archive-size-bytes: 1073741824   # 1 GB total archive limit
-    max-single-file-bytes: 536870912     # 512 MB per-file limit
+    max-archive-size-bytes: 2147483648   # 2 GB total archive limit
+    max-single-file-bytes: 1073741824    # 1 GB per-file limit
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
