@@ -1,0 +1,38 @@
+# Values for the DR rehearsal copy (values-aws-dr.yaml). Deep-merges into the base application.yml
+# baked into the image; SPRING_PROFILES_ACTIVE=dr activates it.
+#
+# This profile outranks the copy's hand-made configuration secret, so every production side effect
+# is switched off here as well: no job, scan, ingestion or trace may run from the copy.
+#
+management:
+  tracing:
+    export:
+      enabled: false
+
+jobrunr:
+  background-job-server:
+    enabled: false
+
+ovsx:
+  # Generated links point at the port-forward, not at production.
+  server:
+    url: "http://localhost:8080"
+  webui:
+    url: "http://localhost:8080"
+
+  # Downloads redirect to the CDN, as in production.
+  storage:
+    cdn:
+      enabled: true
+      services:
+        aws: https://openvsx.eclipsecontent.org/
+
+  scanning:
+    enabled: false
+  extension-control:
+    enabled: false
+  analytics:
+    enabled: false
+  logs:
+    aws:
+      bucket: ""
