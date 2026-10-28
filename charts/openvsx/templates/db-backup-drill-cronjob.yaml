@@ -723,6 +723,10 @@ data:
       GD_FOUND=$(( GD_FOUND + 1 ))
       is_gameday "${ID}" || exit 1
       case "${STATE}" in deleting) echo "skip ${ID} (${STATE})"; continue ;; esac
+      # ElastiCache refuses tag reads until a cluster is available; a young one is kept anyway.
+      if [ "${STATE}" != "available" ] && ! older "${CREATED}"; then
+        echo "keep ${ID} (${STATE}) created=${CREATED}"; continue
+      fi
       PURPOSE=$(aws elasticache list-tags-for-resource --region "${AWS_REGION}" --resource-name "${ARN}" \
         --query "TagList[?Key=='purpose'].Value|[0]" --output text)
       [ "${PURPOSE}" = "game-day" ] || { UNTAGGED="${UNTAGGED} ${ID}"; continue; }
