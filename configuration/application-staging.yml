@@ -40,7 +40,7 @@ ovsx:
   # (stable releases are never dropped). Unset means unlimited, which loads every active
   # version of extensions with thousands of pre-releases into memory.
   extension-query:
-    max-pre-release-versions: 20
+    max-pre-release-versions: 200
 
   trusted-publishing:
     enabled: true
