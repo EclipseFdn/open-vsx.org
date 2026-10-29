@@ -36,6 +36,12 @@ ovsx:
     relevance:
       timestamp: 0.5
 
+  # Keep only the newest N pre-releases per extension in /vscode/gallery/extensionquery
+  # (stable releases are never dropped). Unset means unlimited, which loads every active
+  # version of extensions with thousands of pre-releases into memory.
+  extension-query:
+    max-pre-release-versions: 200
+
   trusted-publishing:
     enabled: true
     audience: 'https://staging.open-vsx.org'
