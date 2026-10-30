@@ -19,13 +19,13 @@ jobs:
   handle-issue:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out script
-        uses: actions/checkout@v5
+      - name: Check out script  # zizmor: ignore[artipacked] -- token needed to push stats commit
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: namespace-stats
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
