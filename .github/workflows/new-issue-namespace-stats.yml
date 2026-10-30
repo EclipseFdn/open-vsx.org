@@ -1,0 +1,37 @@
+name: Handle new issue
+
+on:
+  issues:
+    types: [opened]
+
+# Listing any permission sets every unlisted one to "none", so contents
+# must be granted explicitly or actions/checkout can't read the repo.
+permissions:
+  contents: write  # needed by actions/checkout and to commit the CSV file
+  issues: write    # needed to comment on and label issues
+
+# Run one issue at a time so two runs don't update the CSV simultaneously
+concurrency:
+  group: handle-new-issue
+  cancel-in-progress: false
+
+jobs:
+  handle-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out script
+        uses: actions/checkout@v5
+        with:
+          ref: namespace-stats
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Run issue handler
+        run: python namespace-stats/namespace_stats.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUTPUT_CSV_FILE: namespace-stats/namespace-stats.csv  # path relative to the repo root
+          STATS_FILE_BRANCH: namespace-stats
