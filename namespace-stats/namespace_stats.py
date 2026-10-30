@@ -201,7 +201,7 @@ def append_csv_row(repo, branch, path, row, token, number, attempts=3):
                 f"/repos/{repo}/contents/{encoded_path}",
                 token,
                 {
-                    "message": f"Add namespace request from issue #{number}",
+                    "message": f"Add namespace request from issue {number}",
                     "content": base64.b64encode(text.encode("utf-8")).decode(),
                     "sha": current["sha"],
                     "branch": branch,
