@@ -36,6 +36,12 @@ ovsx:
     max-content-size: 268435456 # 256 MiB
     max-override-size: 1073741824 # 1 GiB
 
+  # Keep only the newest N pre-releases per extension in /vscode/gallery/extensionquery
+  # (stable releases are never dropped). Unset means unlimited, which loads every active
+  # version of extensions with thousands of pre-releases into memory.
+  extension-query:
+    max-pre-release-versions: 200
+
   trusted-publishing:
     enabled: true
     audience: 'https://open-vsx.org'
