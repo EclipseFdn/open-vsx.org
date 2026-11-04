@@ -62,6 +62,7 @@ ovsx:
       daily-job-schedule: '*/30 * * * * *'
     filters:
       - url: '/(api|vscode)/.*'
+        customer-headers: true
         http-response-headers:
           Access-Control-Allow-Origin: '*'
           Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
