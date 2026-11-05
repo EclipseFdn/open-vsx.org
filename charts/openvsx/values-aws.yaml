@@ -330,9 +330,9 @@ analyticsCnpg:
   storage:
     size: 30Gi
     storageClass: gp3-retain
-  # Sized for bulk loads (restores, backfills), which write roughly the data size in WAL.
+  # Sized for bulk loads (restores, backfills); aggregate refreshes during a backfill write far more.
   walStorage:
-    size: 10Gi
+    size: 40Gi
     storageClass: gp3-retain
   # The registry analytics dashboard runs several aggregate queries at once, each with parallel
   # workers; a 1 CPU limit throttled them from under a second to 8s each.
@@ -354,6 +354,8 @@ analyticsCnpg:
   backup:
     destinationPath: "s3://openvsx-analytics-backups-production/"
     retentionPolicy: "30d"
+    # Parallel WAL uploads so archiving keeps up with bulk writes.
+    walMaxParallel: 4
     # CNPG cron has a leading seconds field.
     schedule: "0 0 3 * * *"
 
