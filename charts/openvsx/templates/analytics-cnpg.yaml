@@ -85,6 +85,7 @@ spec:
       inheritFromIAMRole: true
     wal:
       compression: gzip
+      maxParallel: {{ $c.backup.walMaxParallel | default 1 }}
     data:
       compression: gzip
 ---
