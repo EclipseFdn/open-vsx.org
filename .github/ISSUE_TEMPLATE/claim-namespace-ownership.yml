@@ -1,7 +1,7 @@
 name: Claim namespace ownership
 description: Request exclusive publishing rights to an Open VSX namespace
 title: "Claiming namespace [name]"
-labels: ["namespace"]
+labels: ["namespace", "team:operations"]
 body:
   - type: markdown
     attributes:
