@@ -31,6 +31,19 @@ ovsx:
   webui:
     url: "https://test.open-vsx.org"
 
+  # Search relevance weights (used when sortBy=relevance). Upstream defaults are 1.0
+  # for rating/downloads/timestamp. Halving timestamp so recently published
+  # extensions don't outrank established ones as easily.
+  search:
+    relevance:
+      timestamp: 0.5
+
+  # Keep only the newest N pre-releases per extension in /vscode/gallery/extensionquery
+  # (stable releases are never dropped). Unset means unlimited, which loads every active
+  # version of extensions with thousands of pre-releases into memory.
+  extension-query:
+    max-pre-release-versions: 200
+
   trusted-publishing:
     enabled: true
     audience: 'https://test.open-vsx.org'
@@ -46,11 +59,12 @@ ovsx:
     # for internal requests from within the cluster check first if "X-Forwarded-For" is set, otherwise use the remote addr.
     # jetty seems to return "[127.0.0.1]" as remote addr in some cases, need to investigate why this is happening
     ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
-    usage-stats:
-      job-schedule: '*/30 * * * * *'
-      daily-job-schedule: '*/30 * * * * *'
+    #usage-stats:
+    #  job-schedule: '0 */5 * * * *'
+    #  daily-job-schedule: '0 */5 * * * *'
     filters:
       - url: '/(api|vscode)/.*'
+        customer-headers: true
         http-response-headers:
           Access-Control-Allow-Origin: '*'
           Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
@@ -69,8 +83,8 @@ ovsx:
     enabled: true
 
     # Shared archive limits for all scanning checks (secret detection, blocklist, etc.)
-    max-archive-size-bytes: 1073741824   # 1 GB total archive limit
-    max-single-file-bytes: 536870912     # 512 MB per-file limit
+    max-archive-size-bytes: 2147483648   # 2 GB total archive limit
+    max-single-file-bytes: 1073741824    # 1 GB per-file limit
     max-entry-count: 100000              # Max ZIP entries to process
     blocklist-check:
       enabled: true
@@ -109,7 +123,7 @@ ovsx:
       timeout-check-interval: 100
 
     namespace-ownership-check:
-      enabled: true
+      enabled: false
       enforced: true
       required: true
       check-active-extensions: false
@@ -246,6 +260,7 @@ ovsx:
             Authorization: "Bearer ${ARGUS_API_KEY}"
           response:
             format: json
+            malicious-verdict-path: "$.verdictData.isMalicious"
             threats-path: "$.matches[*]"
             threat-mapping:
               condition: "true"
