@@ -4,6 +4,14 @@
 ./helm-deploy.sh aws-staging <docker_image_tag>
 ```
 
+## How to deploy aws-test instance for a given image?
+
+Deploys to the EKS staging cluster (`eks-staging-openvsx`) in the `open-vsx-org-test` namespace.
+
+```bash
+./helm-deploy.sh aws-test <docker_image_tag>
+```
+
 ## How to deploy staging instance for a given image?
 
 ```bash

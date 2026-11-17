@@ -33,7 +33,7 @@ DRY_RUN="${DRY_RUN:-}"
 
 # check that environment is not empty
 if [[ -z "${environment}" ]]; then
-  printf "ERROR: an environment ('test', 'staging', 'aws-staging', 'aws-production' or 'production') must be given.\n"
+  printf "ERROR: an environment ('test', 'aws-test', 'staging', 'aws-staging', 'production' or 'aws-production') must be given.\n"
   exit 1
 fi
 
@@ -55,6 +55,11 @@ elif [[ "${environment}" == "test" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-test.yaml"
   release_name="${release_name_test}"
   namespace="${namespace_test}"
+elif [[ "${environment}" == "aws-test" ]]; then
+  # Runs on the EKS staging cluster, in its own namespace.
+  values_file="${ROOT_DIR}/charts/${chart_name}/values-aws-test.yaml"
+  release_name="${release_name_test}"
+  namespace="${namespace_test}"
 elif [[ "${environment}" == "production" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values.yaml"
   release_name="${release_name_production}"
@@ -62,7 +67,7 @@ elif [[ "${environment}" == "aws-production" ]]; then
   values_file="${ROOT_DIR}/charts/${chart_name}/values-aws.yaml"
   release_name="${release_name_production}"
 else
-  printf "ERROR: Unknown environment. Only 'test', 'staging', 'aws-staging', 'aws-production' or 'production' are supported.\n"
+  printf "ERROR: Unknown environment. Only 'test', 'aws-test', 'staging', 'aws-staging', 'production' or 'aws-production' are supported.\n"
   exit 1
 fi
 
@@ -71,6 +76,8 @@ if [[ "${environment}" == "aws-production" ]]; then
   deployment_env="production"
 elif [[ "${environment}" == "aws-staging" ]]; then
   deployment_env="staging"
+elif [[ "${environment}" == "aws-test" ]]; then
+  deployment_env="test"
 else
   deployment_env="${environment}"
 fi

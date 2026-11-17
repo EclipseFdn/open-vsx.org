@@ -137,6 +137,29 @@ pipeline {
       }
     }
 
+    // Feature branches deploy to the test namespace on the EKS staging cluster.
+    stage('Deploy aws-test') {
+      when {
+        branch pattern: 'feature/*', comparator: 'GLOB'
+      }
+      steps {
+        container('eks') {
+          withCredentials([
+            string(credentialsId: 'jenkins-openvsx-aws-key-id',     variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'jenkins-openvsx-aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+          ]) {
+            sh '''
+              set -e
+              export AWS_DEFAULT_REGION=eu-central-1
+              export KUBECONFIG="${HOME}/.kube/config"
+              aws eks update-kubeconfig --name eks-staging-openvsx --region eu-central-1
+              ./kubernetes/helm-deploy.sh aws-test "${IMAGE_TAG}"
+            '''
+          }
+        }
+      }
+    }
+
     stage('Deploy aws-staging') {
       when {
         branch 'aws-main'

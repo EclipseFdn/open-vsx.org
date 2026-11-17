@@ -1,0 +1,289 @@
+# Default values for openvsx eks test.
+#
+# Runs on the EKS *staging* cluster (eks-staging-openvsx) in its own namespace,
+# fully isolated from aws-staging: every name-scoped resource is keyed on
+# environment=test (deployment, ES, postgresql-ha, secrets, configmap, ALB).
+# Deploy with: ./kubernetes/helm-deploy.sh aws-test <image_tag>
+#
+# Prerequisites that live outside this repo (tf-resources / AWS console):
+#   - Secrets Manager: openvsx/test/{elasticache,oauth,mail,grafana-cloud,argus,postgresql}
+#   - IAM role openvsx-app-test, trust subject system:serviceaccount:open-vsx-org-test:openvsx
+#   - S3 buckets openvsxorgtest + fastlyopenvsxorgtest
+#   - ACM cert covering test.open-vsx.org, DNS for test.open-vsx.org
+
+name: &name open-vsx-org
+environment: &environment test
+platform: &platform eks
+namespace: &namespace open-vsx-org-test
+host: test.open-vsx.org
+
+replicaCount: 2
+# 3 is the floor: templates/pdb.yaml pins the ES PDB at minAvailable: 2.
+esReplicaCount: 3
+
+# Must exceed the ALB deregistration_delay of 30s set in ingress annotations below.
+preStopDelaySeconds: 35
+
+# No postgresql-ha HPA for test — fixed 3 repmgr pods.
+autoscaling:
+  enabled: false
+
+# Fixed replicaCount above; no KEDA scaling for test.
+keda:
+  enabled: false
+
+image:
+  repository: ghcr.io/eclipsefdn/openvsx-website
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 97e1417-99
+
+eks:
+  enabled: true
+
+# ── ServiceAccount (IRSA) ─────────────────────────────────────────────────────
+# Own role: openvsx-app-staging's trust policy only admits the open-vsx-org-staging namespace.
+serviceAccount:
+  create: true
+  name: openvsx
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::365555376529:role/openvsx-app-test"
+
+# ── External Secrets Operator — composes deployment-configuration-test from SM (openvsx/test/*) ──
+externalSecrets:
+  enabled: true
+  clusterSecretStore: aws-secrets-manager
+  refreshInterval: 1h
+  fastlyLogsBucket: "fastlyopenvsxorgtest"
+  storageBucket: "openvsxorgtest"
+  elasticsearchClearOnStart: false
+  elasticsearchPasswordFromEck: true
+  # In-cluster Postgres (same model as aws-staging). Host follows the "test" helm release name.
+  inClusterPostgres: true
+  postgresHost: "test-postgresql-ha-postgresql"
+  postgresDb: "openvsx-test"
+  postgresUsername: "postgres"
+
+inClusterPostgres:
+  passwordSecret:
+    name: "test-postgresql-ha-postgresql"
+    key: "password"
+
+# Logical backups are staging's recovery point; test data is disposable.
+dbBackup:
+  enabled: false
+
+# node-exporter / kube-state-metrics are cluster-wide and already scraped by the
+# aws-staging release on this cluster — enabling them here would double-count.
+serviceMonitors:
+  platformMetrics:
+    enabled: false
+
+aws-load-balancer-controller:
+  enabled: false
+
+ingress:
+  enabled: true
+  certArn: arn:aws:acm:eu-central-1:365555376529:certificate/b3835b51-0271-404d-8b35-31f14bd651cc
+  preActions:
+    - forward-cors
+    - ssl-redirect
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:365555376529:certificate/b3835b51-0271-404d-8b35-31f14bd651cc
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: >
+      {"Type": "redirect", "RedirectConfig":
+       {"Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}
+    alb.ingress.kubernetes.io/actions.forward-cors: >
+      {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"204"}}
+    alb.ingress.kubernetes.io/conditions.forward-cors: >
+      [{"field":"http-request-method","httpRequestMethodConfig":{"values":["OPTIONS"]}}]
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
+    alb.ingress.kubernetes.io/healthcheck-port: "8081"
+    # deletion_protection off so the test namespace can be torn down cleanly.
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60,routing.http2.enabled=true,deletion_protection.enabled=false,client_keep_alive.seconds=60
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30,slow_start.duration_seconds=0
+
+website:
+  jvmArgs: >
+    -Xms2G -Xmx3G
+    -XX:+AlwaysPreTouch
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+UseStringDeduplication
+    -XX:+ParallelRefProcEnabled
+    -XX:+DisableExplicitGC
+    -XX:+UnlockExperimentalVMOptions
+    -XX:+UnlockDiagnosticVMOptions
+    -XX:-OmitStackTraceInFastThrow
+    -Dlog4j2.formatMsgNoLookups=true
+    -Dlog4j.formatMsgNoLookups=true
+    -Dorg.jooq.no-logo=true
+    -Dorg.jooq.no-tips=true
+    --enable-native-access=ALL-UNNAMED
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 1000m
+    memory: 4Gi
+
+# elastic search
+es:
+  # Spring Boot 4 bundles the 9.x ES Java client, which cannot talk to an 8.x server.
+  version: "9.2.8"
+  podAnnotations:
+    "karpenter.sh/do-not-disrupt": "true"
+    "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+  java_opts: -Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true
+  resources:
+    limits:
+      cpu: 2
+      memory: 2Gi
+    requests:
+      cpu: 250m
+      memory: 2Gi
+  storage_class: gp3
+  storage: 4Gi
+
+postgresql-ha:
+  enabled: true
+  volumePermissions:
+    enabled: true
+    image:
+      repository: bitnamilegacy/os-shell  # public bitnami/os-shell is retired
+      tag: 12-debian-12-r51
+  metrics:
+    enabled: true
+    image:
+      repository: bitnamilegacy/postgres-exporter
+      tag: 0.17.1-debian-12-r14
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    serviceMonitor:
+      enabled: true
+      interval: 60s
+      labels:
+        app: open-vsx-org
+        environment: test
+  postgresql:
+    # Pinned to SM (openvsx/test/postgresql) via ESO. Keys: password, repmgr-password.
+    existingSecret: test-postgresql-ha-postgresql
+    image:
+      repository: bitnamilegacy/postgresql-repmgr
+      tag: 17.6.0-debian-12-r2
+    podSecurityContext:
+      enabled: true
+      fsGroup: 1001
+    containerSecurityContext:
+      enabled: true
+      runAsUser: 1001
+    database: openvsx-test
+    createDatabase: true
+    passwordEncryption: "scram-sha-256"
+    enablePostgresUser: true
+    extraEnvVars:
+      - name: POSTGRESQL_SR_CHECK_PASSWORD
+    authenticationConfiguration: |
+      host all all 0.0.0.0/0 scram-sha-256
+      local all all peer
+    extendedConf: |-
+      max_connections = 300
+      shared_buffers = 256MB
+      work_mem = 1MB
+      maintenance_work_mem = 64MB
+      effective_cache_size = 768MB
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "1Gi"
+      limits:
+        cpu: "1"
+        memory: "1536Mi"
+    pdb:
+      create: true
+      minAvailable: 1
+    podAnnotations:
+      "karpenter.sh/do-not-disrupt": "true"
+      "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+  pgpool:
+    replicaCount: 0
+    # Keys: admin-password, sr-check-password.
+    existingSecret: test-postgresql-ha-pgpool
+
+# grafana alloy
+alloy:
+  enabled: false
+
+# Analytics needs its own CNPG backup role + S3 bucket; off until those exist for test.
+analytics:
+  enabled: false
+
+analyticsCnpg:
+  enabled: false
+
+clamav:
+  enabled: true
+  name: "clamav"
+  replicas: 1
+  persistence:
+    storageClass: "gp3"
+  image:
+    repository: "ghcr.io/eclipsefdn/clamav-rest-new"
+    tag: "v0.1.3"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      cpu: 2
+      memory: 6Gi
+  service:
+    port: 9000
+  env:
+    MAX_UPLOAD_SIZE_MB: 1024
+    MAX_EXTRACTED_SIZE_MB: 2048
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 512
+    MAX_RECURSION: 16
+    MAX_THREADS: 4
+    SCAN_TIMEOUT_MINUTES: 5
+    READ_TIMEOUT_SECONDS: 120
+    WRITE_TIMEOUT_SECONDS: 600
+
+yara:
+  enabled: true
+  name: "yara"
+  replicas: 1
+  image:
+    repository: "ghcr.io/eclipsefdn/yara-rest"
+    tag: "v0.1.2"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+  service:
+    port: 9001
+  env:
+    MAX_UPLOAD_SIZE_MB: 1024
+    MAX_EXTRACTED_SIZE_MB: 2048
+    MAX_FILE_COUNT: 100000
+    MAX_SINGLE_FILE_MB: 512
+    MAX_RECURSION: 0
+    SCAN_TIMEOUT_MINUTES: 5
+    HTTP_READ_TIMEOUT_SECONDS: 120
+    HTTP_WRITE_TIMEOUT_SECONDS: 600
