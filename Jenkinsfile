@@ -137,64 +137,46 @@ pipeline {
       }
     }
 
-    // Fetch chart dependencies once: the parallel deploys below share this workspace and
-    // would otherwise race on charts/openvsx/charts/ and the Helm repo cache.
-    stage('Prepare aws-main deploy') {
+    // Feature branches deploy to the test namespace on the EKS staging cluster.
+    stage('Deploy aws-test') {
+      when {
+        branch pattern: 'feature/*', comparator: 'GLOB'
+      }
+      steps {
+        container('eks') {
+          withCredentials([
+            string(credentialsId: 'jenkins-openvsx-aws-key-id',     variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'jenkins-openvsx-aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+          ]) {
+            sh '''
+              set -e
+              export AWS_DEFAULT_REGION=eu-central-1
+              export KUBECONFIG="${HOME}/.kube/config"
+              aws eks update-kubeconfig --name eks-staging-openvsx --region eu-central-1
+              ./kubernetes/helm-deploy.sh aws-test "${IMAGE_TAG}"
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Deploy aws-staging') {
       when {
         branch 'aws-main'
       }
       steps {
         container('eks') {
-          sh './kubernetes/helm-deps.sh'
-        }
-      }
-    }
-
-    // aws-test and aws-staging deploy side by side on the staging cluster (separate
-    // namespaces/releases). failFast false: a failed aws-test deploy does not abort
-    // aws-staging (the build is still marked failed). Each branch gets its own kubeconfig
-    // so the concurrent `aws eks update-kubeconfig` calls don't write the same file.
-    stage('Deploy aws-main') {
-      when {
-        branch 'aws-main'
-      }
-      failFast false
-      parallel {
-        stage('Deploy aws-test') {
-          steps {
-            container('eks') {
-              withCredentials([
-                string(credentialsId: 'jenkins-openvsx-aws-key-id',     variable: 'AWS_ACCESS_KEY_ID'),
-                string(credentialsId: 'jenkins-openvsx-aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
-              ]) {
-                sh '''
-                  set -e
-                  export AWS_DEFAULT_REGION=eu-central-1
-                  export KUBECONFIG="${HOME}/.kube/config-aws-test"
-                  aws eks update-kubeconfig --name eks-staging-openvsx --region eu-central-1
-                  SKIP_HELM_DEPS=1 ./kubernetes/helm-deploy.sh aws-test "${IMAGE_TAG}"
-                '''
-              }
-            }
-          }
-        }
-
-        stage('Deploy aws-staging') {
-          steps {
-            container('eks') {
-              withCredentials([
-                string(credentialsId: 'jenkins-openvsx-aws-key-id',     variable: 'AWS_ACCESS_KEY_ID'),
-                string(credentialsId: 'jenkins-openvsx-aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
-              ]) {
-                sh '''
-                  set -e
-                  export AWS_DEFAULT_REGION=eu-central-1
-                  export KUBECONFIG="${HOME}/.kube/config-aws-staging"
-                  aws eks update-kubeconfig --name eks-staging-openvsx --region eu-central-1
-                  SKIP_HELM_DEPS=1 ./kubernetes/helm-deploy.sh aws-staging "${IMAGE_TAG}"
-                '''
-              }
-            }
+          withCredentials([
+            string(credentialsId: 'jenkins-openvsx-aws-key-id',     variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'jenkins-openvsx-aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+          ]) {
+            sh '''
+              set -e
+              export AWS_DEFAULT_REGION=eu-central-1
+              export KUBECONFIG="${HOME}/.kube/config"
+              aws eks update-kubeconfig --name eks-staging-openvsx --region eu-central-1
+              ./kubernetes/helm-deploy.sh aws-staging "${IMAGE_TAG}"
+            '''
           }
         }
       }
