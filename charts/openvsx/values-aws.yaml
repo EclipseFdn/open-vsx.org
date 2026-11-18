@@ -43,6 +43,7 @@ image:
 website:
   # MaxDirectMemorySize caps off-heap so the JVM cannot expand past the cgroup limit
   # under load; unbounded native + direct growth has OOM-killed pods before.
+  # UseBASE64Intrinsics off: mitigates CVE-2026-114938 until the base image ships a patched JDK.
   jvmArgs: >
     -Xms6G -Xmx8G
     -XX:MaxDirectMemorySize=512m
@@ -54,6 +55,7 @@ website:
     -XX:+UnlockExperimentalVMOptions
     -XX:+UnlockDiagnosticVMOptions
     -XX:-OmitStackTraceInFastThrow
+    -XX:-UseBASE64Intrinsics
     -Dlog4j2.formatMsgNoLookups=true
     -Dlog4j.formatMsgNoLookups=true
     -Dorg.jooq.no-logo=true
