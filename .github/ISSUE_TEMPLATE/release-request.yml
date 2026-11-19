@@ -77,6 +77,10 @@ body:
       options:
         - label: "[PRE] Validate CDN caching hit ratios, bandwidth consumption, and SSL certificates binding"
           required: false
+        - label: "[PRE] Confirm the OpenVSX App is changed to Read-Only mode"
+          required: false
+        - label: "[PRE] Confirm RDS backup has been taken and verified"
+          required: false
         - label: "[PRE] Verify EKS cluster health and readiness"
           required: false
         - label: "[PRE] Confirm application staging sign-off has been obtained"
