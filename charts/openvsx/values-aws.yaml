@@ -76,7 +76,7 @@ serviceAccount:
 # output db_backup_role_arn.
 dbBackupDrill:
   enabled: true
-  sourceDbInstance: "openvsx-registrydb-production"
+  sourceDbInstance: "openvsx-registrydb-v140"
   # Every identifier the job creates or deletes must start with this. The IAM policy
   # scopes RestoreDBInstanceFromDBSnapshot and DeleteDBInstance to the same prefix.
   drillPrefix: "openvsx-drill-"
