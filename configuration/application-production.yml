@@ -59,6 +59,7 @@ ovsx:
     ip-address-function: '(getHeader("X-Fastly-Real-IP")?: getHeader("X-Real-IP")?: getHeader("X-Forwarded-For")?: getRemoteAddr()).split(",")[0].trim()'
     filters:
       - url: '/(api|vscode)/.*'
+        customer-headers: true
         http-response-headers:
           Access-Control-Allow-Origin: '*'
           Access-Control-Expose-Headers: Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
