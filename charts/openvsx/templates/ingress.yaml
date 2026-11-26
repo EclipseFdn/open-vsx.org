@@ -2,6 +2,14 @@
 {{- $ingress := .Values.ingress | default dict }}
 {{- if and .Values.eks.enabled (or (not (hasKey $ingress "enabled")) $ingress.enabled) }}
 {{- $preActions := .Values.ingress.preActions | default (list "ssl-redirect") }}
+{{- /* Hosts served by this Ingress: the main host, www.<host> in production, then ingress.additionalHosts. */}}
+{{- $hosts := list .Values.host }}
+{{- if eq .Values.environment "production" }}
+{{- $hosts = append $hosts (printf "www.%s" .Values.host) }}
+{{- end }}
+{{- $hosts = concat $hosts ($ingress.additionalHosts | default list) | compact }}
+{{- $serviceName := printf "%s-%s" .Values.name .Values.environment }}
+{{- $servicePort := .Values.service.port }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -12,7 +20,8 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.className | default "alb" }}
   rules:
-  - host: {{ .Values.host }}
+  {{- range $host := $hosts }}
+  - host: {{ $host }}
     http:
       paths:
       {{- range $action := $preActions }}
@@ -28,28 +37,8 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ .Values.name }}-{{ .Values.environment }}
+            name: {{ $serviceName }}
             port:
-              number: {{ .Values.service.port }}
-{{- if eq .Values.environment "production" }}
-  - host: www.{{ .Values.host }}
-    http:
-      paths:
-      {{- range $action := $preActions }}
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $action }}
-            port:
-              name: use-annotation
-      {{- end }}
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Values.name }}-{{ .Values.environment }}
-            port:
-              number: {{ .Values.service.port }}
-{{- end }}
+              number: {{ $servicePort }}
+  {{- end }}
 {{- end }}

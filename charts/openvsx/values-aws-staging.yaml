@@ -109,6 +109,9 @@ ingress:
   # false skips the Ingress and its ALB (e.g. a copy reached only by port-forward).
   enabled: true
   certArn: arn:aws:acm:eu-central-1:365555376529:certificate/b3835b51-0271-404d-8b35-31f14bd651cc
+  # Extra hosts routed to the app alongside `host` (same rules). Covered by the *.open-vsx.org cert.
+  additionalHosts:
+    - staging-origin.open-vsx.org
   preActions:
     - forward-cors
     - ssl-redirect
